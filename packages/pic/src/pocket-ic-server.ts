@@ -1,7 +1,19 @@
 import { ChildProcess, spawn } from 'node:child_process';
 import { resolve } from 'node:path';
-import { BinNotFoundError, BinTimeoutError } from './error';
-import { exists, readFileAsString, tmpFile, poll } from './util';
+import {
+  BinNotFoundError,
+  BinStartError,
+  BinStartMacOSArmError,
+  BinTimeoutError,
+} from './error';
+import {
+  exists,
+  readFileAsString,
+  tmpFile,
+  poll,
+  isArm,
+  isDarwin,
+} from './util';
 
 export class PocketIcServer {
   private readonly url: string;
@@ -24,6 +36,14 @@ export class PocketIcServer {
 
     const serverProcess = spawn(binPath, ['--pid', pid.toString()], {
       stdio: 'ignore',
+    });
+
+    serverProcess.on('error', error => {
+      if (isArm() && isDarwin()) {
+        throw new BinStartMacOSArmError(error);
+      }
+
+      throw new BinStartError(error);
     });
 
     return await poll(async () => {

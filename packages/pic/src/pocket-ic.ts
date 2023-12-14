@@ -1,6 +1,6 @@
 import { Principal } from '@dfinity/principal';
 import { IDL } from '@dfinity/candid';
-import { assertPlatform, optionalBigInt, readFileAsBytes } from './util';
+import { optionalBigInt, readFileAsBytes } from './util';
 import { PocketIcServer } from './pocket-ic-server';
 import { PocketIcClient } from './pocket-ic-client';
 import { ActorInterface, Actor, createActorClass } from './pocket-ic-actor';
@@ -72,8 +72,6 @@ export class PocketIc {
    * ```
    */
   public static async create(): Promise<PocketIc> {
-    assertPlatform();
-
     const server = await PocketIcServer.start();
     const client = await PocketIcClient.create(server.getUrl());
 
@@ -95,8 +93,6 @@ export class PocketIc {
    * ```
    */
   public static async createFromUrl(url: string): Promise<PocketIc> {
-    assertPlatform();
-
     const client = await PocketIcClient.create(url);
     return new PocketIc(client);
   }

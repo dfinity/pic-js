@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  lint:
+  test_nodejs:
     name: Test (NodeJS)
     runs-on: ubuntu-latest
     steps:

@@ -1,7 +1,26 @@
-export class PlatformMismatchError extends Error {
-  constructor() {
+export class BinStartError extends Error {
+  constructor(cause: Error) {
     super(
-      `The PocketIC binary is only available for x64 Linux and Intel/rosetta-enabled Darwin, but you are running ${process.platform} ${process.arch}.`,
+      `There was an error starting the PocketIC Binary.
+
+Original error: ${cause.name} ${cause.message}.
+${cause.stack}`,
+      { cause },
+    );
+  }
+}
+
+export class BinStartMacOSArmError extends Error {
+  constructor(cause: Error) {
+    super(
+      `There was an error starting the PocketIC Binary.
+
+It seems you are running on an Apple Silicon Mac. The PocketIC binary can not run with the ARM architecture on Apple Silicon Macs.
+Please install and enable Rosetta if it is not enabled and try again.
+
+Original error: ${cause.name} ${cause.message}.
+${cause.stack}`,
+      { cause },
     );
   }
 }
@@ -9,7 +28,7 @@ export class PlatformMismatchError extends Error {
 export class BinNotFoundError extends Error {
   constructor(picBinPath: string) {
     super(
-      `Could not find the PocketIC binary. The PocketIC binary could not be found at ${picBinPath}. Please try install @hadronous/pic again.`,
+      `Could not find the PocketIC binary. The PocketIC binary could not be found at ${picBinPath}. Please try installing @hadronous/pic again.`,
     );
   }
 }
