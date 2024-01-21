@@ -108,7 +108,7 @@ export class PocketIc {
    * @param interfaceFactory The interface factory to use for the {@link Actor}.
    * @param wasm The WASM module to install to the canister.
    *  If a string is passed, it is treated as a path to a file.
-   *  If an Uint8Array is passed, it is treated as the WASM module itself.
+   *  If an `ArrayBufferLike` is passed, it is treated as the WASM module itself.
    * @param createCanisterOptions Options for creating the canister, see {@link CreateCanisterOptions}.
    * @param arg Candid encoded argument to pass to the canister's init function.
    * @param sender The Principal to send the request as.
@@ -131,9 +131,9 @@ export class PocketIc {
    */
   public async setupCanister<T = ActorInterface>(
     interfaceFactory: IDL.InterfaceFactory,
-    wasm: Uint8Array | string,
+    wasm: ArrayBufferLike | string,
     createCanisterOptions: CreateCanisterOptions = {},
-    arg: Uint8Array = new Uint8Array(),
+    arg: ArrayBufferLike = new Uint8Array(),
     sender = Principal.anonymous(),
   ): Promise<CanisterFixture<T>> {
     const canisterId = await this.createCanister(createCanisterOptions, sender);
@@ -200,7 +200,7 @@ export class PocketIc {
    * @param canisterId The Principal of the canister to install the code to.
    * @param wasm The WASM module to install to the canister.
    *  If a string is passed, it is treated as a path to a file.
-   *  If an Uint8Array is passed, it is treated as the WASM module itself.
+   *  If an `ArrayBufferLike` is passed, it is treated as the WASM module itself.
    * @param arg Candid encoded argument to pass to the canister's init function.
    * @param sender The Principal to send the request as.
    *
@@ -221,8 +221,8 @@ export class PocketIc {
    */
   public async installCode(
     canisterId: Principal,
-    wasm: Uint8Array | string,
-    arg: Uint8Array = new Uint8Array(),
+    wasm: ArrayBufferLike | string,
+    arg: ArrayBufferLike = new Uint8Array(),
     sender = Principal.anonymous(),
   ): Promise<void> {
     if (typeof wasm === 'string') {
@@ -230,12 +230,12 @@ export class PocketIc {
     }
 
     const payload = encodeInstallCodeRequest({
-      arg,
+      arg: new Uint8Array(arg),
       canister_id: canisterId,
       mode: {
         install: null,
       },
-      wasm_module: wasm,
+      wasm_module: new Uint8Array(wasm),
     });
 
     await this.client.updateCall(
@@ -255,7 +255,7 @@ export class PocketIc {
    * @param canisterId The Principal of the canister to reinstall code to.
    * @param wasm The WASM module to install to the canister.
    *  If a string is passed, it is treated as a path to a file.
-   *  If an Uint8Array is passed, it is treated as the WASM module itself.
+   *  If an `ArrayBufferLike` is passed, it is treated as the WASM module itself.
    * @param arg Candid encoded argument to pass to the canister's init function.
    * @param sender The Principal to send the request as.
    *
@@ -276,8 +276,8 @@ export class PocketIc {
    */
   public async reinstallCode(
     canisterId: Principal,
-    wasm: Uint8Array | string,
-    arg: Uint8Array = new Uint8Array(),
+    wasm: ArrayBufferLike | string,
+    arg: ArrayBufferLike = new Uint8Array(),
     sender = Principal.anonymous(),
   ): Promise<void> {
     if (typeof wasm === 'string') {
@@ -285,12 +285,12 @@ export class PocketIc {
     }
 
     const payload = encodeInstallCodeRequest({
-      arg,
+      arg: new Uint8Array(arg),
       canister_id: canisterId,
       mode: {
         reinstall: null,
       },
-      wasm_module: wasm,
+      wasm_module: new Uint8Array(wasm),
     });
 
     await this.client.updateCall(
@@ -310,7 +310,7 @@ export class PocketIc {
    * @param canisterId The Principal of the canister to upgrade.
    * @param wasm The WASM module to install to the canister.
    *  If a string is passed, it is treated as a path to a file.
-   *  If an Uint8Array is passed, it is treated as the WASM module itself.
+   *  If an `ArrayBufferLike` is passed, it is treated as the WASM module itself.
    * @param arg Candid encoded argument to pass to the canister's init function.
    * @param sender The Principal to send the request as.
    *
@@ -331,8 +331,8 @@ export class PocketIc {
    */
   public async upgradeCanister(
     canisterId: Principal,
-    wasm: Uint8Array | string,
-    arg: Uint8Array = new Uint8Array(),
+    wasm: ArrayBufferLike | string,
+    arg: ArrayBufferLike = new Uint8Array(),
     sender = Principal.anonymous(),
   ): Promise<void> {
     if (typeof wasm === 'string') {
@@ -340,12 +340,12 @@ export class PocketIc {
     }
 
     const payload = encodeInstallCodeRequest({
-      arg,
+      arg: new Uint8Array(arg),
       canister_id: canisterId,
       mode: {
         upgrade: null,
       },
-      wasm_module: wasm,
+      wasm_module: new Uint8Array(wasm),
     });
 
     await this.client.updateCall(
@@ -524,7 +524,7 @@ export class PocketIc {
    * const pic = await PocketIc.create();
    * const rootKey = await pic.fetchRootKey();
    */
-  public async fetchRootKey(): Promise<Uint8Array> {
+  public async fetchRootKey(): Promise<ArrayBufferLike> {
     return await this.client.fetchRootKey();
   }
 
@@ -622,9 +622,9 @@ export class PocketIc {
    */
   public async setStableMemory(
     canisterId: Principal,
-    stableMemory: Uint8Array,
+    stableMemory: ArrayBufferLike,
   ): Promise<void> {
-    const blobId = await this.client.uploadBlob(stableMemory);
+    const blobId = await this.client.uploadBlob(new Uint8Array(stableMemory));
 
     await this.client.setStableMemory(canisterId, blobId);
   }
@@ -648,7 +648,9 @@ export class PocketIc {
    * const stableMemory = await pic.getStableMemory(canisterId);
    * ```
    */
-  public async getStableMemory(canisterId: Principal): Promise<Uint8Array> {
+  public async getStableMemory(
+    canisterId: Principal,
+  ): Promise<ArrayBufferLike> {
     return await this.client.getStableMemory(canisterId);
   }
 }
