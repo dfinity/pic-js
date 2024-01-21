@@ -414,17 +414,25 @@ export class PocketIc {
   }
 
   /**
-   * Make the IC produce and progress by one block.
+   * Make the IC produce and progress by one block. Accepts a parameter `times` to tick multiple times,
+   * the default is `1`.
+   *
+   * @param times The number of new blocks to produce and progress by. Defaults to `1`.
    *
    * ```ts
    * import { PocketIc } from '@hadronous/pic';
    *
    * const pic = await PocketIc.create();
    * await pic.tick();
+   *
+   * // or to tick multiple times
+   * await pic.tick(3);
    * ```
    */
-  public async tick(): Promise<void> {
-    return await this.client.tick();
+  public async tick(times: number = 1): Promise<void> {
+    for (let i = 0; i < times; i++) {
+      await this.client.tick();
+    }
   }
 
   /**
