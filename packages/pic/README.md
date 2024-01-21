@@ -12,7 +12,7 @@ Other languages available include [Python](https://github.com/dfinity/pocketic-p
 npm i -D @hadronous/pic
 ```
 
-Install peer dependencies if needed:
+Install peer dependencies if they are not already installed:
 
 ```shell
 npm i -D @dfinity/{agent,candid,identity,principal}
@@ -54,6 +54,19 @@ const actor = pic.createActor<_SERVICE>(idlFactory, canisterId);
 // perform tests...
 
 await pic.tearDown();
+```
+
+## Bun Users
+
+PicJS leverages a [`postinstall`](https://docs.npmjs.com/cli/v9/using-npm/scripts#npm-install) script to download the `pocket-ic` binary. This is done to avoid bundling the binary with the library. If you are using [bun](https://bun.sh/) to manage your project's dependencies, then you will need to add `@hadronous/pic` as a [trusted dependency](https://bun.sh/docs/install/lifecycle#trusteddependencies) in your `package.json`:
+
+```json
+{
+  "devDependencies": {
+    "@hadronous/pic": "~0.2.0"
+  },
+  "trustedDependencies": ["@hadronous/pic"]
+}
 ```
 
 ## API Docs
