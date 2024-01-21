@@ -14,7 +14,7 @@ but `@hadronous/pic` can be used with JavaScript and any other testing runner, s
   ```
 
 - [Counter](./counter/README.md)
-  This example demonstrates how to work with a simple canister as well as canister upgrades and WASM reinstallation.
+  This example demonstrates how to work with a simple canister as well as init arguments, canister upgrades and WASM reinstallation.
 - [Clock](./clock/README.md)
   This example demonstrates how to work with the replica's system time, canister timers as well as checking for canister existence and cycle management.
 - [Todo](./todo/README.md)

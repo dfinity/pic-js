@@ -65,6 +65,6 @@ More detailed documentation is available in the [API docs](https://hadronous.git
 All examples are written in [TypeScript](https://www.typescriptlang.org/) with [Jest](https://jestjs.io/) as the test runner,
 but `@hadronous/pic` can be used with JavaScript and any other testing runner, such as [NodeJS](https://nodejs.org/dist/latest-v20.x/docs/api/test.html), [bun](https://bun.sh/docs/cli/test) or [Mocha](https://mochajs.org/).
 
-- The [Counter](https://github.com/hadronous/pic-js/tree/main/examples/counter/README.md) example demonstrates how to work with a simple canister as well as canister upgrades and WASM reinstallation.
+- The [Counter](https://github.com/hadronous/pic-js/tree/main/examples/counter/README.md) example demonstrates how to work with a simple canister as well as init arguments, canister upgrades and WASM reinstallation.
 - The [Clock](https://github.com/hadronous/pic-js/tree/main/examples/clock/README.md) example demonstrates how to work with the replica's system time, canister timers as well as checking for canister existence and cycle management.
 - The [Todo](https://github.com/hadronous/pic-js/tree/main/examples/todo/README.md) example demonstrates how to work with more complex canisters, identities, canister upgrades, and stable memory management.

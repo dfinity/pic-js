@@ -1,7 +1,8 @@
 import { resolve } from 'node:path';
 import { Principal } from '@dfinity/principal';
 import { PocketIc } from '@hadronous/pic';
-import { CounterActor, idlFactory, CounterService } from '../counter';
+import { CounterActor, idlFactory, CounterService, init } from '../counter';
+import { IDL } from '@dfinity/candid';
 
 const WASM_PATH = resolve(
   __dirname,
@@ -21,11 +22,15 @@ describe('Counter', () => {
   let actor: CounterActor;
   let canisterId: Principal;
 
+  const countInitArg = 1n;
+
   beforeEach(async () => {
     pic = await PocketIc.create();
     const fixture = await pic.setupCanister<CounterService>(
       idlFactory,
       WASM_PATH,
+      undefined,
+      IDL.encode(init({ IDL }), [countInitArg]),
     );
     actor = fixture.actor;
     canisterId = fixture.canisterId;
@@ -35,10 +40,10 @@ describe('Counter', () => {
     await pic.tearDown();
   });
 
-  it('should start at 0', async () => {
+  it(`should start at ${countInitArg}`, async () => {
     const result = await actor.get();
 
-    expect(result).toEqual(0n);
+    expect(result).toEqual(countInitArg);
   });
 
   it.each([42n, 306n, 7n])('should set the counter to %d', async input => {
@@ -48,7 +53,7 @@ describe('Counter', () => {
     expect(result).toEqual(input);
   });
 
-  it('should increment from 0', async () => {
+  it(`should increment from ${countInitArg}`, async () => {
     const initialCount = await actor.get();
 
     await actor.inc();
@@ -57,9 +62,9 @@ describe('Counter', () => {
     await actor.inc();
     const finalCount = await actor.get();
 
-    expect(initialCount).toEqual(0n);
-    expect(countAfterFirstInc).toEqual(1n);
-    expect(finalCount).toEqual(2n);
+    expect(initialCount).toEqual(countInitArg);
+    expect(countAfterFirstInc).toEqual(countInitArg + 1n);
+    expect(finalCount).toEqual(countInitArg + 2n);
   });
 
   it.each([42n, 306n, 7n])('should increment from %d', async input => {
@@ -93,6 +98,7 @@ describe('Counter', () => {
   });
 
   it('should fail to decrement from 0', async () => {
+    await actor.set(0n);
     const initialCount = await actor.get();
 
     expect(initialCount).toEqual(0n);
@@ -103,7 +109,11 @@ describe('Counter', () => {
     await actor.inc();
     const preUpgradeCount = await actor.get();
 
-    await pic.upgradeCanister(canisterId, WASM_PATH);
+    await pic.upgradeCanister(
+      canisterId,
+      WASM_PATH,
+      IDL.encode(init({ IDL }), [countInitArg]),
+    );
     const postUpgradeCount = await actor.get();
 
     expect(preUpgradeCount).toEqual(postUpgradeCount);
@@ -113,7 +123,11 @@ describe('Counter', () => {
     await actor.inc();
     const preReinstallCount = await actor.get();
 
-    await pic.reinstallCode(canisterId, WASM_PATH);
+    await pic.reinstallCode(
+      canisterId,
+      WASM_PATH,
+      IDL.encode(init({ IDL }), [countInitArg]),
+    );
     const postReinstallCount = await actor.get();
 
     expect(postReinstallCount).not.toEqual(preReinstallCount);

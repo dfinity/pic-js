@@ -1,6 +1,6 @@
 # Counter
 
-This example demonstrates how to work with a simple canister as well as canister upgrades and WASM reinstallation.
+This example demonstrates how to work with a simple canister as well as init arguments, canister upgrades and WASM reinstallation.
 
 Start DFX:
 

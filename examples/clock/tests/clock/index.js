@@ -1,1 +1,1 @@
-export { idlFactory } from '../../declarations/clock.did';
+export { idlFactory, init } from '../../declarations/clock.did';
