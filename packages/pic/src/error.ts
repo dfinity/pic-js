@@ -38,3 +38,11 @@ export class BinTimeoutError extends Error {
     super('The PocketIC binary took too long to start. Please try again.');
   }
 }
+
+export class InstanceDeletedError extends Error {
+  constructor() {
+    super(
+      'This PocketIC instance has been torn down. Please create a new instance before interacting further with PocketIC.',
+    );
+  }
+}

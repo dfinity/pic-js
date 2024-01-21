@@ -34,6 +34,8 @@ const PROCESSING_HEADER: HeadersInit = {
 };
 
 export class PocketIcClient {
+  private isInstanceDeleted = false;
+
   private constructor(
     private readonly instanceUrl: string,
     private readonly serverUrl: string,
@@ -58,32 +60,46 @@ export class PocketIcClient {
   }
 
   public async deleteInstance(): Promise<void> {
+    this.assertInstanceNotDeleted();
+
     await fetch(this.instanceUrl, {
       method: 'DELETE',
     });
+
+    this.isInstanceDeleted = true;
   }
 
   public async tick(): Promise<void> {
+    this.assertInstanceNotDeleted();
+
     return await this.post<void, void>('/update/tick');
   }
 
   public async getTime(): Promise<number> {
+    this.assertInstanceNotDeleted();
+
     const response = await this.get<GetTimeResponse>('/read/get_time');
 
     return response.nanos_since_epoch / 1_000_000;
   }
 
   public async setTime(time: number): Promise<void> {
+    this.assertInstanceNotDeleted();
+
     await this.post<SetTimeRequest, void>('/update/set_time', {
       nanos_since_epoch: time * 1_000_000,
     });
   }
 
   public async fetchRootKey(): Promise<Uint8Array> {
+    this.assertInstanceNotDeleted();
+
     return await this.post<null, Uint8Array>('/read/root_key');
   }
 
   public async checkCanisterExists(canisterId: Principal): Promise<boolean> {
+    this.assertInstanceNotDeleted();
+
     return await this.post<CheckCanisterExistsRequest, boolean>(
       '/read/canister_exists',
       { canister_id: base64EncodePrincipal(canisterId) },
@@ -91,6 +107,8 @@ export class PocketIcClient {
   }
 
   public async getCyclesBalance(canisterId: Principal): Promise<number> {
+    this.assertInstanceNotDeleted();
+
     const response = await this.post<
       GetCanisterCyclesBalanceRequest,
       GetCanisterCyclesBalanceResponse
@@ -105,6 +123,8 @@ export class PocketIcClient {
     canisterId: Principal,
     amount: number,
   ): Promise<number> {
+    this.assertInstanceNotDeleted();
+
     const response = await this.post<
       AddCanisterCyclesRequest,
       AddCanisterCyclesResponse
@@ -117,6 +137,8 @@ export class PocketIcClient {
   }
 
   public async uploadBlob(blob: Uint8Array): Promise<Uint8Array> {
+    this.assertInstanceNotDeleted();
+
     const response = await fetch(`${this.serverUrl}/blobstore`, {
       method: 'POST',
       body: blob,
@@ -130,6 +152,8 @@ export class PocketIcClient {
     canisterId: Principal,
     blobId: Uint8Array,
   ): Promise<void> {
+    this.assertInstanceNotDeleted();
+
     const request: SetStableMemoryRequest = {
       canister_id: base64EncodePrincipal(canisterId),
       blob_id: Array.from(blobId),
@@ -151,6 +175,8 @@ export class PocketIcClient {
   }
 
   public async getStableMemory(canisterId: Principal): Promise<Uint8Array> {
+    this.assertInstanceNotDeleted();
+
     const response = await this.post<
       GetStableMemoryRequest,
       GetStableMemoryResponse
@@ -167,6 +193,8 @@ export class PocketIcClient {
     method: string,
     payload: Uint8Array,
   ): Promise<Uint8Array> {
+    this.assertInstanceNotDeleted();
+
     return await this.canisterCall(
       '/update/execute_ingress_message',
       canisterId,
@@ -182,6 +210,8 @@ export class PocketIcClient {
     method: string,
     payload: Uint8Array,
   ): Promise<Uint8Array> {
+    this.assertInstanceNotDeleted();
+
     return await this.canisterCall(
       '/read/query',
       canisterId,
@@ -228,5 +258,11 @@ export class PocketIcClient {
     return await HttpClient.get<R>(`${this.instanceUrl}${endpoint}`, {
       headers: PROCESSING_HEADER,
     });
+  }
+
+  private assertInstanceNotDeleted(): void {
+    if (this.isInstanceDeleted) {
+      throw new Error('Instance was deleted');
+    }
   }
 }
