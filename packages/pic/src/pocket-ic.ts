@@ -1,16 +1,16 @@
 import { Principal } from '@dfinity/principal';
 import { IDL } from '@dfinity/candid';
-import { optionalBigInt, readFileAsBytes } from './util';
+import { optionalArray, optionalBigInt, readFileAsBytes } from './util';
 import { PocketIcServer } from './pocket-ic-server';
 import { PocketIcClient } from './pocket-ic-client';
 import { ActorInterface, Actor, createActorClass } from './pocket-ic-actor';
-import {
-  MANAGEMENT_CANISTER_ID,
-  decodeCreateCanisterResponse,
-  encodeCreateCanisterRequest,
-  encodeInstallCodeRequest,
-} from './management-canister';
 import { CanisterFixture, CreateCanisterOptions } from './pocket-ic-types';
+import {
+  _SERVICE as ManagementCanister,
+  idlFactory as ManagementCanisterIdl,
+} from './candid/management-canister';
+
+const MANAGEMENT_CANISTER_ID = Principal.fromText('aaaaa-aa');
 
 /**
  * PocketIC is a local development environment for Internet Computer canisters.
@@ -56,6 +56,7 @@ import { CanisterFixture, CreateCanisterOptions } from './pocket-ic-types';
 export class PocketIc {
   private constructor(
     private readonly client: PocketIcClient,
+    private readonly managementCanisterActor: Actor<ManagementCanister>,
     private readonly server?: PocketIcServer,
   ) {}
 
@@ -74,8 +75,13 @@ export class PocketIc {
   public static async create(): Promise<PocketIc> {
     const server = await PocketIcServer.start();
     const client = await PocketIcClient.create(server.getUrl());
+    const ManageCanisterActor = createActorClass<ManagementCanister>(
+      ManagementCanisterIdl,
+      MANAGEMENT_CANISTER_ID,
+      client,
+    );
 
-    return new PocketIc(client, server);
+    return new PocketIc(client, new ManageCanisterActor(), server);
   }
 
   /**
@@ -94,7 +100,13 @@ export class PocketIc {
    */
   public static async createFromUrl(url: string): Promise<PocketIc> {
     const client = await PocketIcClient.create(url);
-    return new PocketIc(client);
+    const ManageCanisterActor = createActorClass<ManagementCanister>(
+      ManagementCanisterIdl,
+      MANAGEMENT_CANISTER_ID,
+      client,
+    );
+
+    return new PocketIc(client, new ManageCanisterActor());
   }
 
   /**
@@ -169,26 +181,28 @@ export class PocketIc {
   ): Promise<Principal> {
     const cycles = options.cycles ?? 1_000_000_000_000_000_000n;
 
-    const payload = encodeCreateCanisterRequest({
-      settings: [
+    this.managementCanisterActor.setPrincipal(sender);
+    const { canister_id } =
+      await this.managementCanisterActor.provisional_create_canister_with_cycles(
         {
-          controllers: options.controllers ?? [],
-          compute_allocation: optionalBigInt(options.computeAllocation),
-          memory_allocation: optionalBigInt(options.memoryAllocation),
-          freezing_threshold: optionalBigInt(options.freezingThreshold),
+          settings: [
+            {
+              controllers: optionalArray(options.controllers),
+              compute_allocation: optionalBigInt(options.computeAllocation),
+              memory_allocation: optionalBigInt(options.memoryAllocation),
+              freezing_threshold: optionalBigInt(options.freezingThreshold),
+              reserved_cycles_limit: optionalBigInt(
+                options.reservedCyclesLimit,
+              ),
+            },
+          ],
+          amount: [cycles],
+          sender_canister_version: [],
+          specified_id: [],
         },
-      ],
-      amount: [cycles],
-    });
+      );
 
-    const res = await this.client.updateCall(
-      MANAGEMENT_CANISTER_ID,
-      sender,
-      'provisional_create_canister_with_cycles',
-      payload,
-    );
-
-    return decodeCreateCanisterResponse(res).canister_id;
+    return canister_id;
   }
 
   /**
@@ -229,21 +243,16 @@ export class PocketIc {
       wasm = await readFileAsBytes(wasm);
     }
 
-    const payload = encodeInstallCodeRequest({
+    this.managementCanisterActor.setPrincipal(sender);
+    await this.managementCanisterActor.install_code({
       arg: new Uint8Array(arg),
       canister_id: canisterId,
       mode: {
         install: null,
       },
       wasm_module: new Uint8Array(wasm),
+      sender_canister_version: [],
     });
-
-    await this.client.updateCall(
-      MANAGEMENT_CANISTER_ID,
-      sender,
-      'install_code',
-      payload,
-    );
   }
 
   /**
@@ -284,21 +293,16 @@ export class PocketIc {
       wasm = await readFileAsBytes(wasm);
     }
 
-    const payload = encodeInstallCodeRequest({
+    this.managementCanisterActor.setPrincipal(sender);
+    await this.managementCanisterActor.install_code({
       arg: new Uint8Array(arg),
       canister_id: canisterId,
       mode: {
         reinstall: null,
       },
       wasm_module: new Uint8Array(wasm),
+      sender_canister_version: [],
     });
-
-    await this.client.updateCall(
-      MANAGEMENT_CANISTER_ID,
-      sender,
-      'install_code',
-      payload,
-    );
   }
 
   /**
@@ -334,26 +338,26 @@ export class PocketIc {
     wasm: ArrayBufferLike | string,
     arg: ArrayBufferLike = new Uint8Array(),
     sender = Principal.anonymous(),
+    skipPreUpgrade = false,
   ): Promise<void> {
     if (typeof wasm === 'string') {
       wasm = await readFileAsBytes(wasm);
     }
 
-    const payload = encodeInstallCodeRequest({
+    this.managementCanisterActor.setPrincipal(sender);
+    await this.managementCanisterActor.install_code({
       arg: new Uint8Array(arg),
       canister_id: canisterId,
       mode: {
-        upgrade: null,
+        upgrade: [
+          {
+            skip_pre_upgrade: [skipPreUpgrade],
+          },
+        ],
       },
       wasm_module: new Uint8Array(wasm),
+      sender_canister_version: [],
     });
-
-    await this.client.updateCall(
-      MANAGEMENT_CANISTER_ID,
-      sender,
-      'install_code',
-      payload,
-    );
   }
 
   /**

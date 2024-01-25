@@ -30,6 +30,7 @@ export interface CanisterFixture<T = ActorInterface> {
  * @param computeAllocation The compute allocation of the canister.
  * @param memoryAllocation The memory allocation of the canister.
  * @param freezingThreshold The freezing threshold of the canister.
+ * @param reservedCyclesLimit The reserved cycles limit of the canister.
  *
  * @category Types
  * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
@@ -40,4 +41,5 @@ export interface CreateCanisterOptions {
   computeAllocation?: bigint;
   memoryAllocation?: bigint;
   freezingThreshold?: bigint;
+  reservedCyclesLimit?: bigint;
 }
