@@ -46,3 +46,11 @@ export class InstanceDeletedError extends Error {
     );
   }
 }
+
+export class TopologyValidationError extends Error {
+  constructor() {
+    super(
+      'The provided subnet configuration is invalid. At least one subnet must be configured and the number of both application and system subnets must be at least 0 (non-negative).',
+    );
+  }
+}

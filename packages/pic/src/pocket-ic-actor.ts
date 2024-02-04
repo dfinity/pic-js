@@ -131,41 +131,35 @@ export function createActorClass<T = ActorInterface>(
     return sender ?? Principal.anonymous();
   }
 
-  function createQueryMethod(
-    methodName: string,
-    func: IDL.FuncClass,
-  ): ActorMethod {
+  function createQueryMethod(method: string, func: IDL.FuncClass): ActorMethod {
     return async function (...args) {
       const arg = IDL.encode(func.argTypes, args);
       const sender = getSender();
 
-      const response = await pocketIcClient.queryCall(
+      const res = await pocketIcClient.queryCall({
         canisterId,
         sender,
-        methodName,
-        new Uint8Array(arg),
-      );
+        method,
+        payload: new Uint8Array(arg),
+      });
 
-      return decodeReturnValue(func.retTypes, response);
+      return decodeReturnValue(func.retTypes, res.body);
     };
   }
 
-  function createCallMethod(
-    methodName: string,
-    func: IDL.FuncClass,
-  ): ActorMethod {
+  function createCallMethod(method: string, func: IDL.FuncClass): ActorMethod {
     return async function (...args) {
       const arg = IDL.encode(func.argTypes, args);
       const sender = getSender();
 
-      const response = await pocketIcClient.updateCall(
+      const res = await pocketIcClient.updateCall({
         canisterId,
         sender,
-        methodName,
-        new Uint8Array(arg),
-      );
+        method,
+        payload: new Uint8Array(arg),
+      });
 
-      return decodeReturnValue(func.retTypes, response);
+      return decodeReturnValue(func.retTypes, res.body);
     };
   }
 

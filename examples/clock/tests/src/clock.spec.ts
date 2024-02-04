@@ -23,10 +23,10 @@ describe('Clock', () => {
 
   beforeEach(async () => {
     pic = await PocketIc.create();
-    const fixture = await pic.setupCanister<ClockService>(
+    const fixture = await pic.setupCanister<ClockService>({
       idlFactory,
-      WASM_PATH,
-    );
+      wasm: WASM_PATH,
+    });
     actor = fixture.actor;
     canisterId = fixture.canisterId;
   });
@@ -36,16 +36,16 @@ describe('Clock', () => {
   });
 
   it('should create the correct canister', async () => {
-    const canisterExists = await pic.checkCanisterExists(canisterId);
+    const canisterExists = await pic.getCanisterSubnetId(canisterId);
 
-    expect(canisterExists).toBe(true);
+    expect(canisterExists).toBeTruthy();
   });
 
   it('should not create any other canister', async () => {
     const otherCanisterId = Principal.fromUint8Array(new Uint8Array([0]));
-    const canisterExists = await pic.checkCanisterExists(otherCanisterId);
+    const canisterExists = await pic.getCanisterSubnetId(otherCanisterId);
 
-    expect(canisterExists).toBe(false);
+    expect(canisterExists).toBeFalsy();
   });
 
   it('should set and get canister cycles', async () => {

@@ -1,10 +1,3 @@
-import { Principal } from '@dfinity/principal';
-import {
-  base64Decode,
-  base64Encode,
-  base64EncodePrincipal,
-  hexDecode,
-} from './util';
 import {
   HeadersInit,
   HttpClient,
@@ -12,19 +5,55 @@ import {
   handleFetchError,
 } from './http-client';
 import {
-  AddCanisterCyclesRequest,
-  AddCanisterCyclesResponse,
-  CanisterCallRequest,
-  CanisterCallResponse,
-  CheckCanisterExistsRequest,
+  EncodedAddCyclesRequest,
+  EncodedAddCyclesResponse,
+  EncodedCanisterCallRequest,
+  EncodedCanisterCallResponse,
+  EncodedGetSubnetIdRequest,
+  EncodedCreateInstanceRequest,
   CreateInstanceResponse,
-  GetCanisterCyclesBalanceRequest,
-  GetCanisterCyclesBalanceResponse,
+  EncodedGetCyclesBalanceRequest,
+  EncodedGetStableMemoryRequest,
+  EncodedGetStableMemoryResponse,
+  EncodedGetTimeResponse,
+  EncodedSetTimeRequest,
+  EncodedGetSubnetIdResponse,
+  SubnetTopology,
+  decodeInstanceTopology,
+  InstanceTopology,
   GetStableMemoryRequest,
+  encodeGetStableMemoryRequest,
   GetStableMemoryResponse,
-  GetTimeResponse,
+  decodeGetStableMemoryResponse,
   SetStableMemoryRequest,
+  encodeSetStableMemoryRequest,
+  AddCyclesRequest,
+  encodeAddCyclesRequest,
+  AddCyclesResponse,
+  decodeAddCyclesResponse,
+  EncodedGetCyclesBalanceResponse,
+  GetCyclesBalanceResponse,
+  decodeGetCyclesBalanceResponse,
+  encodeGetCyclesBalanceRequest,
+  GetCyclesBalanceRequest,
+  GetSubnetIdResponse,
+  GetSubnetIdRequest,
+  encodeGetSubnetIdRequest,
+  decodeGetSubnetIdResponse,
+  GetTimeResponse,
+  decodeGetTimeResponse,
   SetTimeRequest,
+  encodeSetTimeRequest,
+  CanisterCallRequest,
+  encodeCanisterCallRequest,
+  decodeCanisterCallResponse,
+  CanisterCallResponse,
+  decodeUploadBlobResponse,
+  UploadBlobResponse,
+  UploadBlobRequest,
+  encodeUploadBlobRequest,
+  CreateInstanceRequest,
+  encodeCreateInstanceRequest,
 } from './pocket-ic-client-types';
 
 const PROCESSING_TIME_HEADER = 'processing-timeout-ms';
@@ -39,24 +68,37 @@ export class PocketIcClient {
   private constructor(
     private readonly instanceUrl: string,
     private readonly serverUrl: string,
+    private readonly topology: InstanceTopology,
   ) {}
 
-  public static async create(url: string): Promise<PocketIcClient> {
-    const instanceId = await PocketIcClient.createInstance(url);
-
-    return new PocketIcClient(`${url}/instances/${instanceId}`, url);
-  }
-
-  private static async createInstance(url: string): Promise<number> {
-    const response = await HttpClient.post<null, CreateInstanceResponse>(
-      `${url}/instances`,
+  public static async create(
+    url: string,
+    req?: CreateInstanceRequest,
+  ): Promise<PocketIcClient> {
+    const [instanceId, topology] = await PocketIcClient.createInstance(
+      url,
+      req,
     );
 
-    if ('Error' in response) {
-      throw new Error(response.Error.message);
+    return new PocketIcClient(`${url}/instances/${instanceId}`, url, topology);
+  }
+
+  private static async createInstance(
+    url: string,
+    req?: CreateInstanceRequest,
+  ): Promise<[number, Record<string, SubnetTopology>]> {
+    const res = await HttpClient.post<
+      EncodedCreateInstanceRequest,
+      CreateInstanceResponse
+    >(`${url}/instances`, { body: encodeCreateInstanceRequest(req) });
+
+    if ('Error' in res) {
+      throw new Error(res.Error.message);
     }
 
-    return response.Created.instance_id;
+    const topology = decodeInstanceTopology(res.Created.topology);
+
+    return [res.Created.instance_id, topology];
   }
 
   public async deleteInstance(): Promise<void> {
@@ -75,176 +117,138 @@ export class PocketIcClient {
     return await this.post<void, void>('/update/tick');
   }
 
-  public async getTime(): Promise<number> {
-    this.assertInstanceNotDeleted();
-
-    const response = await this.get<GetTimeResponse>('/read/get_time');
-
-    return response.nanos_since_epoch / 1_000_000;
-  }
-
-  public async setTime(time: number): Promise<void> {
-    this.assertInstanceNotDeleted();
-
-    await this.post<SetTimeRequest, void>('/update/set_time', {
-      nanos_since_epoch: time * 1_000_000,
-    });
-  }
-
   public async fetchRootKey(): Promise<Uint8Array> {
     this.assertInstanceNotDeleted();
 
-    return await this.post<null, Uint8Array>('/read/root_key');
+    return await this.post<null, Uint8Array>('/read/pub_key');
   }
 
-  public async checkCanisterExists(canisterId: Principal): Promise<boolean> {
+  public getTopology(): InstanceTopology {
+    return this.topology;
+  }
+
+  public async getTime(): Promise<GetTimeResponse> {
     this.assertInstanceNotDeleted();
 
-    return await this.post<CheckCanisterExistsRequest, boolean>(
-      '/read/canister_exists',
-      { canister_id: base64EncodePrincipal(canisterId) },
+    const res = await this.get<EncodedGetTimeResponse>('/read/get_time');
+
+    return decodeGetTimeResponse(res);
+  }
+
+  public async setTime(req: SetTimeRequest): Promise<void> {
+    this.assertInstanceNotDeleted();
+
+    await this.post<EncodedSetTimeRequest, void>(
+      '/update/set_time',
+      encodeSetTimeRequest(req),
     );
   }
 
-  public async getCyclesBalance(canisterId: Principal): Promise<number> {
+  public async getSubnetId(
+    req: GetSubnetIdRequest,
+  ): Promise<GetSubnetIdResponse> {
     this.assertInstanceNotDeleted();
 
-    const response = await this.post<
-      GetCanisterCyclesBalanceRequest,
-      GetCanisterCyclesBalanceResponse
-    >('/read/get_cycles', {
-      canister_id: base64EncodePrincipal(canisterId),
-    });
+    const res = await this.post<
+      EncodedGetSubnetIdRequest,
+      EncodedGetSubnetIdResponse
+    >('/read/get_subnet', encodeGetSubnetIdRequest(req));
 
-    return response.cycles;
+    return decodeGetSubnetIdResponse(res);
   }
 
-  public async addCycles(
-    canisterId: Principal,
-    amount: number,
-  ): Promise<number> {
+  public async getCyclesBalance(
+    req: GetCyclesBalanceRequest,
+  ): Promise<GetCyclesBalanceResponse> {
     this.assertInstanceNotDeleted();
 
-    const response = await this.post<
-      AddCanisterCyclesRequest,
-      AddCanisterCyclesResponse
-    >('/update/add_cycles', {
-      canister_id: base64EncodePrincipal(canisterId),
-      amount,
-    });
+    const res = await this.post<
+      EncodedGetCyclesBalanceRequest,
+      EncodedGetCyclesBalanceResponse
+    >('/read/get_cycles', encodeGetCyclesBalanceRequest(req));
 
-    return response.cycles;
+    return decodeGetCyclesBalanceResponse(res);
   }
 
-  public async uploadBlob(blob: Uint8Array): Promise<Uint8Array> {
+  public async addCycles(req: AddCyclesRequest): Promise<AddCyclesResponse> {
     this.assertInstanceNotDeleted();
 
-    const response = await fetch(`${this.serverUrl}/blobstore`, {
+    const res = await this.post<
+      EncodedAddCyclesRequest,
+      EncodedAddCyclesResponse
+    >('/update/add_cycles', encodeAddCyclesRequest(req));
+
+    return decodeAddCyclesResponse(res);
+  }
+
+  public async uploadBlob(req: UploadBlobRequest): Promise<UploadBlobResponse> {
+    this.assertInstanceNotDeleted();
+
+    const res = await fetch(`${this.serverUrl}/blobstore`, {
       method: 'POST',
-      body: blob,
+      body: encodeUploadBlobRequest(req),
     });
 
-    const responseText = await response.text();
-    return new Uint8Array(hexDecode(responseText));
+    return decodeUploadBlobResponse(await res.text());
   }
 
-  public async setStableMemory(
-    canisterId: Principal,
-    blobId: Uint8Array,
-  ): Promise<void> {
+  public async setStableMemory(req: SetStableMemoryRequest): Promise<void> {
     this.assertInstanceNotDeleted();
 
-    const request: SetStableMemoryRequest = {
-      canister_id: base64EncodePrincipal(canisterId),
-      blob_id: Array.from(blobId),
-    };
-
-    const response = await fetch(
-      `${this.instanceUrl}/update/set_stable_memory`,
-      {
-        method: 'POST',
-        headers: {
-          ...JSON_HEADER,
-          ...PROCESSING_HEADER,
-        },
-        body: JSON.stringify(request),
+    // this endpoint does not return JSON encoded responses,
+    // so we make this request directly using fetch to avoid the automatic JSON decoding
+    // from HttpClient.post
+    const res = await fetch(`${this.instanceUrl}/update/set_stable_memory`, {
+      method: 'POST',
+      headers: {
+        ...JSON_HEADER,
+        ...PROCESSING_HEADER,
       },
-    );
-
-    handleFetchError(response);
-  }
-
-  public async getStableMemory(canisterId: Principal): Promise<Uint8Array> {
-    this.assertInstanceNotDeleted();
-
-    const response = await this.post<
-      GetStableMemoryRequest,
-      GetStableMemoryResponse
-    >('/read/get_stable_memory', {
-      canister_id: base64EncodePrincipal(canisterId),
+      body: JSON.stringify(encodeSetStableMemoryRequest(req)),
     });
 
-    return base64Decode(response.blob);
+    handleFetchError(res);
+  }
+
+  public async getStableMemory(
+    req: GetStableMemoryRequest,
+  ): Promise<GetStableMemoryResponse> {
+    this.assertInstanceNotDeleted();
+
+    const res = await this.post<
+      EncodedGetStableMemoryRequest,
+      EncodedGetStableMemoryResponse
+    >('/read/get_stable_memory', encodeGetStableMemoryRequest(req));
+
+    return decodeGetStableMemoryResponse(res);
   }
 
   public async updateCall(
-    canisterId: Principal,
-    sender: Principal,
-    method: string,
-    payload: Uint8Array,
-  ): Promise<Uint8Array> {
+    req: CanisterCallRequest,
+  ): Promise<CanisterCallResponse> {
     this.assertInstanceNotDeleted();
 
-    return await this.canisterCall(
-      '/update/execute_ingress_message',
-      canisterId,
-      sender,
-      method,
-      payload,
-    );
+    return await this.canisterCall('/update/execute_ingress_message', req);
   }
 
   public async queryCall(
-    canisterId: Principal,
-    sender: Principal,
-    method: string,
-    payload: Uint8Array,
-  ): Promise<Uint8Array> {
+    req: CanisterCallRequest,
+  ): Promise<CanisterCallResponse> {
     this.assertInstanceNotDeleted();
 
-    return await this.canisterCall(
-      '/read/query',
-      canisterId,
-      sender,
-      method,
-      payload,
-    );
+    return await this.canisterCall('/read/query', req);
   }
 
   private async canisterCall(
     endpoint: string,
-    canisterId: Principal,
-    sender: Principal,
-    method: string,
-    payload: Uint8Array,
-  ): Promise<Uint8Array> {
-    let rawCanisterCall: CanisterCallRequest = {
-      sender: base64EncodePrincipal(sender),
-      canister_id: base64EncodePrincipal(canisterId),
-      method,
-      payload: base64Encode(payload),
-    };
+    req: CanisterCallRequest,
+  ): Promise<CanisterCallResponse> {
+    const res = await this.post<
+      EncodedCanisterCallRequest,
+      EncodedCanisterCallResponse
+    >(endpoint, encodeCanisterCallRequest(req));
 
-    const response = await this.post<CanisterCallRequest, CanisterCallResponse>(
-      endpoint,
-      rawCanisterCall,
-    );
-
-    if ('Err' in response) {
-      throw new Error(response.Err.description);
-    }
-
-    return base64Decode(response.Ok.Reply);
+    return decodeCanisterCallResponse(res);
   }
 
   private async post<P, R>(endpoint: string, body?: P): Promise<R> {

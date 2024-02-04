@@ -27,7 +27,10 @@ describe('Todo', () => {
 
   beforeEach(async () => {
     pic = await PocketIc.create();
-    const fixture = await pic.setupCanister<TodoService>(idlFactory, WASM_PATH);
+    const fixture = await pic.setupCanister<TodoService>({
+      idlFactory,
+      wasm: WASM_PATH,
+    });
     actor = fixture.actor;
     canisterId = fixture.canisterId;
   });
@@ -210,7 +213,7 @@ describe('Todo', () => {
         text: 'Learn WebAssembly',
       });
 
-      await pic.upgradeCanister(canisterId, WASM_PATH);
+      await pic.upgradeCanister({ canisterId, wasm: WASM_PATH });
 
       actor.setIdentity(alice);
       const aliceAfterUpgradeGetResponse = await actor.get_todos();
@@ -245,7 +248,7 @@ describe('Todo', () => {
       });
 
       const stableMemory = await pic.getStableMemory(canisterId);
-      await pic.reinstallCode(canisterId, WASM_PATH);
+      await pic.reinstallCode({ canisterId, wasm: WASM_PATH });
       await pic.setStableMemory(canisterId, stableMemory);
 
       actor.setIdentity(alice);

@@ -1,3 +1,5 @@
+import { isNil } from './util';
+
 export type HeadersInit = Record<string, string>;
 
 export interface GetOptions {
@@ -47,7 +49,7 @@ export class HttpClient {
 }
 
 export function handleFetchError(response: Response): void {
-  if (!response.ok) {
+  if (isNil(response.ok)) {
     console.error('Error response', response.url, response.statusText);
 
     throw new Error(`${response.url} ${response.statusText}`);

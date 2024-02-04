@@ -26,12 +26,11 @@ describe('Counter', () => {
 
   beforeEach(async () => {
     pic = await PocketIc.create();
-    const fixture = await pic.setupCanister<CounterService>(
+    const fixture = await pic.setupCanister<CounterService>({
       idlFactory,
-      WASM_PATH,
-      undefined,
-      IDL.encode(init({ IDL }), [countInitArg]),
-    );
+      wasm: WASM_PATH,
+      arg: IDL.encode(init({ IDL }), [countInitArg]),
+    });
     actor = fixture.actor;
     canisterId = fixture.canisterId;
   });
@@ -109,11 +108,11 @@ describe('Counter', () => {
     await actor.inc();
     const preUpgradeCount = await actor.get();
 
-    await pic.upgradeCanister(
+    await pic.upgradeCanister({
       canisterId,
-      WASM_PATH,
-      IDL.encode(init({ IDL }), [countInitArg]),
-    );
+      wasm: WASM_PATH,
+      arg: IDL.encode(init({ IDL }), [countInitArg]),
+    });
     const postUpgradeCount = await actor.get();
 
     expect(preUpgradeCount).toEqual(postUpgradeCount);
@@ -123,11 +122,11 @@ describe('Counter', () => {
     await actor.inc();
     const preReinstallCount = await actor.get();
 
-    await pic.reinstallCode(
+    await pic.reinstallCode({
       canisterId,
-      WASM_PATH,
-      IDL.encode(init({ IDL }), [countInitArg]),
-    );
+      wasm: WASM_PATH,
+      arg: IDL.encode(init({ IDL }), [countInitArg]),
+    });
     const postReinstallCount = await actor.get();
 
     expect(postReinstallCount).not.toEqual(preReinstallCount);

@@ -1,16 +1,24 @@
 import { Principal } from '@dfinity/principal';
 import { IDL } from '@dfinity/candid';
-import { optionalArray, optionalBigInt, readFileAsBytes } from './util';
+import { optional, readFileAsBytes } from './util';
 import { PocketIcServer } from './pocket-ic-server';
 import { PocketIcClient } from './pocket-ic-client';
 import { ActorInterface, Actor, createActorClass } from './pocket-ic-actor';
-import { CanisterFixture, CreateCanisterOptions } from './pocket-ic-types';
 import {
-  _SERVICE as ManagementCanister,
-  idlFactory as ManagementCanisterIdl,
-} from './candid/management-canister';
-
-const MANAGEMENT_CANISTER_ID = Principal.fromText('aaaaa-aa');
+  CanisterFixture,
+  CreateCanisterOptions,
+  CreateInstanceOptions,
+  InstallCodeOptions,
+  ReinstallCodeOptions,
+  SetupCanisterOptions,
+  UpgradeCanisterOptions,
+} from './pocket-ic-types';
+import {
+  MANAGEMENT_CANISTER_ID,
+  decodeCreateCanisterResponse,
+  encodeCreateCanisterRequest,
+  encodeInstallCodeRequest,
+} from './management-canister';
 
 /**
  * PocketIC is a local development environment for Internet Computer canisters.
@@ -26,7 +34,7 @@ const MANAGEMENT_CANISTER_ID = Principal.fromText('aaaaa-aa');
  * const wasmPath = resolve('..', '..', 'canister.wasm');
  *
  * const pic = await PocketIc.create();
- * const fixture = await pic.setupCanister<_SERVICE>(idlFactory, wasmPath);
+ * const fixture = await pic.setupCanister<_SERVICE>({ idlFactory, wasmPath });
  * const { actor } = fixture;
  *
  * // perform tests...
@@ -45,8 +53,8 @@ const MANAGEMENT_CANISTER_ID = Principal.fromText('aaaaa-aa');
  * const pic = await PocketIc.create();
  *
  * const canisterId = await pic.createCanister();
- * await pic.installCode(canisterId, wasmPath);
- * const actor = pic.createActor<_SERVICE>(idlFactory, canisterId);
+ * await pic.installCode({ canisterId, wasmPath });
+ * const actor = pic.createActor<_SERVICE>({ idlFactory, canisterId });
  *
  * // perform tests...
  *
@@ -56,7 +64,6 @@ const MANAGEMENT_CANISTER_ID = Principal.fromText('aaaaa-aa');
 export class PocketIc {
   private constructor(
     private readonly client: PocketIcClient,
-    private readonly managementCanisterActor: Actor<ManagementCanister>,
     private readonly server?: PocketIcServer,
   ) {}
 
@@ -72,16 +79,13 @@ export class PocketIc {
    * const pic = await PocketIc.create();
    * ```
    */
-  public static async create(): Promise<PocketIc> {
+  public static async create(
+    options?: CreateInstanceOptions,
+  ): Promise<PocketIc> {
     const server = await PocketIcServer.start();
-    const client = await PocketIcClient.create(server.getUrl());
-    const ManageCanisterActor = createActorClass<ManagementCanister>(
-      ManagementCanisterIdl,
-      MANAGEMENT_CANISTER_ID,
-      client,
-    );
+    const client = await PocketIcClient.create(server.getUrl(), options);
 
-    return new PocketIc(client, new ManageCanisterActor(), server);
+    return new PocketIc(client, server);
   }
 
   /**
@@ -98,15 +102,13 @@ export class PocketIc {
    * const pic = await PocketIc.createFromUrl(url);
    * ```
    */
-  public static async createFromUrl(url: string): Promise<PocketIc> {
-    const client = await PocketIcClient.create(url);
-    const ManageCanisterActor = createActorClass<ManagementCanister>(
-      ManagementCanisterIdl,
-      MANAGEMENT_CANISTER_ID,
-      client,
-    );
+  public static async createFromUrl(
+    url: string,
+    options?: CreateInstanceOptions,
+  ): Promise<PocketIc> {
+    const client = await PocketIcClient.create(url, options);
 
-    return new PocketIc(client, new ManageCanisterActor());
+    return new PocketIc(client);
   }
 
   /**
@@ -117,13 +119,7 @@ export class PocketIc {
    * To just install code to an existing canister, see {@link installCode}.
    * To just create an Actor for an existing canister, see {@link createActor}.
    *
-   * @param interfaceFactory The interface factory to use for the {@link Actor}.
-   * @param wasm The WASM module to install to the canister.
-   *  If a string is passed, it is treated as a path to a file.
-   *  If an `ArrayBufferLike` is passed, it is treated as the WASM module itself.
-   * @param createCanisterOptions Options for creating the canister, see {@link CreateCanisterOptions}.
-   * @param arg Candid encoded argument to pass to the canister's init function.
-   * @param sender The Principal to send the request as.
+   * @param options Options for setting up the canister, see {@link SetupCanisterOptions}.
    * @returns The {@link Actor} instance.
    *
    * @see [Candid](https://internetcomputer.org/docs/current/references/candid-ref)
@@ -137,21 +133,34 @@ export class PocketIc {
    * const wasmPath = resolve('..', '..', 'canister.wasm');
    *
    * const pic = await PocketIc.create();
-   * const fixture = await pic.setupCanister<_SERVICE>(idlFactory, wasmPath);
+   * const fixture = await pic.setupCanister<_SERVICE>({ idlFactory, wasmPath });
    * const { actor } = fixture;
    * ```
    */
-  public async setupCanister<T = ActorInterface>(
-    interfaceFactory: IDL.InterfaceFactory,
-    wasm: ArrayBufferLike | string,
-    createCanisterOptions: CreateCanisterOptions = {},
-    arg: ArrayBufferLike = new Uint8Array(),
-    sender = Principal.anonymous(),
-  ): Promise<CanisterFixture<T>> {
-    const canisterId = await this.createCanister(createCanisterOptions, sender);
-    await this.installCode(canisterId, wasm, arg, sender);
+  public async setupCanister<T = ActorInterface>({
+    sender,
+    arg,
+    wasm,
+    idlFactory,
+    computeAllocation,
+    controllers,
+    cycles,
+    freezingThreshold,
+    memoryAllocation,
+    reservedCyclesLimit,
+  }: SetupCanisterOptions): Promise<CanisterFixture<T>> {
+    const canisterId = await this.createCanister({
+      computeAllocation,
+      controllers,
+      cycles,
+      freezingThreshold,
+      memoryAllocation,
+      reservedCyclesLimit,
+    });
 
-    const actor = this.createActor<T>(interfaceFactory, canisterId);
+    await this.installCode({ canisterId, wasm, arg, sender });
+
+    const actor = this.createActor<T>(idlFactory, canisterId);
 
     return { actor, canisterId };
   }
@@ -162,7 +171,6 @@ export class PocketIc {
    * creating a canister and installing code, see {@link setupCanister}.
    *
    * @param options Options for creating the canister, see {@link CreateCanisterOptions}.
-   * @param sender The Principal to send the request as.
    * @returns The Principal of the newly created canister.
    *
    * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
@@ -175,34 +183,36 @@ export class PocketIc {
    * const canisterId = await pic.createCanister();
    * ```
    */
-  public async createCanister(
-    options: CreateCanisterOptions = {},
+  public async createCanister({
     sender = Principal.anonymous(),
-  ): Promise<Principal> {
-    const cycles = options.cycles ?? 1_000_000_000_000_000_000n;
-
-    this.managementCanisterActor.setPrincipal(sender);
-    const { canister_id } =
-      await this.managementCanisterActor.provisional_create_canister_with_cycles(
+    cycles = 1_000_000_000_000_000_000n,
+    controllers,
+    computeAllocation,
+    freezingThreshold,
+    memoryAllocation,
+    reservedCyclesLimit,
+  }: CreateCanisterOptions = {}): Promise<Principal> {
+    const payload = encodeCreateCanisterRequest({
+      settings: [
         {
-          settings: [
-            {
-              controllers: optionalArray(options.controllers),
-              compute_allocation: optionalBigInt(options.computeAllocation),
-              memory_allocation: optionalBigInt(options.memoryAllocation),
-              freezing_threshold: optionalBigInt(options.freezingThreshold),
-              reserved_cycles_limit: optionalBigInt(
-                options.reservedCyclesLimit,
-              ),
-            },
-          ],
-          amount: [cycles],
-          sender_canister_version: [],
-          specified_id: [],
+          controllers: controllers ?? [],
+          compute_allocation: optional(computeAllocation),
+          memory_allocation: optional(memoryAllocation),
+          freezing_threshold: optional(freezingThreshold),
+          reserved_cycles_limit: optional(reservedCyclesLimit),
         },
-      );
+      ],
+      amount: [cycles],
+    });
 
-    return canister_id;
+    const res = await this.client.updateCall({
+      canisterId: MANAGEMENT_CANISTER_ID,
+      sender,
+      method: 'provisional_create_canister_with_cycles',
+      payload,
+    });
+
+    return decodeCreateCanisterResponse(res.body).canister_id;
   }
 
   /**
@@ -211,12 +221,7 @@ export class PocketIc {
    * For a more convenient way of creating a PocketIC instance,
    * creating a canister and installing code, see {@link setupCanister}.
    *
-   * @param canisterId The Principal of the canister to install the code to.
-   * @param wasm The WASM module to install to the canister.
-   *  If a string is passed, it is treated as a path to a file.
-   *  If an `ArrayBufferLike` is passed, it is treated as the WASM module itself.
-   * @param arg Candid encoded argument to pass to the canister's init function.
-   * @param sender The Principal to send the request as.
+   * @param options Options for installing the code, see {@link InstallCodeOptions}.
    *
    * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
    *
@@ -230,28 +235,33 @@ export class PocketIc {
    * const wasmPath = resolve('..', '..', 'canister.wasm');
    *
    * const pic = await PocketIc.create();
-   * await pic.installCode(canisterId, wasmPath);
+   * await pic.installCode({ canisterId, wasmPath });
    * ```
    */
-  public async installCode(
-    canisterId: Principal,
-    wasm: ArrayBufferLike | string,
-    arg: ArrayBufferLike = new Uint8Array(),
+  public async installCode({
+    arg = new Uint8Array(),
     sender = Principal.anonymous(),
-  ): Promise<void> {
+    canisterId,
+    wasm,
+  }: InstallCodeOptions): Promise<void> {
     if (typeof wasm === 'string') {
       wasm = await readFileAsBytes(wasm);
     }
 
-    this.managementCanisterActor.setPrincipal(sender);
-    await this.managementCanisterActor.install_code({
+    const payload = encodeInstallCodeRequest({
       arg: new Uint8Array(arg),
       canister_id: canisterId,
       mode: {
         install: null,
       },
       wasm_module: new Uint8Array(wasm),
-      sender_canister_version: [],
+    });
+
+    await this.client.updateCall({
+      canisterId: MANAGEMENT_CANISTER_ID,
+      sender,
+      method: 'install_code',
+      payload,
     });
   }
 
@@ -261,12 +271,7 @@ export class PocketIc {
    * To create a canister to upgrade, see {@link createCanister}.
    * To install the initial WASM module to a new canister, see {@link installCode}.
    *
-   * @param canisterId The Principal of the canister to reinstall code to.
-   * @param wasm The WASM module to install to the canister.
-   *  If a string is passed, it is treated as a path to a file.
-   *  If an `ArrayBufferLike` is passed, it is treated as the WASM module itself.
-   * @param arg Candid encoded argument to pass to the canister's init function.
-   * @param sender The Principal to send the request as.
+   * @param options Options for reinstalling the code, see {@link ReinstallCodeOptions}.
    *
    * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
    *
@@ -283,25 +288,30 @@ export class PocketIc {
    * await pic.reinstallCode(canisterId, wasmPath);
    * ```
    */
-  public async reinstallCode(
-    canisterId: Principal,
-    wasm: ArrayBufferLike | string,
-    arg: ArrayBufferLike = new Uint8Array(),
+  public async reinstallCode({
     sender = Principal.anonymous(),
-  ): Promise<void> {
+    arg = new Uint8Array(),
+    canisterId,
+    wasm,
+  }: ReinstallCodeOptions): Promise<void> {
     if (typeof wasm === 'string') {
       wasm = await readFileAsBytes(wasm);
     }
 
-    this.managementCanisterActor.setPrincipal(sender);
-    await this.managementCanisterActor.install_code({
+    const payload = encodeInstallCodeRequest({
       arg: new Uint8Array(arg),
       canister_id: canisterId,
       mode: {
         reinstall: null,
       },
       wasm_module: new Uint8Array(wasm),
-      sender_canister_version: [],
+    });
+
+    await this.client.updateCall({
+      canisterId: MANAGEMENT_CANISTER_ID,
+      sender,
+      method: 'install_code',
+      payload,
     });
   }
 
@@ -311,12 +321,7 @@ export class PocketIc {
    * To create a canister to upgrade to, see {@link createCanister}.
    * To install the initial WASM module to a new canister, see {@link installCode}.
    *
-   * @param canisterId The Principal of the canister to upgrade.
-   * @param wasm The WASM module to install to the canister.
-   *  If a string is passed, it is treated as a path to a file.
-   *  If an `ArrayBufferLike` is passed, it is treated as the WASM module itself.
-   * @param arg Candid encoded argument to pass to the canister's init function.
-   * @param sender The Principal to send the request as.
+   * @param options Options for upgrading the canister, see {@link UpgradeCanisterOptions}.
    *
    * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
    *
@@ -333,30 +338,30 @@ export class PocketIc {
    * await pic.upgradeCanister(canisterId, wasmPath);
    * ```
    */
-  public async upgradeCanister(
-    canisterId: Principal,
-    wasm: ArrayBufferLike | string,
-    arg: ArrayBufferLike = new Uint8Array(),
+  public async upgradeCanister({
     sender = Principal.anonymous(),
-    skipPreUpgrade = false,
-  ): Promise<void> {
+    arg = new Uint8Array(),
+    canisterId,
+    wasm,
+  }: UpgradeCanisterOptions): Promise<void> {
     if (typeof wasm === 'string') {
       wasm = await readFileAsBytes(wasm);
     }
 
-    this.managementCanisterActor.setPrincipal(sender);
-    await this.managementCanisterActor.install_code({
+    const payload = encodeInstallCodeRequest({
       arg: new Uint8Array(arg),
       canister_id: canisterId,
       mode: {
-        upgrade: [
-          {
-            skip_pre_upgrade: [skipPreUpgrade],
-          },
-        ],
+        upgrade: null,
       },
       wasm_module: new Uint8Array(wasm),
-      sender_canister_version: [],
+    });
+
+    await this.client.updateCall({
+      canisterId: MANAGEMENT_CANISTER_ID,
+      sender,
+      method: 'install_code',
+      payload,
     });
   }
 
@@ -454,7 +459,9 @@ export class PocketIc {
    * ```
    */
   public async getTime(): Promise<number> {
-    return await this.client.getTime();
+    const { millisSinceEpoch } = await this.client.getTime();
+
+    return millisSinceEpoch;
   }
 
   /**
@@ -491,7 +498,7 @@ export class PocketIc {
    * ```
    */
   public async setTime(time: number): Promise<void> {
-    await this.client.setTime(time);
+    await this.client.setTime({ millisSinceEpoch: time });
   }
 
   /**
@@ -547,11 +554,15 @@ export class PocketIc {
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    *
    * const pic = await PocketIc.create();
-   * const canisterExists = await pic.checkCanisterExists(canisterId);
+   * const subnetId = await pic.getCanisterSubnetId(canisterId);
    * ```
    */
-  public async checkCanisterExists(canisterId: Principal): Promise<boolean> {
-    return await this.client.checkCanisterExists(canisterId);
+  public async getCanisterSubnetId(
+    canisterId: Principal,
+  ): Promise<Principal | null> {
+    const { subnetId } = await this.client.getSubnetId({ canisterId });
+
+    return subnetId;
   }
 
   /**
@@ -574,7 +585,9 @@ export class PocketIc {
    * ```
    */
   public async getCyclesBalance(canisterId: Principal): Promise<number> {
-    return await this.client.getCyclesBalance(canisterId);
+    const { cycles } = await this.client.getCyclesBalance({ canisterId });
+
+    return cycles;
   }
 
   /**
@@ -601,7 +614,9 @@ export class PocketIc {
     canisterId: Principal,
     amount: number,
   ): Promise<number> {
-    return await this.client.addCycles(canisterId, amount);
+    const { cycles } = await this.client.addCycles({ canisterId, amount });
+
+    return cycles;
   }
 
   /**
@@ -628,9 +643,11 @@ export class PocketIc {
     canisterId: Principal,
     stableMemory: ArrayBufferLike,
   ): Promise<void> {
-    const blobId = await this.client.uploadBlob(new Uint8Array(stableMemory));
+    const { blobId } = await this.client.uploadBlob({
+      blob: new Uint8Array(stableMemory),
+    });
 
-    await this.client.setStableMemory(canisterId, blobId);
+    await this.client.setStableMemory({ canisterId, blobId });
   }
 
   /**
@@ -655,6 +672,8 @@ export class PocketIc {
   public async getStableMemory(
     canisterId: Principal,
   ): Promise<ArrayBufferLike> {
-    return await this.client.getStableMemory(canisterId);
+    const { blob } = await this.client.getStableMemory({ canisterId });
+
+    return blob;
   }
 }

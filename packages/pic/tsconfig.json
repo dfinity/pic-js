@@ -6,6 +6,5 @@
     "declaration": true,
     "sourceMap": true,
     "stripInternal": true,
-    "allowJs": true,
   },
 }

@@ -1,9 +1,5 @@
-export function optionalBigInt(
-  value: bigint | undefined | null,
-): [] | [bigint] {
-  return value === undefined || value === null ? [] : [value];
-}
+import { isNil } from './is-nil';
 
-export function optionalArray<T>(value: T[] | undefined | null): [] | [T[]] {
-  return value === undefined || value === null ? [] : [value];
+export function optional<T>(value: T | undefined | null): [] | [T] {
+  return isNil(value) ? [] : [value];
 }
