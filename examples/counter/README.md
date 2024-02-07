@@ -11,7 +11,7 @@ dfx start --background
 Create a new canister:
 
 ```shell
-dfx bun create:counter
+bun create:counter
 ```
 
 Build the counter canister:
