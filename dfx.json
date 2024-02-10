@@ -1,4 +1,16 @@
 {
+  "version": 1,
+  "dfx": "0.16.1",
+  "output_env_file": ".env",
+  "networks": {
+    "local": {
+      "bind": "127.0.0.1:8080",
+      "type": "ephemeral",
+      "replica": {
+        "subnet_type": "system"
+      }
+    }
+  },
   "canisters": {
     "counter": {
       "main": "examples/counter/src/main.mo",
@@ -28,8 +40,5 @@
         "output": "examples/todo/declarations"
       }
     }
-  },
-  "output_env_file": ".env",
-  "dfx": "0.15.2",
-  "version": 1
+  }
 }

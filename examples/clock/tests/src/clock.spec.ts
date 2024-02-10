@@ -1,7 +1,7 @@
 import { resolve } from 'node:path';
 import { Principal } from '@dfinity/principal';
-import { PocketIc } from '@hadronous/pic';
-import { ClockActor, idlFactory, ClockService } from '../clock';
+import { Actor, PocketIc } from '@hadronous/pic';
+import { _SERVICE, idlFactory } from '../../declarations/clock.did';
 
 const WASM_PATH = resolve(
   __dirname,
@@ -17,14 +17,14 @@ const WASM_PATH = resolve(
 );
 
 describe('Clock', () => {
-  let actor: ClockActor;
+  let actor: Actor<_SERVICE>;
   let pic: PocketIc;
   let canisterId: Principal;
 
   beforeEach(async () => {
     pic = await PocketIc.create();
-    const fixture = await pic.setupCanister<ClockService>({
-      idlFactory,
+    const fixture = await pic.setupCanister<_SERVICE>({
+      idlFactory: idlFactory,
       wasm: WASM_PATH,
     });
     actor = fixture.actor;
@@ -51,7 +51,7 @@ describe('Clock', () => {
   it('should set and get canister cycles', async () => {
     const cycles = await pic.getCyclesBalance(canisterId);
 
-    const cyclesToAdd = 1_000_000;
+    const cyclesToAdd = 1_000_000_000;
     const updatedCyclesBalance = await pic.addCycles(canisterId, cyclesToAdd);
     const fetchUpdatedCyclesBalance = await pic.getCyclesBalance(canisterId);
 

@@ -1,8 +1,8 @@
 import { resolve } from 'node:path';
 import { Principal } from '@dfinity/principal';
-import { PocketIc } from '@hadronous/pic';
-import { CounterActor, idlFactory, CounterService, init } from '../counter';
+import { Actor, PocketIc } from '@hadronous/pic';
 import { IDL } from '@dfinity/candid';
+import { _SERVICE, idlFactory, init } from '../../declarations/counter.did';
 
 const WASM_PATH = resolve(
   __dirname,
@@ -19,14 +19,14 @@ const WASM_PATH = resolve(
 
 describe('Counter', () => {
   let pic: PocketIc;
-  let actor: CounterActor;
+  let actor: Actor<_SERVICE>;
   let canisterId: Principal;
 
   const countInitArg = 1n;
 
   beforeEach(async () => {
     pic = await PocketIc.create();
-    const fixture = await pic.setupCanister<CounterService>({
+    const fixture = await pic.setupCanister<_SERVICE>({
       idlFactory,
       wasm: WASM_PATH,
       arg: IDL.encode(init({ IDL }), [countInitArg]),

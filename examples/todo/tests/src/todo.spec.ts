@@ -1,8 +1,8 @@
 import { resolve } from 'node:path';
 import { Principal } from '@dfinity/principal';
 import { AnonymousIdentity } from '@dfinity/agent';
-import { PocketIc, createIdentity } from '@hadronous/pic';
-import { TodoActor, idlFactory, TodoService } from '../todo';
+import { Actor, PocketIc, createIdentity } from '@hadronous/pic';
+import { _SERVICE, idlFactory } from '../../declarations/todo.did';
 
 const WASM_PATH = resolve(
   __dirname,
@@ -19,7 +19,7 @@ const WASM_PATH = resolve(
 
 describe('Todo', () => {
   let pic: PocketIc;
-  let actor: TodoActor;
+  let actor: Actor<_SERVICE>;
   let canisterId: Principal;
 
   const alice = createIdentity('superSecretAlicePassword');
@@ -27,7 +27,7 @@ describe('Todo', () => {
 
   beforeEach(async () => {
     pic = await PocketIc.create();
-    const fixture = await pic.setupCanister<TodoService>({
+    const fixture = await pic.setupCanister<_SERVICE>({
       idlFactory,
       wasm: WASM_PATH,
     });
