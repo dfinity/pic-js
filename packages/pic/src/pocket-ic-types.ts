@@ -165,18 +165,12 @@ export interface CanisterFixture<T = ActorInterface> {
 }
 
 /**
- * Options for creating a canister.
+ * Canister settings.
  *
  * @category Types
  * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
  */
-export interface CreateCanisterOptions {
-  /**
-   * The amount of cycles to send to the canister.
-   * Defaults to 1_000_000_000_000_000_000n.
-   */
-  cycles?: bigint;
-
+export interface CanisterSettings {
   /**
    * The controllers of the canister.
    * Defaults to the sender, which defaults to the anonymous principal.
@@ -202,6 +196,20 @@ export interface CreateCanisterOptions {
    * The reserved cycles limit of the canister.
    */
   reservedCyclesLimit?: bigint;
+}
+
+/**
+ * Options for creating a canister.
+ *
+ * @category Types
+ * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+ */
+export interface CreateCanisterOptions extends CanisterSettings {
+  /**
+   * The amount of cycles to send to the canister.
+   * Defaults to 1_000_000_000_000_000_000n.
+   */
+  cycles?: bigint;
 
   /**
    * The principal to create the canister as.
@@ -314,6 +322,26 @@ export interface UpgradeCanisterOptions {
    * Candid encoded argument to pass to the canister's init function.
    */
   arg?: ArrayBufferLike;
+
+  /**
+   * The Principal to send the request as.
+   * Defaults to the anonymous principal.
+   */
+  sender?: Principal;
+}
+
+/**
+ * Options for updating the settings of a given canister.
+ *
+ * @category Types
+ * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+ */
+export interface UpdateCanisterSettingsOptions
+  extends Partial<CanisterSettings> {
+  /**
+   * The Principal of the canister to update the settings for.
+   */
+  canisterId: Principal;
 
   /**
    * The Principal to send the request as.

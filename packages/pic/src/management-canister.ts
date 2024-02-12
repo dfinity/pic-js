@@ -77,3 +77,19 @@ export interface InstallCodeRequest {
 export function encodeInstallCodeRequest(arg: InstallCodeRequest): Uint8Array {
   return new Uint8Array(IDL.encode([InstallCodeRequest], [arg]));
 }
+
+const UpdateCanisterSettingsRequest = IDL.Record({
+  settings: CanisterSettings,
+  canister_id: IDL.Principal,
+});
+
+export interface UpdateCanisterSettingsRequest {
+  settings: CanisterSettings;
+  canister_id: Principal;
+}
+
+export function encodeUpdateCanisterSettingsRequest(
+  arg: UpdateCanisterSettingsRequest,
+): Uint8Array {
+  return new Uint8Array(IDL.encode([UpdateCanisterSettingsRequest], [arg]));
+}

@@ -14,12 +14,14 @@ import {
   UpgradeCanisterOptions,
   SubnetTopology,
   SubnetType,
+  UpdateCanisterSettingsOptions,
 } from './pocket-ic-types';
 import {
   MANAGEMENT_CANISTER_ID,
   decodeCreateCanisterResponse,
   encodeCreateCanisterRequest,
   encodeInstallCodeRequest,
+  encodeUpdateCanisterSettingsRequest,
 } from './management-canister';
 
 /**
@@ -382,6 +384,54 @@ export class PocketIc {
       canisterId: MANAGEMENT_CANISTER_ID,
       sender,
       method: 'install_code',
+      payload,
+    });
+  }
+
+  /**
+   * Updates the settings of the given canister.
+   *
+   * @param options Options for updating the canister settings, see {@link UpdateCanisterSettingsOptions}.
+   *
+   * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+   *
+   * @example
+   * ```ts
+   * import { Principal } from '@dfinity/principal';
+   * import { PocketIc } from '@hadronous/pic';
+   *
+   * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
+   *
+   * const pic = await PocketIc.create();
+   * await pic.updateCanisterSettings({
+   *  canisterId,
+   *  controllers: [Principal.fromUint8Array(new Uint8Array([1]))],
+   * });
+   */
+  public async updateCanisterSettings({
+    canisterId,
+    computeAllocation,
+    controllers,
+    freezingThreshold,
+    memoryAllocation,
+    reservedCyclesLimit,
+    sender = Principal.anonymous(),
+  }: UpdateCanisterSettingsOptions): Promise<void> {
+    const payload = encodeUpdateCanisterSettingsRequest({
+      canister_id: canisterId,
+      settings: {
+        controllers: controllers ?? [],
+        compute_allocation: optional(computeAllocation),
+        memory_allocation: optional(memoryAllocation),
+        freezing_threshold: optional(freezingThreshold),
+        reserved_cycles_limit: optional(reservedCyclesLimit),
+      },
+    });
+
+    await this.client.updateCall({
+      canisterId: MANAGEMENT_CANISTER_ID,
+      sender,
+      method: 'update_settings',
       payload,
     });
   }
