@@ -165,6 +165,7 @@ export class PocketIc {
       reservedCyclesLimit,
       targetCanisterId,
       targetSubnetId,
+      sender,
     });
 
     await this.installCode({ canisterId, wasm, arg, sender, targetSubnetId });
