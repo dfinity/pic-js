@@ -19,3 +19,5 @@ but `@hadronous/pic` can be used with JavaScript and any other testing runner, s
   This example demonstrates how to work with the replica's system time, canister timers as well as checking for canister existence and cycle management.
 - [Todo](./todo/README.md)
   This example demonstrates how to work with more complex canisters, identities, canister upgrades, and stable memory management.
+- [Multicanister](./multicanister/README.md)
+  This example demonstrates how to work with multiple canisters and multiple subnets.

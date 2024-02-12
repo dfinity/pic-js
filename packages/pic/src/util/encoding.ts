@@ -8,6 +8,10 @@ export function base64EncodePrincipal(principal: Principal): string {
   return base64Encode(principal.toUint8Array());
 }
 
+export function base64DecodePrincipal(payload: string): Principal {
+  return Principal.fromUint8Array(base64Decode(payload));
+}
+
 export function base64Decode(payload: string): Uint8Array {
   return new Uint8Array(Buffer.from(payload, 'base64'));
 }

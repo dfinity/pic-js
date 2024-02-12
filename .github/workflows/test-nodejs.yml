@@ -23,17 +23,8 @@ jobs:
       - name: Build
         run: pnpm run build
 
-      - name: Start DFX
-        run: dfx start --background
-
-      - name: Create Example Canisters
-        run: pnpm create:examples
-
       - name: Build Examples
         run: pnpm build:examples
-
-      - name: Stop DFX
-        run: dfx stop
 
       - name: Test Examples
         run: pnpm test:examples

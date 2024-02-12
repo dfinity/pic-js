@@ -12,6 +12,8 @@ import {
   ReinstallCodeOptions,
   SetupCanisterOptions,
   UpgradeCanisterOptions,
+  SubnetTopology,
+  SubnetType,
 } from './pocket-ic-types';
 import {
   MANAGEMENT_CANISTER_ID,
@@ -70,6 +72,7 @@ export class PocketIc {
   /**
    * Starts the PocketIC server and creates a PocketIC instance.
    *
+   * @param options Options for creating the PocketIC instance see {@link CreateInstanceOptions}.
    * @returns A new PocketIC instance.
    *
    * @example
@@ -147,6 +150,8 @@ export class PocketIc {
     cycles,
     freezingThreshold,
     memoryAllocation,
+    targetCanisterId,
+    targetSubnetId,
     reservedCyclesLimit,
   }: SetupCanisterOptions): Promise<CanisterFixture<T>> {
     const canisterId = await this.createCanister({
@@ -156,9 +161,11 @@ export class PocketIc {
       freezingThreshold,
       memoryAllocation,
       reservedCyclesLimit,
+      targetCanisterId,
+      targetSubnetId,
     });
 
-    await this.installCode({ canisterId, wasm, arg, sender });
+    await this.installCode({ canisterId, wasm, arg, sender, targetSubnetId });
 
     const actor = this.createActor<T>(idlFactory, canisterId);
 
@@ -191,6 +198,8 @@ export class PocketIc {
     freezingThreshold,
     memoryAllocation,
     reservedCyclesLimit,
+    targetCanisterId,
+    targetSubnetId,
   }: CreateCanisterOptions = {}): Promise<Principal> {
     const payload = encodeCreateCanisterRequest({
       settings: [
@@ -203,6 +212,7 @@ export class PocketIc {
         },
       ],
       amount: [cycles],
+      specified_id: optional(targetCanisterId),
     });
 
     const res = await this.client.updateCall({
@@ -210,6 +220,11 @@ export class PocketIc {
       sender,
       method: 'provisional_create_canister_with_cycles',
       payload,
+      effectivePrincipal: targetSubnetId
+        ? {
+            subnetId: targetSubnetId,
+          }
+        : undefined,
     });
 
     return decodeCreateCanisterResponse(res.body).canister_id;
@@ -243,6 +258,7 @@ export class PocketIc {
     sender = Principal.anonymous(),
     canisterId,
     wasm,
+    targetSubnetId,
   }: InstallCodeOptions): Promise<void> {
     if (typeof wasm === 'string') {
       wasm = await readFileAsBytes(wasm);
@@ -262,6 +278,11 @@ export class PocketIc {
       sender,
       method: 'install_code',
       payload,
+      effectivePrincipal: targetSubnetId
+        ? {
+            subnetId: targetSubnetId,
+          }
+        : undefined,
     });
   }
 
@@ -563,6 +584,105 @@ export class PocketIc {
     const { subnetId } = await this.client.getSubnetId({ canisterId });
 
     return subnetId;
+  }
+
+  /**
+   * Get the topology of this instance's network.
+   * The topology is a list of subnets, each with a type and a list of canister ID ranges
+   * that can be deployed to that subnet.
+   * The instance network topology is configured via the {@link create} method.
+   *
+   * @returns An array of subnet topologies, see {@link SubnetTopology}.
+   */
+  public getTopology(): SubnetTopology[] {
+    return Object.values(this.client.getTopology());
+  }
+
+  /**
+   * Get the Bitcoin subnet topology for this instance's network.
+   * The instance network topology is configured via the {@link create} method.
+   *
+   * @returns The subnet topology for the Bitcoin subnet,
+   * if it exists on this instance's network.
+   */
+  public getBitcoinSubnet(): SubnetTopology | undefined {
+    return this.getTopology().find(
+      subnet => subnet.type === SubnetType.Bitcoin,
+    );
+  }
+
+  /**
+   * Get the Fiduciary subnet topology for this instance's network.
+   * The instance network topology is configured via the {@link create} method.
+   *
+   * @returns The subnet topology for the Fiduciary subnet,
+   * if it exists on this instance's network.
+   */
+  public getFiduciarySubnet(): SubnetTopology | undefined {
+    return this.getTopology().find(
+      subnet => subnet.type === SubnetType.Fiduciary,
+    );
+  }
+
+  /**
+   * Get the Internet Identity subnet topology for this instance's network.
+   * The instance network topology is configured via the {@link create} method.
+   *
+   * @returns The subnet topology for the Internet Identity subnet,
+   * if it exists on this instance's network.
+   */
+  public getInternetIdentitySubnet(): SubnetTopology | undefined {
+    return this.getTopology().find(
+      subnet => subnet.type === SubnetType.InternetIdentity,
+    );
+  }
+
+  /**
+   * Get the NNS subnet topology for this instance's network.
+   * The instance network topology is configured via the {@link create} method.
+   *
+   * @returns The subnet topology for the NNS subnet,
+   * if it exists on this instance's network.
+   */
+  public getNnsSubnet(): SubnetTopology | undefined {
+    return this.getTopology().find(subnet => subnet.type === SubnetType.NNS);
+  }
+
+  /**
+   * Get the SNS subnet topology for this instance's network.
+   * The instance network topology is configured via the {@link create} method.
+   *
+   * @returns The subnet topology for the SNS subnet,
+   * if it exists on this instance's network.
+   */
+  public getSnsSubnet(): SubnetTopology | undefined {
+    return this.getTopology().find(subnet => subnet.type === SubnetType.SNS);
+  }
+
+  /**
+   * Get all application subnet topologies for this instance's network.
+   * The instance network topology is configured via the {@link create} method.
+   *
+   * @returns An array of subnet topologies for each application subnet
+   * that exists on this instance's network.
+   */
+  public getApplicationSubnets(): SubnetTopology[] {
+    return this.getTopology().filter(
+      subnet => subnet.type === SubnetType.Application,
+    );
+  }
+
+  /**
+   * Get all system subnet topologies for this instance's network.
+   * The instance network topology is configured via the {@link create} method.
+   *
+   * @returns An array of subnet topologies for each system subnet
+   * that exists on this instance's network.
+   */
+  public getSystemSubnets(): SubnetTopology[] {
+    return this.getTopology().filter(
+      subnet => subnet.type === SubnetType.System,
+    );
   }
 
   /**

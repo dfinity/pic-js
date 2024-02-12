@@ -23,17 +23,8 @@ jobs:
       - name: Build
         run: bun run build
 
-      - name: Start DFX
-        run: dfx start --background
-
-      - name: Create Example Canisters
-        run: bun create:examples
-
       - name: Build Examples
         run: bun build:examples
-
-      - name: Stop DFX
-        run: dfx stop
 
       - name: Test Examples
         run: bun test:examples

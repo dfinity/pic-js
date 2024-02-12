@@ -6,13 +6,115 @@ import { IDL } from '@dfinity/candid';
  * Options for creating a PocketIc instance.
  */
 export interface CreateInstanceOptions {
+  /**
+   * Whether to setup an NNS subnet or not.
+   * Default is `false`.
+   */
   nns?: boolean;
+
+  /**
+   * Whether to setup an SNS subnet or not.
+   * Default is `false`.
+   */
   sns?: boolean;
+
+  /**
+   * Whether to setup an II subnet or not.
+   * Default is `false`.
+   */
   ii?: boolean;
+
+  /**
+   * Whether to setup a Fiduciary subnet or not.
+   * Default is `false`.
+   */
   fiduciary?: boolean;
+
+  /**
+   * Whether to setup a Bitcoin subnet or not.
+   * Default is `false`.
+   */
   bitcoin?: boolean;
+
+  /**
+   * The number of system subnets to setup.
+   * Default is `0`.
+   */
   system?: number;
+
+  /**
+   * The number of application subnets to setup.
+   * Default is `1`.
+   */
   application?: number;
+}
+
+/**
+ * The topology of a subnet.
+ */
+export interface SubnetTopology {
+  /**
+   * The subnet ID.
+   */
+  id: Principal;
+
+  /**
+   * The subnet type. See {@link SubnetType}.
+   */
+  type: SubnetType;
+
+  /**
+   * The number of nodes in the subnet.
+   */
+  size: number;
+
+  /**
+   * The range of canister IDs that can be deployed to the subnet.
+   */
+  canisterRanges: Array<{
+    start: Principal;
+    end: Principal;
+  }>;
+}
+
+/**
+ * The type of a subnet.
+ */
+export enum SubnetType {
+  /**
+   * The subnet is an application subnet.
+   */
+  Application = 'Application',
+
+  /**
+   * The subnet is a Bitcoin subnet.
+   */
+  Bitcoin = 'Bitcoin',
+
+  /**
+   * The subnet is a Fiduciary subnet.
+   */
+  Fiduciary = 'Fiduciary',
+
+  /**
+   * The subnet is an Internet Identity subnet.
+   */
+  InternetIdentity = 'II',
+
+  /**
+   * The subnet is a NNS subnet.
+   */
+  NNS = 'NNS',
+
+  /**
+   * The subnet is an SNS subnet.
+   */
+  SNS = 'SNS',
+
+  /**
+   * The subnet is a system subnet.
+   */
+  System = 'System',
 }
 
 /**
@@ -149,6 +251,11 @@ export interface InstallCodeOptions {
    * Defaults to the anonymous principal.
    */
   sender?: Principal;
+
+  /**
+   * The ID of the subnet that the canister resides on.
+   */
+  targetSubnetId?: Principal;
 }
 
 /**

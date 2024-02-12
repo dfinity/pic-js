@@ -24,11 +24,13 @@ export const CanisterSettings = IDL.Opt(
 export interface CreateCanisterRequest {
   settings: [] | [CanisterSettings];
   amount: [] | [bigint];
+  specified_id: [] | [Principal];
 }
 
 const CreateCanisterRequest = IDL.Record({
   settings: CanisterSettings,
   amount: IDL.Opt(IDL.Nat),
+  specified_id: IDL.Opt(IDL.Principal),
 });
 
 export function encodeCreateCanisterRequest(

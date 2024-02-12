@@ -1,0 +1,6 @@
+{
+  "name": "multicanister-tests",
+  "devDependencies": {
+    "@hadronous/pic": "workspace:*"
+  }
+}

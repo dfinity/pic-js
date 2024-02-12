@@ -1,5 +1,6 @@
 packages:
-  - 'packages/pic'
-  - 'examples/counter/tests'
   - 'examples/clock/tests'
+  - 'examples/counter/tests'
+  - 'examples/multicanister/tests'
   - 'examples/todo/tests'
+  - 'packages/pic'

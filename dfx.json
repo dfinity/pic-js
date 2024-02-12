@@ -13,17 +13,18 @@
   },
   "canisters": {
     "counter": {
-      "main": "examples/counter/src/main.mo",
       "type": "motoko",
+      "main": "examples/counter/src/main.mo",
       "optimize": "cycles",
       "declarations": {
         "bindings": ["js", "ts"],
         "output": "examples/counter/declarations"
-      }
+      },
+      "init_arg": "'(42)'"
     },
     "clock": {
-      "main": "examples/clock/src/main.mo",
       "type": "motoko",
+      "main": "examples/clock/src/main.mo",
       "optimize": "cycles",
       "declarations": {
         "bindings": ["js", "ts"],
@@ -38,6 +39,34 @@
       "declarations": {
         "bindings": ["js", "ts", "did"],
         "output": "examples/todo/declarations"
+      }
+    },
+    "multicanister": {
+      "type": "motoko",
+      "main": "examples/multicanister/src/main.mo",
+      "dependencies": ["phonebook", "superheroes"],
+      "optimize": "cycles",
+      "declarations": {
+        "bindings": ["js", "ts"],
+        "output": "examples/multicanister/declarations/multicanister"
+      }
+    },
+    "phonebook": {
+      "type": "motoko",
+      "main": "examples/multicanister/src/phonebook.mo",
+      "optimize": "cycles",
+      "declarations": {
+        "bindings": ["mo"],
+        "output": "examples/multicanister/declarations/phonebook"
+      }
+    },
+    "superheroes": {
+      "type": "motoko",
+      "main": "examples/multicanister/src/superheroes.mo",
+      "optimize": "cycles",
+      "declarations": {
+        "bindings": ["mo"],
+        "output": "examples/multicanister/declarations/superheroes"
       }
     }
   }

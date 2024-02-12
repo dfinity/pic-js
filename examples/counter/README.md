@@ -2,18 +2,6 @@
 
 This example demonstrates how to work with a simple canister as well as init arguments, canister upgrades and WASM reinstallation.
 
-Start DFX:
-
-```shell
-dfx start --background
-```
-
-Create a new canister:
-
-```shell
-bun create:counter
-```
-
 Build the counter canister:
 
 ```shell

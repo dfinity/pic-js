@@ -1,21 +1,13 @@
 import { Principal } from '@dfinity/principal';
 import {
   base64Decode,
+  base64DecodePrincipal,
   base64Encode,
   base64EncodePrincipal,
   hexDecode,
   isNil,
 } from './util';
 import { TopologyValidationError } from './error';
-
-export type SubnetKind =
-  | 'Application'
-  | 'Bitcoin'
-  | 'Fiduciary'
-  | 'II'
-  | 'NNS'
-  | 'SNS'
-  | 'System';
 
 export interface CreateInstanceRequest {
   nns?: boolean;
@@ -28,13 +20,13 @@ export interface CreateInstanceRequest {
 }
 
 export interface EncodedCreateInstanceRequest {
-  nns: boolean;
-  sns: boolean;
-  ii: boolean;
-  fiduciary: boolean;
-  bitcoin: boolean;
-  system: number;
-  application: number;
+  nns?: string;
+  sns?: string;
+  ii?: string;
+  fiduciary?: string;
+  bitcoin?: string;
+  system: string[];
+  application: string[];
   nns_subnet_state?: string;
   nns_subnet_id?: {
     subnet_id: number[];
@@ -46,26 +38,26 @@ export function encodeCreateInstanceRequest(
 ): EncodedCreateInstanceRequest {
   const defaultOptions = req ?? { application: 1 };
 
-  const options = {
-    nns: defaultOptions.nns ?? false,
-    sns: defaultOptions.sns ?? false,
-    ii: defaultOptions.ii ?? false,
-    fiduciary: defaultOptions.fiduciary ?? false,
-    bitcoin: defaultOptions.bitcoin ?? false,
-    system: defaultOptions.system ?? 0,
-    application: defaultOptions.application ?? 0,
+  const options: EncodedCreateInstanceRequest = {
+    nns: defaultOptions.nns ? 'New' : undefined,
+    sns: defaultOptions.sns ? 'New' : undefined,
+    ii: defaultOptions.ii ? 'New' : undefined,
+    fiduciary: defaultOptions.fiduciary ? 'New' : undefined,
+    bitcoin: defaultOptions.bitcoin ? 'New' : undefined,
+    system: new Array(defaultOptions.system ?? 0).fill('New'),
+    application: new Array(defaultOptions.application ?? 1).fill('New'),
   };
 
   if (
-    (!options.nns &&
-      !options.sns &&
-      !options.ii &&
-      !options.fiduciary &&
-      !options.bitcoin &&
-      options.system === 0 &&
-      options.application === 0) ||
-    options.system < 0 ||
-    options.application < 0
+    (options.nns !== 'New' &&
+      options.sns !== 'New' &&
+      options.ii !== 'New' &&
+      options.fiduciary !== 'New' &&
+      options.bitcoin !== 'New' &&
+      options.system.length === 0 &&
+      options.application.length === 0) ||
+    options.system.length < 0 ||
+    options.application.length < 0
   ) {
     throw new TopologyValidationError();
   }
@@ -76,7 +68,8 @@ export function encodeCreateInstanceRequest(
 export type InstanceTopology = Record<string, SubnetTopology>;
 
 export interface SubnetTopology {
-  subnetKind: SubnetKind;
+  id: Principal;
+  type: SubnetType;
   size: number;
   canisterRanges: Array<{
     start: Principal;
@@ -84,39 +77,85 @@ export interface SubnetTopology {
   }>;
 }
 
+export enum SubnetType {
+  Application = 'Application',
+  Bitcoin = 'Bitcoin',
+  Fiduciary = 'Fiduciary',
+  InternetIdentity = 'II',
+  NNS = 'NNS',
+  SNS = 'SNS',
+  System = 'System',
+}
+
 export type EncodedInstanceTopology = Record<string, EncodedSubnetTopology>;
 
 export interface EncodedSubnetTopology {
-  subnet_kind: SubnetKind;
+  subnet_kind: EncodedSubnetKind;
   size: number;
   canister_ranges: Array<{
-    start: string;
-    end: string;
+    start: {
+      canister_id: string;
+    };
+    end: {
+      canister_id: string;
+    };
   }>;
 }
+
+export type EncodedSubnetKind =
+  | 'Application'
+  | 'Bitcoin'
+  | 'Fiduciary'
+  | 'II'
+  | 'NNS'
+  | 'SNS'
+  | 'System';
 
 export function decodeInstanceTopology(
   encoded: EncodedInstanceTopology,
 ): InstanceTopology {
   return Object.fromEntries(
-    Object.entries(encoded).map(([key, value]) => [
-      key,
-      decodeSubnetTopology(value),
+    Object.entries(encoded).map(([subnetId, subnetTopology]) => [
+      subnetId,
+      decodeSubnetTopology(subnetId, subnetTopology),
     ]),
   );
 }
 
 export function decodeSubnetTopology(
+  subnetId: string,
   encoded: EncodedSubnetTopology,
 ): SubnetTopology {
   return {
-    subnetKind: encoded.subnet_kind,
+    id: Principal.fromText(subnetId),
+    type: decodeSubnetKind(encoded.subnet_kind),
     size: encoded.size,
     canisterRanges: encoded.canister_ranges.map(range => ({
-      start: Principal.fromText(range.start),
-      end: Principal.fromText(range.end),
+      start: base64DecodePrincipal(range.start.canister_id),
+      end: base64DecodePrincipal(range.end.canister_id),
     })),
   };
+}
+
+export function decodeSubnetKind(kind: EncodedSubnetKind): SubnetType {
+  switch (kind) {
+    case 'Application':
+      return SubnetType.Application;
+    case 'Bitcoin':
+      return SubnetType.Bitcoin;
+    case 'Fiduciary':
+      return SubnetType.Fiduciary;
+    case 'II':
+      return SubnetType.InternetIdentity;
+    case 'NNS':
+      return SubnetType.NNS;
+    case 'SNS':
+      return SubnetType.SNS;
+    case 'System':
+      return SubnetType.System;
+    default:
+      throw new Error(`Unknown subnet kind: ${kind}`);
+  }
 }
 
 export interface CreateInstanceSuccessResponse {
@@ -205,7 +244,7 @@ export function decodeGetSubnetIdResponse(
 ): GetSubnetIdResponse {
   const subnetId = isNil(res?.subnet_id)
     ? null
-    : Principal.fromUint8Array(base64Decode(res.subnet_id));
+    : base64DecodePrincipal(res.subnet_id);
 
   return { subnetId };
 }
@@ -388,10 +427,10 @@ export interface CanisterCallRequest {
 
 export type EffectivePrincipal =
   | {
-      SubnetId: Principal;
+      subnetId: Principal;
     }
   | {
-      CanisterId: Principal;
+      canisterId: Principal;
     };
 
 export interface EncodedCanisterCallRequest {
@@ -418,13 +457,13 @@ export function encodeEffectivePrincipal(
     return 'None';
   }
 
-  if ('SubnetId' in effectivePrincipal) {
+  if ('subnetId' in effectivePrincipal) {
     return {
-      SubnetId: base64EncodePrincipal(effectivePrincipal.SubnetId),
+      SubnetId: base64EncodePrincipal(effectivePrincipal.subnetId),
     };
   } else {
     return {
-      CanisterId: base64EncodePrincipal(effectivePrincipal.CanisterId),
+      CanisterId: base64EncodePrincipal(effectivePrincipal.canisterId),
     };
   }
 }
@@ -451,6 +490,12 @@ export interface EncodedCanisterCallSuccessResponse {
   };
 }
 
+export interface EncodedCanisterCallRejectResponse {
+  Ok: {
+    Reject: string;
+  };
+}
+
 export interface EncodedCanisterCallErrorResponse {
   Err: {
     code: string;
@@ -458,15 +503,29 @@ export interface EncodedCanisterCallErrorResponse {
   };
 }
 
+export interface EncodedCanisterCallErrorMessageResponse {
+  message: string;
+}
+
 export type EncodedCanisterCallResponse =
   | EncodedCanisterCallSuccessResponse
-  | EncodedCanisterCallErrorResponse;
+  | EncodedCanisterCallRejectResponse
+  | EncodedCanisterCallErrorResponse
+  | EncodedCanisterCallErrorMessageResponse;
 
 export function decodeCanisterCallResponse(
   res: EncodedCanisterCallResponse,
 ): CanisterCallResponse {
   if ('Err' in res) {
     throw new Error(res.Err.description);
+  }
+
+  if ('message' in res) {
+    throw new Error(res.message);
+  }
+
+  if ('Reject' in res.Ok) {
+    throw new Error(res.Ok.Reject);
   }
 
   return {

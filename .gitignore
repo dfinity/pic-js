@@ -12,6 +12,8 @@
 /examples/counter/tests/node_modules/
 /examples/todo/declarations/
 /examples/todo/tests/node_modules/
+/examples/multicanister/declarations/
+/examples/multicanister/tests/node_modules/
 
 .env
 .DS_Store
