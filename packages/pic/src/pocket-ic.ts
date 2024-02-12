@@ -207,7 +207,7 @@ export class PocketIc {
     const payload = encodeCreateCanisterRequest({
       settings: [
         {
-          controllers: controllers ?? [],
+          controllers: optional(controllers),
           compute_allocation: optional(computeAllocation),
           memory_allocation: optional(memoryAllocation),
           freezing_threshold: optional(freezingThreshold),
@@ -421,7 +421,7 @@ export class PocketIc {
     const payload = encodeUpdateCanisterSettingsRequest({
       canister_id: canisterId,
       settings: {
-        controllers: controllers ?? [],
+        controllers: optional(controllers),
         compute_allocation: optional(computeAllocation),
         memory_allocation: optional(memoryAllocation),
         freezing_threshold: optional(freezingThreshold),

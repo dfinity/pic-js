@@ -4,22 +4,20 @@ import { Principal } from '@dfinity/principal';
 export const MANAGEMENT_CANISTER_ID = Principal.fromText('aaaaa-aa');
 
 export interface CanisterSettings {
-  controllers: Principal[];
+  controllers: [] | [Principal[]];
   compute_allocation: [] | [bigint];
   memory_allocation: [] | [bigint];
   freezing_threshold: [] | [bigint];
   reserved_cycles_limit: [] | [bigint];
 }
 
-export const CanisterSettings = IDL.Opt(
-  IDL.Record({
-    controllers: IDL.Opt(IDL.Vec(IDL.Principal)),
-    compute_allocation: IDL.Opt(IDL.Nat),
-    memory_allocation: IDL.Opt(IDL.Nat),
-    freezing_threshold: IDL.Opt(IDL.Nat),
-    reserved_cycles_limit: IDL.Opt(IDL.Nat),
-  }),
-);
+export const CanisterSettings = IDL.Record({
+  controllers: IDL.Opt(IDL.Vec(IDL.Principal)),
+  compute_allocation: IDL.Opt(IDL.Nat),
+  memory_allocation: IDL.Opt(IDL.Nat),
+  freezing_threshold: IDL.Opt(IDL.Nat),
+  reserved_cycles_limit: IDL.Opt(IDL.Nat),
+});
 
 export interface CreateCanisterRequest {
   settings: [] | [CanisterSettings];
@@ -28,7 +26,7 @@ export interface CreateCanisterRequest {
 }
 
 const CreateCanisterRequest = IDL.Record({
-  settings: CanisterSettings,
+  settings: IDL.Opt(CanisterSettings),
   amount: IDL.Opt(IDL.Nat),
   specified_id: IDL.Opt(IDL.Principal),
 });
@@ -79,13 +77,13 @@ export function encodeInstallCodeRequest(arg: InstallCodeRequest): Uint8Array {
 }
 
 const UpdateCanisterSettingsRequest = IDL.Record({
-  settings: CanisterSettings,
   canister_id: IDL.Principal,
+  settings: CanisterSettings,
 });
 
 export interface UpdateCanisterSettingsRequest {
-  settings: CanisterSettings;
   canister_id: Principal;
+  settings: CanisterSettings;
 }
 
 export function encodeUpdateCanisterSettingsRequest(
