@@ -4,3 +4,4 @@ packages:
   - 'examples/multicanister/tests'
   - 'examples/todo/tests'
   - 'packages/pic'
+  - 'docs'

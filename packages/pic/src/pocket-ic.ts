@@ -52,12 +52,12 @@ import {
  * import { PocketIc } from '@hadronous/pic';
  * import { _SERVICE, idlFactory } from '../declarations';
  *
- * const wasmPath = resolve('..', '..', 'canister.wasm');
+ * const wasm = resolve('..', '..', 'canister.wasm');
  *
  * const pic = await PocketIc.create();
  *
  * const canisterId = await pic.createCanister();
- * await pic.installCode({ canisterId, wasmPath });
+ * await pic.installCode({ canisterId, wasm });
  * const actor = pic.createActor<_SERVICE>({ idlFactory, canisterId });
  *
  * // perform tests...
@@ -250,10 +250,10 @@ export class PocketIc {
    * import { resolve } from 'node:path';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
-   * const wasmPath = resolve('..', '..', 'canister.wasm');
+   * const wasm = resolve('..', '..', 'canister.wasm');
    *
    * const pic = await PocketIc.create();
-   * await pic.installCode({ canisterId, wasmPath });
+   * await pic.installCode({ canisterId, wasm });
    * ```
    */
   public async installCode({
@@ -306,10 +306,10 @@ export class PocketIc {
    * import { resolve } from 'node:path';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
-   * const wasmPath = resolve('..', '..', 'canister.wasm');
+   * const wasm = resolve('..', '..', 'canister.wasm');
    *
    * const pic = await PocketIc.create();
-   * await pic.reinstallCode(canisterId, wasmPath);
+   * await pic.reinstallCode({ canisterId, wasm });
    * ```
    */
   public async reinstallCode({
@@ -356,10 +356,10 @@ export class PocketIc {
    * import { resolve } from 'node:path';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
-   * const wasmPath = resolve('..', '..', 'canister.wasm');
+   * const wasm = resolve('..', '..', 'canister.wasm');
    *
    * const pic = await PocketIc.create();
-   * await pic.upgradeCanister(canisterId, wasmPath);
+   * await pic.upgradeCanister({ canisterId, wasm });
    * ```
    */
   public async upgradeCanister({
@@ -459,10 +459,13 @@ export class PocketIc {
    * import { _SERVICE, idlFactory } from '../declarations';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
+   * const wasm = resolve('..', '..', 'canister.wasm');
    *
    * const pic = await PocketIc.create();
-   * const fixture = await pic.setupCanister<_SERVICE>(idlFactory, wasmPath);
-   * const { actor } = fixture;
+   *
+   * const canisterId = await pic.createCanister();
+   * await pic.installCode({ canisterId, wasm });
+   * const actor = pic.createActor<_SERVICE>({ idlFactory, canisterId });
    * ```
    */
   public createActor<T = ActorInterface>(

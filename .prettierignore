@@ -1,17 +1,23 @@
 .git/
 /.dfx/
-/docs/
 /node_modules/
 /target/
 
 /packages/pic/dist/
-/examples/clock/declarations/
 /packages/pic/node_modules/
+
+/examples/clock/declarations/
 /examples/clock/tests/node_modules/
 /examples/counter/declarations/
 /examples/counter/tests/node_modules/
 /examples/todo/declarations/
 /examples/todo/tests/node_modules/
+/examples/multicanister/declarations/
+/examples/multicanister/tests/node_modules/
+
+/docs/.docusaurus/
+/docs/build/
+/docs/node_modules/
 
 .env
 .DS_Store

@@ -2,10 +2,7 @@ import Principal "mo:base/Principal";
 import PhoneBook "../declarations/phonebook/phonebook";
 import SuperHeroes "../declarations/superheroes/superheroes";
 
-actor class KeyValue(phonebook_canister_id : Principal, superheroes_canister_id : Principal) {
-  private let phonebook : PhoneBook.Self = actor (Principal.toText(phonebook_canister_id));
-  private let superheroes : SuperHeroes.Self = actor (Principal.toText(superheroes_canister_id));
-
+actor class KeyValue(phonebook : PhoneBook.Self, superheroes : SuperHeroes.Self) {
   public func insert_phone_book_entry(name : Text, entry : PhoneBook.PhoneBookEntry) : async () {
     await phonebook.insert(name, entry);
   };

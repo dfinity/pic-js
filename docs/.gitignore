@@ -1,0 +1,6 @@
+
+/build
+.docusaurus
+.cache-loader
+/docs/pic-js
+/node_modules/
