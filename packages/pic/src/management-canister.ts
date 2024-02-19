@@ -54,6 +54,34 @@ export function decodeCreateCanisterResponse(
   return payload as unknown as CreateCanisterResponse;
 }
 
+const StartCanisterRequest = IDL.Record({
+  canister_id: IDL.Principal,
+});
+
+export interface StartCanisterRequest {
+  canister_id: Principal;
+}
+
+export function encodeStartCanisterRequest(
+  arg: StartCanisterRequest,
+): Uint8Array {
+  return new Uint8Array(IDL.encode([StartCanisterRequest], [arg]));
+}
+
+const StopCanisterRequest = IDL.Record({
+  canister_id: IDL.Principal,
+});
+
+export interface StopCanisterRequest {
+  canister_id: Principal;
+}
+
+export function encodeStopCanisterRequest(
+  arg: StopCanisterRequest,
+): Uint8Array {
+  return new Uint8Array(IDL.encode([StopCanisterRequest], [arg]));
+}
+
 const InstallCodeRequest = IDL.Record({
   arg: IDL.Vec(IDL.Nat8),
   wasm_module: IDL.Vec(IDL.Nat8),

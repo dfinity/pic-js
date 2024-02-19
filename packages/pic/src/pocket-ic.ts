@@ -15,12 +15,15 @@ import {
   SubnetTopology,
   SubnetType,
   UpdateCanisterSettingsOptions,
+  StartCanisterOptions,
+  StopCanisterOptions,
 } from './pocket-ic-types';
 import {
   MANAGEMENT_CANISTER_ID,
   decodeCreateCanisterResponse,
   encodeCreateCanisterRequest,
   encodeInstallCodeRequest,
+  encodeStartCanisterRequest,
   encodeUpdateCanisterSettingsRequest,
 } from './management-canister';
 
@@ -231,6 +234,86 @@ export class PocketIc {
     });
 
     return decodeCreateCanisterResponse(res.body).canister_id;
+  }
+
+  /**
+   * Starts the given canister.
+   *
+   * @param options Options for starting the canister, see {@link StartCanisterOptions}.
+   *
+   * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+   *
+   * @example
+   * ```ts
+   * import { Principal } from '@dfinity/principal';
+   * import { PocketIc } from '@hadronous/pic';
+   *
+   * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
+   *
+   * const pic = await PocketIc.create();
+   * await pic.startCanister({ canisterId });
+   * ```
+   */
+  public async startCanister({
+    canisterId,
+    sender = Principal.anonymous(),
+    targetSubnetId,
+  }: StartCanisterOptions): Promise<void> {
+    const payload = encodeStartCanisterRequest({
+      canister_id: canisterId,
+    });
+
+    await this.client.updateCall({
+      canisterId: MANAGEMENT_CANISTER_ID,
+      sender,
+      method: 'start_canister',
+      payload,
+      effectivePrincipal: targetSubnetId
+        ? {
+            subnetId: targetSubnetId,
+          }
+        : undefined,
+    });
+  }
+
+  /**
+   * Stops the given canister.
+   *
+   * @param options Options for stopping the canister, see {@link StopCanisterOptions}.
+   *
+   * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+   *
+   * @example
+   * ```ts
+   * import { Principal } from '@dfinity/principal';
+   * import { PocketIc } from '@hadronous/pic';
+   *
+   * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
+   *
+   * const pic = await PocketIc.create();
+   * await pic.stopCanister({ canisterId });
+   * ```
+   */
+  public async stopCanister({
+    canisterId,
+    sender = Principal.anonymous(),
+    targetSubnetId,
+  }: StopCanisterOptions): Promise<void> {
+    const payload = encodeStartCanisterRequest({
+      canister_id: canisterId,
+    });
+
+    await this.client.updateCall({
+      canisterId: MANAGEMENT_CANISTER_ID,
+      sender,
+      method: 'stop_canister',
+      payload,
+      effectivePrincipal: targetSubnetId
+        ? {
+            subnetId: targetSubnetId,
+          }
+        : undefined,
+    });
   }
 
   /**

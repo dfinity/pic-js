@@ -271,5 +271,51 @@ describe('Todo', () => {
         done: false,
       });
     });
+
+    it('should stop and start the canister', async () => {
+      actor.setIdentity(alice);
+      const aliceCreateResponse = await actor.create_todo({
+        text: 'Learn Rust',
+      });
+
+      actor.setIdentity(bob);
+      const bobCreateResponse = await actor.create_todo({
+        text: 'Learn WebAssembly',
+      });
+
+      await pic.stopCanister({ canisterId });
+
+      actor.setIdentity(alice);
+      await expect(actor.get_todos()).rejects.toThrow(
+        `Canister ${canisterId} is stopped`,
+      );
+
+      actor.setIdentity(bob);
+      await expect(actor.get_todos()).rejects.toThrow(
+        `Canister ${canisterId} is stopped`,
+      );
+
+      await pic.startCanister({ canisterId });
+
+      actor.setIdentity(alice);
+      const aliceAfterStart = await actor.get_todos();
+
+      actor.setIdentity(bob);
+      const bobAfterStart = await actor.get_todos();
+
+      expect(aliceAfterStart.todos).toHaveLength(1);
+      expect(aliceAfterStart.todos).toContainEqual({
+        id: aliceCreateResponse.id,
+        text: 'Learn Rust',
+        done: false,
+      });
+
+      expect(bobAfterStart.todos).toHaveLength(1);
+      expect(bobAfterStart.todos).toContainEqual({
+        id: bobCreateResponse.id,
+        text: 'Learn WebAssembly',
+        done: false,
+      });
+    });
   });
 });

@@ -230,6 +230,54 @@ export interface CreateCanisterOptions extends CanisterSettings {
 }
 
 /**
+ * Options for stopping a given canister.
+ *
+ * @category Types
+ * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+ */
+export interface StartCanisterOptions {
+  /**
+   * The Principal of the canister to start.
+   */
+  canisterId: Principal;
+
+  /**
+   * The Principal to send the request as.
+   * Defaults to the anonymous principal.
+   */
+  sender?: Principal;
+
+  /**
+   * The ID of the subnet that the canister resides on.
+   */
+  targetSubnetId?: Principal;
+}
+
+/**
+ * Options for stopping a given canister.
+ *
+ * @category Types
+ * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+ */
+export interface StopCanisterOptions {
+  /**
+   * The Principal of the canister to stop.
+   */
+  canisterId: Principal;
+
+  /**
+   * The Principal to send the request as.
+   * Defaults to the anonymous principal.
+   */
+  sender?: Principal;
+
+  /**
+   * The ID of the subnet that the canister resides on.
+   */
+  targetSubnetId?: Principal;
+}
+
+/**
  * Options for installing a WASM module to a given canister.
  *
  * @category Types
