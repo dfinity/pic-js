@@ -9,17 +9,17 @@ importers:
   .:
     devDependencies:
       '@dfinity/agent':
-        specifier: ~0.21.4
-        version: 0.21.4(@dfinity/candid@0.21.4)(@dfinity/principal@0.21.4)
+        specifier: ^1.0.1
+        version: 1.0.1(@dfinity/candid@1.0.1)(@dfinity/principal@1.0.1)
       '@dfinity/candid':
-        specifier: ~0.21.4
-        version: 0.21.4(@dfinity/principal@0.21.4)
+        specifier: ^1.0.1
+        version: 1.0.1(@dfinity/principal@1.0.1)
       '@dfinity/identity':
-        specifier: ~0.21.4
-        version: 0.21.4(@dfinity/agent@0.21.4)(@dfinity/principal@0.21.4)(@peculiar/webcrypto@1.4.4)
+        specifier: ^1.0.1
+        version: 1.0.1(@dfinity/agent@1.0.1)(@dfinity/principal@1.0.1)(@peculiar/webcrypto@1.4.4)
       '@dfinity/principal':
-        specifier: ~0.21.4
-        version: 0.21.4
+        specifier: ^1.0.1
+        version: 1.0.1
       '@types/jest':
         specifier: ^29.5.11
         version: 29.5.11
@@ -127,17 +127,17 @@ importers:
   packages/pic:
     dependencies:
       '@dfinity/agent':
-        specifier: ~0.21.4
-        version: 0.21.4(@dfinity/candid@0.21.4)(@dfinity/principal@0.21.4)
+        specifier: ^1.0.1
+        version: 1.0.1(@dfinity/candid@1.0.1)(@dfinity/principal@1.0.1)
       '@dfinity/candid':
-        specifier: ~0.21.4
-        version: 0.21.4(@dfinity/principal@0.21.4)
+        specifier: ^1.0.1
+        version: 1.0.1(@dfinity/principal@1.0.1)
       '@dfinity/identity':
-        specifier: ~0.21.4
-        version: 0.21.4(@dfinity/agent@0.21.4)(@dfinity/principal@0.21.4)(@peculiar/webcrypto@1.4.4)
+        specifier: ^1.0.1
+        version: 1.0.1(@dfinity/agent@1.0.1)(@dfinity/principal@1.0.1)(@peculiar/webcrypto@1.4.4)
       '@dfinity/principal':
-        specifier: ~0.21.4
-        version: 0.21.4
+        specifier: ^1.0.1
+        version: 1.0.1
       bip39:
         specifier: ^3.1.0
         version: 3.1.0
@@ -1581,14 +1581,14 @@ packages:
       '@jridgewell/trace-mapping': 0.3.9
     dev: true
 
-  /@dfinity/agent@0.21.4(@dfinity/candid@0.21.4)(@dfinity/principal@0.21.4):
-    resolution: {integrity: sha512-k5k8v1BmDE8RStC22FtuqbFzMLaQAQL3cE/wF45ZMKP4WmBBmCPss75RDgIVGiFwLGEKKKXE1muHQDy9g+m5yQ==}
+  /@dfinity/agent@1.0.1(@dfinity/candid@1.0.1)(@dfinity/principal@1.0.1):
+    resolution: {integrity: sha512-QoCiKIWEgsXoaiHpb76M2qLXYDS9IdfvC81dLJYvX9KVXRq8Ojo4S82tBqBFGtM0j0EKEC6mIAJV/bqhOJTtjQ==}
     peerDependencies:
-      '@dfinity/candid': ^0.21.4
-      '@dfinity/principal': ^0.21.4
+      '@dfinity/candid': ^1.0.1
+      '@dfinity/principal': ^1.0.1
     dependencies:
-      '@dfinity/candid': 0.21.4(@dfinity/principal@0.21.4)
-      '@dfinity/principal': 0.21.4
+      '@dfinity/candid': 1.0.1(@dfinity/principal@1.0.1)
+      '@dfinity/principal': 1.0.1
       '@noble/curves': 1.3.0
       '@noble/hashes': 1.3.3
       base64-arraybuffer: 0.2.0
@@ -1596,29 +1596,29 @@ packages:
       buffer: 6.0.3
       simple-cbor: 0.4.1
 
-  /@dfinity/candid@0.21.4(@dfinity/principal@0.21.4):
-    resolution: {integrity: sha512-BRdgLQjPbqEZDRIR985jpy92uwhdBn4mN2D8StMKyOXQLmR6hKSD0p/P2b632Sh7zPUY8HuiA8njpMZ67JEyAg==}
+  /@dfinity/candid@1.0.1(@dfinity/principal@1.0.1):
+    resolution: {integrity: sha512-PfZNV1fTOWtl+NhLOw71ACLYGugKF9HdEJKtkyBJqbj+6pqshvK6rllCUkGwMsmXfP8YopLzmoNVdy1rp/eOgg==}
     peerDependencies:
-      '@dfinity/principal': ^0.21.4
+      '@dfinity/principal': ^1.0.1
     dependencies:
-      '@dfinity/principal': 0.21.4
+      '@dfinity/principal': 1.0.1
 
-  /@dfinity/identity@0.21.4(@dfinity/agent@0.21.4)(@dfinity/principal@0.21.4)(@peculiar/webcrypto@1.4.4):
-    resolution: {integrity: sha512-+lTcr5+/RYwDSM7sGAKbt+kbpIWYDNpMmGi7D9iPWNJWYdWtTX6TDIJDx9dMCRN83/1lKLXF0p7F18ROZdjdUA==}
+  /@dfinity/identity@1.0.1(@dfinity/agent@1.0.1)(@dfinity/principal@1.0.1)(@peculiar/webcrypto@1.4.4):
+    resolution: {integrity: sha512-ArajyKSkiA4LjOq/ocGLMd66svgMVntF9j9P7irZScrzTCPcEXk5c7VteAqRGMwHCpI4LRipjmuZA1agwmUzRw==}
     peerDependencies:
-      '@dfinity/agent': ^0.21.4
-      '@dfinity/principal': ^0.21.4
+      '@dfinity/agent': ^1.0.1
+      '@dfinity/principal': ^1.0.1
       '@peculiar/webcrypto': ^1.4.0
     dependencies:
-      '@dfinity/agent': 0.21.4(@dfinity/candid@0.21.4)(@dfinity/principal@0.21.4)
-      '@dfinity/principal': 0.21.4
+      '@dfinity/agent': 1.0.1(@dfinity/candid@1.0.1)(@dfinity/principal@1.0.1)
+      '@dfinity/principal': 1.0.1
       '@noble/curves': 1.3.0
       '@noble/hashes': 1.3.3
       '@peculiar/webcrypto': 1.4.4
       borc: 2.1.2
 
-  /@dfinity/principal@0.21.4:
-    resolution: {integrity: sha512-r9d+9BYZdFMzrq1+zcdIg6q6tlWeZ9SKnakVdhQ21qUJ6iDe0yxDlah6k9QKEh6fVsg2yv95nID++nqEosvt1Q==}
+  /@dfinity/principal@1.0.1:
+    resolution: {integrity: sha512-pCAuTLcvZEZ8fYgVzTVhfUfFGadxeWN4v2z8Q0rizeiqcHKhbJVfWUiXXjzPGG5lNz2DxKyUHQ/WS4UTbTaxvg==}
     dependencies:
       '@noble/hashes': 1.3.3
 
