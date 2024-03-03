@@ -1,0 +1,6 @@
+{
+  "name": "nns-proxy-tests",
+  "devDependencies": {
+    "@hadronous/pic": "workspace:*"
+  }
+}

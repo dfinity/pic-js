@@ -1,3 +1,3 @@
 [workspace]
-members = ["examples/todo"]
+members = ["examples/todo", "examples/nns_proxy"]
 resolver = "2"

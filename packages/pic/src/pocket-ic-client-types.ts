@@ -10,7 +10,12 @@ import {
 import { TopologyValidationError } from './error';
 
 export interface CreateInstanceRequest {
-  nns?: boolean;
+  nns?:
+    | boolean
+    | {
+        fromPath: string;
+        subnetId: Principal;
+      };
   sns?: boolean;
   ii?: boolean;
   fiduciary?: boolean;
@@ -20,17 +25,49 @@ export interface CreateInstanceRequest {
 }
 
 export interface EncodedCreateInstanceRequest {
-  nns?: string;
+  nns?:
+    | 'New'
+    | {
+        FromPath: [
+          string,
+          {
+            subnet_id: string;
+          },
+        ];
+      };
   sns?: string;
   ii?: string;
   fiduciary?: string;
   bitcoin?: string;
   system: string[];
   application: string[];
-  nns_subnet_state?: string;
-  nns_subnet_id?: {
-    subnet_id: number[];
-  };
+}
+
+function encodeNnsConfig(
+  nns: CreateInstanceRequest['nns'],
+): EncodedCreateInstanceRequest['nns'] {
+  if (isNil(nns)) {
+    return undefined;
+  }
+
+  if (nns === true) {
+    return 'New';
+  }
+
+  if (nns === false) {
+    return undefined;
+  }
+
+  if ('fromPath' in nns) {
+    return {
+      FromPath: [
+        nns.fromPath,
+        { subnet_id: base64EncodePrincipal(nns.subnetId) },
+      ],
+    };
+  }
+
+  return undefined;
 }
 
 export function encodeCreateInstanceRequest(
@@ -39,7 +76,7 @@ export function encodeCreateInstanceRequest(
   const defaultOptions = req ?? { application: 1 };
 
   const options: EncodedCreateInstanceRequest = {
-    nns: defaultOptions.nns ? 'New' : undefined,
+    nns: encodeNnsConfig(defaultOptions.nns),
     sns: defaultOptions.sns ? 'New' : undefined,
     ii: defaultOptions.ii ? 'New' : undefined,
     fiduciary: defaultOptions.fiduciary ? 'New' : undefined,

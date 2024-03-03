@@ -1,4 +1,4 @@
-# Canister Declarations
+# Canister declarations
 
 The DFX auto-generated bindings for canisters had some issues in versions of DFX lower than `0.16.0` that made the developer experience with PicJS less than ideal. If you are using DFX v`0.16.0` or higher then you can ignore this guide.
 

@@ -118,6 +118,12 @@ importers:
         specifier: workspace:*
         version: link:../../../packages/pic
 
+  examples/nns_proxy/tests:
+    devDependencies:
+      '@hadronous/pic':
+        specifier: workspace:*
+        version: link:../../../packages/pic
+
   examples/todo/tests:
     devDependencies:
       '@hadronous/pic':
@@ -141,6 +147,8 @@ importers:
       bip39:
         specifier: ^3.1.0
         version: 3.1.0
+
+  packages/pic-server: {}
 
 packages:
 

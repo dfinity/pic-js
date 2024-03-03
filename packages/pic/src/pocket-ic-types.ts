@@ -10,7 +10,37 @@ export interface CreateInstanceOptions {
    * Whether to setup an NNS subnet or not.
    * Default is `false`.
    */
-  nns?: boolean;
+  nns?:
+    | boolean
+    | {
+        /**
+         * The path to the NNS subnet state.
+         *
+         * This directory should have the following structure:
+         * ```text
+         *   |-- backups/
+         *   |-- checkpoints/
+         *   |-- diverged_checkpoints/
+         *   |-- diverged_state_markers/
+         *   |-- fs_tmp/
+         *   |-- page_deltas/
+         *   |-- tip/
+         *   |-- tmp/
+         *   |-- states_metadata.pbuf
+         * ```
+         */
+        fromPath: string;
+
+        /**
+         * The subnet ID to setup the NNS subnet on.
+         *
+         * The value can be obtained, e.g., via the following command:
+         * ```bash
+         * ic-regedit snapshot <path-to-ic_registry_local_store> | jq -r ".nns_subnet_id"
+         * ```
+         */
+        subnetId: Principal;
+      };
 
   /**
    * Whether to setup an SNS subnet or not.

@@ -68,6 +68,16 @@
         "bindings": ["mo"],
         "output": "examples/multicanister/declarations/superheroes"
       }
+    },
+    "nns_proxy": {
+      "type": "rust",
+      "candid": "examples/nns_proxy/nns_proxy.did",
+      "optimize": "cycles",
+      "package": "nns_proxy",
+      "declarations": {
+        "bindings": ["js", "ts", "did"],
+        "output": "examples/nns_proxy/declarations"
+      }
     }
   }
 }

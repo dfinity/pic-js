@@ -69,3 +69,4 @@ but `@hadronous/pic` can be used with JavaScript and any other testing runner, s
 - The [Clock](https://github.com/hadronous/pic-js/tree/main/examples/clock/README.md) example demonstrates how to work with the replica's system time, canister timers as well as checking for canister existence and cycle management.
 - The [Todo](https://github.com/hadronous/pic-js/tree/main/examples/todo/README.md) example demonstrates how to work with more complex canisters, identities, canister upgrades, and stable memory management.
 - The [Multicanister](https://github.comhadronous/pic-js/tree/main/multicanister/todo/README.md) example demonstrates how to work with multiple canisters and multiple subnets.
+- The [NNS Proxy](https://github.comhadronous/pic-js/tree/main/nns_proxy/todo/README.md) example demonstrates how to work with an NNS state directory.

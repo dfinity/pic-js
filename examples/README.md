@@ -21,3 +21,5 @@ but `@hadronous/pic` can be used with JavaScript and any other testing runner, s
   This example demonstrates how to work with more complex canisters, identities, canister upgrades, and stable memory management.
 - [Multicanister](./multicanister/README.md)
   This example demonstrates how to work with multiple canisters and multiple subnets.
+- [NNS Proxy](./nns_proxy/README.md)
+  This example demonstrates how to work with an NNS state directory.

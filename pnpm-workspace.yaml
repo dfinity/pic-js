@@ -2,6 +2,8 @@ packages:
   - 'examples/clock/tests'
   - 'examples/counter/tests'
   - 'examples/multicanister/tests'
+  - 'examples/nns_proxy/tests'
   - 'examples/todo/tests'
   - 'packages/pic'
+  - 'packages/pic-server'
   - 'docs'

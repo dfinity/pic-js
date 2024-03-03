@@ -1,0 +1,32 @@
+{
+  "name": "@hadronous/pic-server",
+  "description": "PocketIC server stubs",
+  "version": "0.4.0",
+  "author": "Hadronous Labs",
+  "license": "Apache-2.0",
+  "repository": "github:hadronous/pic-js",
+  "bugs": "https://github.com/hadronous/pic-js/issues",
+  "homepage": "https://hadronous.github.io/pic-js",
+  "keywords": [
+    "internet-computer",
+    "internet-computer-protocol",
+    "icp",
+    "smart-contracts",
+    "smart-contract",
+    "canisters",
+    "pocket-ic",
+    "testing",
+    "integration-testing",
+    "testing-tools"
+  ],
+  "files": [
+    "dist",
+    "postinstall.mjs"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "./build.sh",
+    "start": "./start.sh"
+  }
+}

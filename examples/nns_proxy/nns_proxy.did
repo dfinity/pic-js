@@ -1,0 +1,12 @@
+type NeuronId = record { id : nat64 };
+
+type ProposalInfo = record {
+  id : opt NeuronId;
+  status : int32;
+  title: opt text;
+  summary: opt text;
+};
+
+service : {
+  get_pending_proposals : () -> (vec ProposalInfo);
+};

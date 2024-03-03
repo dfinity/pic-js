@@ -14,7 +14,7 @@
     "build": "run-p build:pic",
     "build:pic": "tsc -p ./packages/pic/tsconfig.json",
     "build:examples": "dfx generate phonebook && dfx generate superheroes && dfx generate && dfx build --all --check",
-    "test:examples": "run-p test:counter test:clock test:todo test:multicanister",
+    "test:examples": "run-p test:counter test:clock test:todo test:multicanister test:nns-proxy",
     "build:counter": "dfx generate counter && dfx build counter --check",
     "test:counter": "jest -c ./examples/counter/tests/jest.config.ts",
     "build:clock": "dfx generate clock && dfx build clock --check",
@@ -22,7 +22,10 @@
     "build:todo": "dfx generate todo && dfx build todo --check",
     "test:todo": "jest -c ./examples/todo/tests/jest.config.ts",
     "build:multicanister": "dfx generate multicanister && dfx build multicanister --check",
-    "test:multicanister": "jest -c ./examples/multicanister/tests/jest.config.ts"
+    "test:multicanister": "jest -c ./examples/multicanister/tests/jest.config.ts",
+    "build:nns-proxy": "dfx generate nns_proxy && dfx build nns_proxy --check",
+    "test:nns-proxy": "jest -c ./examples/nns_proxy/tests/jest.config.ts",
+    "postinstall": "tar -xvf examples/nns_proxy/tests/state/nns_state.tar.gz -C examples/nns_proxy/tests/state"
   },
   "devDependencies": {
     "@dfinity/agent": "^1.0.1",

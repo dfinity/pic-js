@@ -1,0 +1,6 @@
+{
+  "modelPropertyNaming": "camelCase",
+  "enumPropertyNaming": "PascalCase",
+  "supportsES6": true,
+  "withInterfaces": true
+}
