@@ -102,6 +102,28 @@ export function encodeCreateInstanceRequest(
   return options;
 }
 
+//#region GetPubKey
+
+export interface GetPubKeyRequest {
+  subnetId: Principal;
+}
+
+export interface EncodedGetPubKeyRequest {
+  subnet_id: Uint8Array;
+}
+
+export function encodeGetPubKeyRequest(
+  req: GetPubKeyRequest,
+): EncodedGetPubKeyRequest {
+  return {
+    subnet_id: req.subnetId.toUint8Array(),
+  };
+}
+
+//#endregion GetPubKey
+
+//#region GetTopology
+
 export type InstanceTopology = Record<string, SubnetTopology>;
 
 export interface SubnetTopology {
@@ -209,6 +231,8 @@ export interface CreateInstanceErrorResponse {
 export type CreateInstanceResponse =
   | CreateInstanceSuccessResponse
   | CreateInstanceErrorResponse;
+
+//#endregion GetTopology
 
 //#region GetTime
 

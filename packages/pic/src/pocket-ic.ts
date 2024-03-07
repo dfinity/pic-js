@@ -682,9 +682,10 @@ export class PocketIc {
   }
 
   /**
-   * Fetch the root key of the IC.
+   * Fetch the public key of the specified subnet.
    *
-   * @returns The root key of the IC.
+   * @param subnetId The Principal of the subnet to fetch the public key of.
+   * @returns The public key of the specified subnet.
    *
    * @example
    * ```ts
@@ -693,8 +694,8 @@ export class PocketIc {
    * const pic = await PocketIc.create();
    * const rootKey = await pic.fetchRootKey();
    */
-  public async fetchRootKey(): Promise<ArrayBufferLike> {
-    return await this.client.fetchRootKey();
+  public async fetchRootKey(subnetId: Principal): Promise<ArrayBufferLike> {
+    return await this.client.getPubKey({ subnetId });
   }
 
   /**

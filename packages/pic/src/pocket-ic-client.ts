@@ -54,6 +54,9 @@ import {
   encodeUploadBlobRequest,
   CreateInstanceRequest,
   encodeCreateInstanceRequest,
+  GetPubKeyRequest,
+  EncodedGetPubKeyRequest,
+  encodeGetPubKeyRequest,
 } from './pocket-ic-client-types';
 
 const PROCESSING_TIME_HEADER = 'processing-timeout-ms';
@@ -117,10 +120,13 @@ export class PocketIcClient {
     return await this.post<void, void>('/update/tick');
   }
 
-  public async fetchRootKey(): Promise<Uint8Array> {
+  public async getPubKey(req: GetPubKeyRequest): Promise<Uint8Array> {
     this.assertInstanceNotDeleted();
 
-    return await this.post<null, Uint8Array>('/read/pub_key');
+    return await this.post<EncodedGetPubKeyRequest, Uint8Array>(
+      '/read/pub_key',
+      encodeGetPubKeyRequest(req),
+    );
   }
 
   public getTopology(): InstanceTopology {
