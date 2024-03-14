@@ -78,4 +78,16 @@ describe('NNS Proxy', () => {
       expect(proposals[0].summary[0]).toBe('Test Proposal Summary');
     });
   });
+
+  describe('fetchRootKey', () => {
+    it('should fetch the root key of the NNS subnet', async () => {
+      const nnsSubnet = pic.getNnsSubnet();
+      if (!nnsSubnet) {
+        throw new Error('NNS subnet not found');
+      }
+
+      const rootKey = pic.getPubKey(nnsSubnet.id);
+      expect(rootKey).toBeDefined();
+    });
+  });
 });

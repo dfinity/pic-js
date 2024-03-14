@@ -109,14 +109,14 @@ export interface GetPubKeyRequest {
 }
 
 export interface EncodedGetPubKeyRequest {
-  subnet_id: Uint8Array;
+  subnet_id: string;
 }
 
 export function encodeGetPubKeyRequest(
   req: GetPubKeyRequest,
 ): EncodedGetPubKeyRequest {
   return {
-    subnet_id: req.subnetId.toUint8Array(),
+    subnet_id: base64EncodePrincipal(req.subnetId),
   };
 }
 

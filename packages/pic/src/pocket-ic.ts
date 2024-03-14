@@ -692,9 +692,9 @@ export class PocketIc {
    * import { PocketIc } from '@hadronous/pic';
    *
    * const pic = await PocketIc.create();
-   * const rootKey = await pic.fetchRootKey();
+   * const rootKey = await pic.getPubKey();
    */
-  public async fetchRootKey(subnetId: Principal): Promise<ArrayBufferLike> {
+  public async getPubKey(subnetId: Principal): Promise<ArrayBufferLike> {
     return await this.client.getPubKey({ subnetId });
   }
 
