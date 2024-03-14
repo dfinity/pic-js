@@ -37,11 +37,6 @@ export class PocketIcServer {
 
     const serverProcess = spawn(binPath, ['--pid', pid.toString()], {
       stdio: 'ignore',
-      env: {
-        POCKET_IC_LOG_DIR: resolve(__dirname, '..', 'logs'),
-        POCKET_IC_LOG_DIR_LEVELS:
-          'pocket_ic_server=trace,tower_http=trace,axum=trace',
-      },
     });
 
     serverProcess.on('error', error => {
