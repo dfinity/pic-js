@@ -692,7 +692,8 @@ export class PocketIc {
    * import { PocketIc } from '@hadronous/pic';
    *
    * const pic = await PocketIc.create();
-   * const rootKey = await pic.getPubKey();
+   * const subnets = pic.getApplicationSubnets();
+   * const pubKey = await pic.getPubKey(subnets[0].id);
    */
   public async getPubKey(subnetId: Principal): Promise<ArrayBufferLike> {
     return await this.client.getPubKey({ subnetId });
