@@ -165,6 +165,7 @@ export interface SetupCanisterOptions extends CreateCanisterOptions {
 
   /**
    * Candid encoded argument to pass to the canister's init function.
+   * Defaults to an empty ArrayBuffer.
    */
   arg?: ArrayBufferLike;
 
@@ -426,4 +427,75 @@ export interface UpdateCanisterSettingsOptions
    * Defaults to the anonymous principal.
    */
   sender?: Principal;
+}
+
+/**
+ * Options for making a query call to a given canister.
+ *
+ * @category Types
+ * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+ */
+export interface QueryCallOptions {
+  /**
+   * The Principal to send the request as.
+   * Defaults to the anonymous principal.
+   */
+  sender?: Principal;
+
+  /**
+   * The Principal of the canister to query.
+   */
+  canisterId: Principal;
+
+  /**
+   * The method to call on the canister.
+   */
+  method: string;
+
+  /**
+   * A Candid encoded argument to pass to the canister's method.
+   * Defaults to an empty ArrayBuffer.
+   */
+  arg?: ArrayBufferLike;
+
+  /**
+   * The ID of the subnet that the canister resides on.
+   */
+  targetSubnetId?: Principal;
+}
+
+/**
+ * Options for making an update call to a given canister.
+ *
+ * @category Types
+ * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+ */
+
+export interface UpdateCallOptions {
+  /**
+   * The Principal to send the request as.
+   * Defaults to the anonymous principal.
+   */
+  sender?: Principal;
+
+  /**
+   * The Principal of the canister to update.
+   */
+  canisterId: Principal;
+
+  /**
+   * The method to call on the canister.
+   */
+  method: string;
+
+  /**
+   * A Candid encoded argument to pass to the canister's method.
+   * Defaults to an empty ArrayBuffer.
+   */
+  arg?: ArrayBufferLike;
+
+  /**
+   * The ID of the subnet that the canister resides on.
+   */
+  targetSubnetId?: Principal;
 }

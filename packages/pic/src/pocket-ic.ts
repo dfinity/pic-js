@@ -17,6 +17,8 @@ import {
   UpdateCanisterSettingsOptions,
   StartCanisterOptions,
   StopCanisterOptions,
+  QueryCallOptions,
+  UpdateCallOptions,
 } from './pocket-ic-types';
 import {
   MANAGEMENT_CANISTER_ID,
@@ -562,6 +564,102 @@ export class PocketIc {
     );
 
     return new Actor();
+  }
+
+  /**
+   * Makes a query call to the given canister.
+   *
+   * @param options Options for making the query call, see {@link QueryCallOptions}.
+   * @returns The Candid-encoded response of the query call.
+   *
+   * @example
+   * ```ts
+   * import { Principal } from '@dfinity/principal';
+   * import { PocketIc } from '@hadronous/pic';
+   * import { _SERVICE, idlFactory } from '../declarations';
+   *
+   * const wasm = resolve('..', '..', 'canister.wasm');
+   *
+   * pic = await PocketIc.create();
+   * canisterId = await pic.createCanister({
+   *   sender: controllerIdentity.getPrincipal(),
+   * });
+   * await pic.installCode({ canisterId, wasm });
+   *
+   * const res = await pic.queryCall({
+   *  canisterId,
+   *  method: 'greet',
+   * });
+   * ```
+   */
+  public async queryCall({
+    canisterId,
+    method,
+    arg = new Uint8Array(),
+    sender = Principal.anonymous(),
+    targetSubnetId,
+  }: QueryCallOptions): Promise<ArrayBufferLike> {
+    const res = await this.client.queryCall({
+      canisterId,
+      method,
+      payload: new Uint8Array(arg),
+      sender,
+      effectivePrincipal: targetSubnetId
+        ? {
+            subnetId: targetSubnetId,
+          }
+        : undefined,
+    });
+
+    return res.body;
+  }
+
+  /**
+   * Makes an update call to the given canister.
+   *
+   * @param options Options for making the update call, see {@link UpdateCallOptions}.
+   * @returns The Candid-encoded response of the update call.
+   *
+   * @example
+   * ```ts
+   * import { Principal } from '@dfinity/principal';
+   * import { PocketIc } from '@hadronous/pic';
+   * import { _SERVICE, idlFactory } from '../declarations';
+   *
+   * const wasm = resolve('..', '..', 'canister.wasm');
+   *
+   * pic = await PocketIc.create();
+   * canisterId = await pic.createCanister({
+   *   sender: controllerIdentity.getPrincipal(),
+   * });
+   * await pic.installCode({ canisterId, wasm });
+   *
+   * const res = await pic.updateCall({
+   *  canisterId,
+   *  method: 'greet',
+   * });
+   * ```
+   */
+  public async updateCall({
+    canisterId,
+    method,
+    arg = new Uint8Array(),
+    sender = Principal.anonymous(),
+    targetSubnetId,
+  }: UpdateCallOptions): Promise<ArrayBufferLike> {
+    const res = await this.client.updateCall({
+      canisterId,
+      method,
+      payload: new Uint8Array(arg),
+      sender,
+      effectivePrincipal: targetSubnetId
+        ? {
+            subnetId: targetSubnetId,
+          }
+        : undefined,
+    });
+
+    return res.body;
   }
 
   /**
