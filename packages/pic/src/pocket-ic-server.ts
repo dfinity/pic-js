@@ -39,12 +39,36 @@ export class PocketIcServer {
       stdio: 'ignore',
     });
 
+    let stderrBuffer = '';
+
     serverProcess.on('error', error => {
       if (isArm() && isDarwin()) {
         throw new BinStartMacOSArmError(error);
       }
 
       throw new BinStartError(error);
+    });
+
+    serverProcess.stderr.on('data', data => {
+      stderrBuffer += data.toString();
+
+      // Split based on newline characters
+      let lines = stderrBuffer.split('\n');
+      
+      // Keep the last incomplete line in the buffer
+      stderrBuffer = lines.pop();
+      
+      // Process complete lines
+      lines.forEach((line) => {
+          console.log(`debug: ${line}`);
+      });
+    });
+    serverProcess.stderr.on('close', () => {
+      if (stderrBuffer.length > 0) {
+          console.log(`debug final: ${stderrBuffer}`);
+          stderrBuffer = ''; // Clear the buffer
+      };
+      stop();
     });
 
     return await poll(async () => {
