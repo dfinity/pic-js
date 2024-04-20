@@ -1,7 +1,6 @@
 import { Principal } from '@dfinity/principal';
 import { IDL } from '@dfinity/candid';
 import { optional, readFileAsBytes } from './util';
-import { PocketIcServer } from './pocket-ic-server';
 import { PocketIcClient } from './pocket-ic-client';
 import { ActorInterface, Actor, createActorClass } from './pocket-ic-actor';
 import {
@@ -71,14 +70,12 @@ import {
  * ```
  */
 export class PocketIc {
-  private constructor(
-    private readonly client: PocketIcClient,
-    private readonly server?: PocketIcServer,
-  ) {}
+  private constructor(private readonly client: PocketIcClient) {}
 
   /**
-   * Starts the PocketIC server and creates a PocketIC instance.
+   * Creates a PocketIC instance.
    *
+   * @param url The URL of an existing PocketIC server to connect to.
    * @param options Options for creating the PocketIC instance see {@link CreateInstanceOptions}.
    * @returns A new PocketIC instance.
    *
@@ -86,33 +83,11 @@ export class PocketIc {
    * ```ts
    * import { PocketIc } from '@hadronous/pic';
    *
+   * const url = 'http://localhost:8080';
    * const pic = await PocketIc.create();
    * ```
    */
   public static async create(
-    options?: CreateInstanceOptions,
-  ): Promise<PocketIc> {
-    const server = await PocketIcServer.start();
-    const client = await PocketIcClient.create(server.getUrl(), options);
-
-    return new PocketIc(client, server);
-  }
-
-  /**
-   * Creates a PocketIC instance that connects to an existing PocketIC server.
-   *
-   * @param url The URL of an existing PocketIC server to connect to.
-   * @returns A new PocketIC instance.
-   *
-   * @example
-   * ```ts
-   * import { PocketIc } from '@hadronous/pic';
-   *
-   * const url = 'http://localhost:8080';
-   * const pic = await PocketIc.createFromUrl(url);
-   * ```
-   */
-  public static async createFromUrl(
     url: string,
     options?: CreateInstanceOptions,
   ): Promise<PocketIc> {
@@ -663,7 +638,7 @@ export class PocketIc {
   }
 
   /**
-   * Deletes the PocketIC instance and disconnects from the server.
+   * Deletes the PocketIC instance.
    *
    * @example
    * ```ts
@@ -675,7 +650,6 @@ export class PocketIc {
    */
   public async tearDown(): Promise<void> {
     await this.client.deleteInstance();
-    this.server?.stop();
   }
 
   /**

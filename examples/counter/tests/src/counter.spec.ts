@@ -2,7 +2,9 @@ import { resolve } from 'node:path';
 import { Principal } from '@dfinity/principal';
 import { Actor, PocketIc } from '@hadronous/pic';
 import { IDL } from '@dfinity/candid';
-import { _SERVICE, idlFactory, init } from '../../declarations/counter.did';
+import { describe, beforeEach, afterEach, it, expect, inject } from 'vitest';
+
+import { _SERVICE, idlFactory, init } from '../../declarations/counter.did.js';
 
 const WASM_PATH = resolve(
   __dirname,
@@ -25,7 +27,7 @@ describe('Counter', () => {
   const countInitArg = 1n;
 
   beforeEach(async () => {
-    pic = await PocketIc.create();
+    pic = await PocketIc.create(inject('PIC_URL'));
     const fixture = await pic.setupCanister<_SERVICE>({
       idlFactory,
       wasm: WASM_PATH,

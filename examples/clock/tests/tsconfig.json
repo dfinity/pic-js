@@ -4,5 +4,10 @@
     "allowJs": true,
     "types": ["jest", "node"]
   },
-  "include": ["./src/**/*.ts"]
+  "include": [
+    "./src/**/*.ts",
+    "./global-setup.ts",
+    "./global-teardown.ts",
+    "./types.d.ts"
+  ]
 }

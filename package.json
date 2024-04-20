@@ -16,7 +16,7 @@
     "build:examples": "dfx generate phonebook && dfx generate superheroes && dfx generate && dfx build --all --check",
     "test:examples": "run-p test:counter test:clock test:todo test:multicanister test:nns-proxy",
     "build:counter": "dfx generate counter && dfx build counter --check",
-    "test:counter": "jest -c ./examples/counter/tests/jest.config.ts",
+    "test:counter": "vitest run -c ./examples/counter/tests/vitest.config.ts",
     "build:clock": "dfx generate clock && dfx build clock --check",
     "test:clock": "jest -c ./examples/clock/tests/jest.config.ts",
     "build:todo": "dfx generate todo && dfx build todo --check",
@@ -40,6 +40,7 @@
     "prettier": "3.1.0",
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vitest": "^1.5.0"
   }
 }

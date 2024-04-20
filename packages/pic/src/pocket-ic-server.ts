@@ -65,8 +65,18 @@ export class PocketIcServer {
     return this.url;
   }
 
-  public stop(): void {
-    this.serverProcess.unref();
+  public async stop(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.serverProcess.on('exit', () => {
+        resolve();
+      });
+
+      this.serverProcess.on('error', error => {
+        reject(error);
+      });
+
+      this.serverProcess.kill();
+    });
   }
 
   private static getBinPath(): string {

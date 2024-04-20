@@ -26,7 +26,7 @@ describe('Todo', () => {
   const bob = createIdentity('superSecretBobPassword');
 
   beforeEach(async () => {
-    pic = await PocketIc.create();
+    pic = await PocketIc.create(process.env.PIC_URL);
     const fixture = await pic.setupCanister<_SERVICE>({
       idlFactory,
       wasm: WASM_PATH,

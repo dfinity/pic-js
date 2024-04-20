@@ -10,3 +10,4 @@ export type {
   SetupCanisterOptions,
   UpgradeCanisterOptions,
 } from './pocket-ic-types';
+export { PocketIcServer } from './pocket-ic-server';

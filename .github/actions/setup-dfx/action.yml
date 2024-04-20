@@ -4,11 +4,7 @@ description: Setup DFX
 runs:
   using: 'composite'
   steps:
-    - name: Get DFX version
-      shell: bash
-      run: echo "dfx_version=$(cat dfx.json | jq -r .dfx)" >> "$GITHUB_ENV"
-
     - name: Setup DFX
       uses: dfinity/setup-dfx@main
       with:
-        dfx-version: ${{ env.dfx_version }}
+        dfx-version: 'auto'

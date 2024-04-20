@@ -20,7 +20,7 @@ cd nns_state
 
 Add a local system network to the `dfx.json` file. This will create the appropriate network configuration for the NNS without affecting any other projects that are running on DFX:
 
-```json
+```json title="dfx.json"
 {
   // redacted...
   "networks": {
@@ -170,7 +170,7 @@ tar -xvf path/to/tests/state/nns_state.tar.gz -C path/to/tests/state
 
 This could be done with an `npm` `postinstall` script, by adding the following to your `package.json`:
 
-```json
+```json title="package.json"
 {
   // redacted...
   "scripts": {
@@ -185,14 +185,14 @@ This could be done with an `npm` `postinstall` script, by adding the following t
 
 You'll need the subnet Id that you recored earlier:
 
-```typescript
+```ts
 const NNS_SUBNET_ID =
   'nt6ha-vabpm-j6nog-bkr62-vbgbt-swwzc-u54zn-odtoy-igwlu-ab7uj-4qe';
 ```
 
 And you'll need to reference the path to the NNS state:
 
-```typescript
+```ts
 const NNS_STATE_PATH = resolve(
   __dirname,
   '..',
@@ -205,7 +205,7 @@ const NNS_STATE_PATH = resolve(
 
 Now you can setup your PocketIC instance to use the NNS state:
 
-```typescript
+```ts
 const pic = await PocketIc.create({
   nns: {
     fromPath: NNS_STATE_PATH,
@@ -216,7 +216,7 @@ const pic = await PocketIc.create({
 
 After creating the instance, make sure to set the PocketIc time to be the same or greater than the time that you created the NNS state:
 
-```typescript
+```ts
 await pic.setTime(new Date(2024, 1, 30).getTime());
 await pic.tick();
 ```

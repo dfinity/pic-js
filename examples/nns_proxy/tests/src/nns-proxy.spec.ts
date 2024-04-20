@@ -38,7 +38,7 @@ describe('NNS Proxy', () => {
   const proposerIdentity = generateRandomIdentity();
 
   beforeEach(async () => {
-    pic = await PocketIc.create({
+    pic = await PocketIc.create(process.env.PIC_URL, {
       nns: {
         fromPath: NNS_STATE_PATH,
         subnetId: Principal.fromText(NNS_SUBNET_ID),

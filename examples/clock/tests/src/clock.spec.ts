@@ -1,6 +1,7 @@
 import { resolve } from 'node:path';
 import { Principal } from '@dfinity/principal';
 import { Actor, PocketIc } from '@hadronous/pic';
+
 import { _SERVICE, idlFactory } from '../../declarations/clock.did';
 
 const WASM_PATH = resolve(
@@ -22,7 +23,7 @@ describe('Clock', () => {
   let canisterId: Principal;
 
   beforeEach(async () => {
-    pic = await PocketIc.create();
+    pic = await PocketIc.create(process.env.PIC_URL);
     const fixture = await pic.setupCanister<_SERVICE>({
       idlFactory: idlFactory,
       wasm: WASM_PATH,
