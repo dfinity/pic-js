@@ -85,6 +85,7 @@ const config: Config = {
   testEnvironment: 'node',
   globalSetup: '<rootDir>/global-setup.ts',
   globalTeardown: '<rootDir>/global-teardown.ts',
+  testTimeout: 30_000,
 };
 
 export default config;

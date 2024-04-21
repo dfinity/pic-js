@@ -11,3 +11,4 @@ export type {
   UpgradeCanisterOptions,
 } from './pocket-ic-types';
 export { PocketIcServer } from './pocket-ic-server';
+export { StartServerOptions as ServerStartOptions } from './pocket-ic-server-types';

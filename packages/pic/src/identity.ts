@@ -22,18 +22,22 @@ import { Ed25519KeyIdentity } from '@dfinity/identity';
  *
  * @example
  * ```ts
- * import { PocketIc, createIdentity } from '@hadronous/pic';
+ * import { PocketIc, PocketIcServer, createIdentity } from '@hadronous/pic';
  * import { AnonymousIdentity } from '@dfinity/agent';
  * import { _SERVICE, idlFactory } from '../declarations';
  *
  * const wasmPath = resolve('..', '..', 'canister.wasm');
  *
- * const pic = await PocketIc.create();
+ * const picServer = await PocketIcServer.create();
+ * const pic = await PocketIc.create(picServer.getUrl());
  * const fixture = await pic.setupCanister<_SERVICE>(idlFactory, wasmPath);
  * const { actor } = fixture;
  *
  * const bob = createIdentity('SuperSecretSeedPhraseForBob');
  * actor.setIdentity(bob);
+ *
+ * await pic.tearDown();
+ * await picServer.stop();
  * ```
  */
 export function createIdentity(seedPhrase: string): Identity {
@@ -67,18 +71,22 @@ function generateMnemonic(): string {
  *
  * @example
  * ```ts
- * import { PocketIc, generateRandomIdentity } from '@hadronous/pic';
+ * import { PocketIc, PocketIcServer, generateRandomIdentity } from '@hadronous/pic';
  * import { AnonymousIdentity } from '@dfinity/agent';
  * import { _SERVICE, idlFactory } from '../declarations';
  *
  * const wasmPath = resolve('..', '..', 'canister.wasm');
  *
- * const pic = await PocketIc.create();
+ * const picServer = await PocketIcServer.create();
+ * const pic = await PocketIc.create(picServer.getUrl());
  * const fixture = await pic.setupCanister<_SERVICE>(idlFactory, wasmPath);
  * const { actor } = fixture;
  *
  * const bob = generateRandomIdentity();
  * actor.setIdentity(bob);
+ *
+ * await pic.tearDown();
+ * await picServer.stop();
  * ```
  */
 export function generateRandomIdentity(): Identity {

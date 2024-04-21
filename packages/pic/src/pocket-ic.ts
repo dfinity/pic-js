@@ -29,36 +29,42 @@ import {
 } from './management-canister';
 
 /**
- * PocketIC is a local development environment for Internet Computer canisters.
+ * This class represents the main PocketIC client.
+ * It is responsible for interacting with the PocketIC server via the REST API.
+ * See {@link PocketIcServer} for details on the server to use with this client.
  *
  * @category API
  *
  * @example
  * The easist way to use PocketIC is to use {@link setupCanister} convenience method:
  * ```ts
- * import { PocketIc } from '@hadronous/pic';
+ * import { PocketIc, PocketIcServer } from '@hadronous/pic';
  * import { _SERVICE, idlFactory } from '../declarations';
  *
  * const wasmPath = resolve('..', '..', 'canister.wasm');
  *
- * const pic = await PocketIc.create();
+ * const picServer = await PocketIcServer.create();
+ * const pic = await PocketIc.create(picServer.getUrl());
+ *
  * const fixture = await pic.setupCanister<_SERVICE>({ idlFactory, wasmPath });
  * const { actor } = fixture;
  *
  * // perform tests...
  *
  * await pic.tearDown();
+ * await picServer.stop();
  * ```
  *
  * If more control is needed, then the {@link createCanister}, {@link installCode} and
  * {@link createActor} methods can be used directly:
  * ```ts
- * import { PocketIc } from '@hadronous/pic';
+ * import { PocketIc, PocketIcServer } from '@hadronous/pic';
  * import { _SERVICE, idlFactory } from '../declarations';
  *
  * const wasm = resolve('..', '..', 'canister.wasm');
  *
- * const pic = await PocketIc.create();
+ * const picServer = await PocketIcServer.create();
+ * const pic = await PocketIc.create(picServer.getUrl());
  *
  * const canisterId = await pic.createCanister();
  * await pic.installCode({ canisterId, wasm });
@@ -67,6 +73,7 @@ import {
  * // perform tests...
  *
  * await pic.tearDown();
+ * await picServer.stop();
  * ```
  */
 export class PocketIc {
@@ -81,10 +88,16 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { PocketIc } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
    *
-   * const url = 'http://localhost:8080';
-   * const pic = await PocketIc.create();
+   * const picServer = await PocketIcServer.create();
+   * const pic = await PocketIc.create(picServer.getUrl());
+   *
+   * const fixture = await pic.setupCanister<_SERVICE>({ idlFactory, wasmPath });
+   * const { actor } = fixture;
+   *
+   * await pic.tearDown();
+   * await picServer.stop();
    * ```
    */
   public static async create(
@@ -112,14 +125,19 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { PocketIc } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
    * import { _SERVICE, idlFactory } from '../declarations';
    *
    * const wasmPath = resolve('..', '..', 'canister.wasm');
    *
-   * const pic = await PocketIc.create();
+   * const picServer = await PocketIcServer.create();
+   * const pic = await PocketIc.create(picServer.getUrl());
+   *
    * const fixture = await pic.setupCanister<_SERVICE>({ idlFactory, wasmPath });
    * const { actor } = fixture;
+   *
+   * await pic.tearDown();
+   * await picServer.stop();
    * ```
    */
   public async setupCanister<T = ActorInterface>({
@@ -167,10 +185,15 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { PocketIc } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
    *
-   * const pic = await PocketIc.create();
+   * const picServer = await PocketIcServer.create();
+   * const pic = await PocketIc.create(picServer.getUrl());
+   *
    * const canisterId = await pic.createCanister();
+   *
+   * await pic.tearDown();
+   * await picServer.stop();
    * ```
    */
   public async createCanister({
@@ -223,12 +246,17 @@ export class PocketIc {
    * @example
    * ```ts
    * import { Principal } from '@dfinity/principal';
-   * import { PocketIc } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    *
-   * const pic = await PocketIc.create();
+   * const picServer = await PocketIcServer.create();
+   * const pic = await PocketIc.create(picServer.getUrl());
+   *
    * await pic.startCanister({ canisterId });
+   *
+   * await pic.tearDown();
+   * await picServer.stop();
    * ```
    */
   public async startCanister({
@@ -263,12 +291,17 @@ export class PocketIc {
    * @example
    * ```ts
    * import { Principal } from '@dfinity/principal';
-   * import { PocketIc } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    *
-   * const pic = await PocketIc.create();
+   * const picServer = await PocketIcServer.create();
+   * const pic = await PocketIc.create(picServer.getUrl());
+   *
    * await pic.stopCanister({ canisterId });
+   *
+   * await pic.tearDown();
+   * await picServer.stop();
    * ```
    */
   public async stopCanister({
@@ -306,14 +339,19 @@ export class PocketIc {
    * @example
    * ```ts
    * import { Principal } from '@dfinity/principal';
-   * import { PocketIc } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
    * import { resolve } from 'node:path';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    * const wasm = resolve('..', '..', 'canister.wasm');
    *
-   * const pic = await PocketIc.create();
+   * const picServer = await PocketIcServer.create();
+   * const pic = await PocketIc.create(picServer.getUrl());
+   *
    * await pic.installCode({ canisterId, wasm });
+   *
+   * await pic.tearDown();
+   * await picServer.stop();
    * ```
    */
   public async installCode({
@@ -362,14 +400,19 @@ export class PocketIc {
    * @example
    * ```ts
    * import { Principal } from '@dfinity/principal';
-   * import { PocketIc } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
    * import { resolve } from 'node:path';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    * const wasm = resolve('..', '..', 'canister.wasm');
    *
-   * const pic = await PocketIc.create();
+   * const picServer = await PocketIcServer.create();
+   * const pic = await PocketIc.create(picServer.getUrl());
+   *
    * await pic.reinstallCode({ canisterId, wasm });
+   *
+   * await pic.tearDown();
+   * await picServer.stop();
    * ```
    */
   public async reinstallCode({
@@ -412,14 +455,19 @@ export class PocketIc {
    * @example
    * ```ts
    * import { Principal } from '@dfinity/principal';
-   * import { PocketIc } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
    * import { resolve } from 'node:path';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    * const wasm = resolve('..', '..', 'canister.wasm');
    *
-   * const pic = await PocketIc.create();
+   * const picServer = await PocketIcServer.create();
+   * const pic = await PocketIc.create(picServer.getUrl());
+   *
    * await pic.upgradeCanister({ canisterId, wasm });
+   *
+   * await pic.tearDown();
+   * await picServer.stop();
    * ```
    */
   public async upgradeCanister({
@@ -459,15 +507,21 @@ export class PocketIc {
    * @example
    * ```ts
    * import { Principal } from '@dfinity/principal';
-   * import { PocketIc } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    *
-   * const pic = await PocketIc.create();
+   * const picServer = await PocketIcServer.create();
+   * const pic = await PocketIc.create(picServer.getUrl());
+   *
    * await pic.updateCanisterSettings({
    *  canisterId,
    *  controllers: [Principal.fromUint8Array(new Uint8Array([1]))],
    * });
+   *
+   * await pic.tearDown();
+   * await picServer.stop();
+   * ```
    */
   public async updateCanisterSettings({
     canisterId,
@@ -515,17 +569,21 @@ export class PocketIc {
    * @example
    * ```ts
    * import { Principal } from '@dfinity/principal';
-   * import { PocketIc } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
    * import { _SERVICE, idlFactory } from '../declarations';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    * const wasm = resolve('..', '..', 'canister.wasm');
    *
-   * const pic = await PocketIc.create();
+   * const picServer = await PocketIcServer.create();
+   * const pic = await PocketIc.create(picServer.getUrl());
    *
    * const canisterId = await pic.createCanister();
    * await pic.installCode({ canisterId, wasm });
    * const actor = pic.createActor<_SERVICE>({ idlFactory, canisterId });
+   *
+   * await pic.tearDown();
+   * await picServer.stop();
    * ```
    */
   public createActor<T = ActorInterface>(
@@ -550,12 +608,14 @@ export class PocketIc {
    * @example
    * ```ts
    * import { Principal } from '@dfinity/principal';
-   * import { PocketIc } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
    * import { _SERVICE, idlFactory } from '../declarations';
    *
    * const wasm = resolve('..', '..', 'canister.wasm');
    *
-   * pic = await PocketIc.create();
+   * const picServer = await PocketIcServer.create();
+   * const pic = await PocketIc.create(picServer.getUrl());
+   *
    * canisterId = await pic.createCanister({
    *   sender: controllerIdentity.getPrincipal(),
    * });
@@ -565,6 +625,9 @@ export class PocketIc {
    *  canisterId,
    *  method: 'greet',
    * });
+   *
+   * await pic.tearDown();
+   * await picServer.stop();
    * ```
    */
   public async queryCall({
@@ -598,12 +661,14 @@ export class PocketIc {
    * @example
    * ```ts
    * import { Principal } from '@dfinity/principal';
-   * import { PocketIc } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
    * import { _SERVICE, idlFactory } from '../declarations';
    *
    * const wasm = resolve('..', '..', 'canister.wasm');
    *
-   * pic = await PocketIc.create();
+   * const picServer = await PocketIcServer.create();
+   * const pic = await PocketIc.create(picServer.getUrl());
+   *
    * canisterId = await pic.createCanister({
    *   sender: controllerIdentity.getPrincipal(),
    * });
@@ -613,6 +678,9 @@ export class PocketIc {
    *  canisterId,
    *  method: 'greet',
    * });
+   *
+   * await pic.tearDown();
+   * await picServer.stop();
    * ```
    */
   public async updateCall({
@@ -642,10 +710,13 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { PocketIc } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
    *
-   * const pic = await PocketIc.create();
+   * const picServer = await PocketIcServer.create();
+   * const pic = await PocketIc.create(picServer.getUrl());
+   *
    * await pic.tearDown();
+   * await picServer.stop();
    * ```
    */
   public async tearDown(): Promise<void> {
@@ -659,13 +730,18 @@ export class PocketIc {
    * @param times The number of new blocks to produce and progress by. Defaults to `1`.
    *
    * ```ts
-   * import { PocketIc } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
    *
-   * const pic = await PocketIc.create();
+   * const picServer = await PocketIcServer.create();
+   * const pic = await PocketIc.create(picServer.getUrl());
+   *
    * await pic.tick();
    *
    * // or to tick multiple times
    * await pic.tick(3);
+   *
+   * await pic.tearDown();
+   * await picServer.stop();
    * ```
    */
   public async tick(times: number = 1): Promise<void> {
@@ -681,11 +757,15 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { PocketIc } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
    *
-   * const pic = await PocketIc.create();
+   * const picServer = await PocketIcServer.create();
+   * const pic = await PocketIc.create(picServer.getUrl());
    *
    * const time = await pic.getTime();
+   *
+   * await pic.tearDown();
+   * await picServer.stop();
    * ```
    */
   public async getTime(): Promise<number> {
@@ -699,12 +779,16 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { PocketIc } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
    *
-   * const pic = await PocketIc.create();
+   * const picServer = await PocketIcServer.create();
+   * const pic = await PocketIc.create(picServer.getUrl());
    *
    * await pic.resetTime();
    * const time = await pic.getTime();
+   *
+   * await pic.tearDown();
+   * await picServer.stop();
    * ```
    */
   public async resetTime(): Promise<void> {
@@ -718,16 +802,30 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { PocketIc } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
    *
    * const pic = await PocketIc.create();
    *
    * const date = new Date();
+   *
+   * const picServer = await PocketIcServer.create();
+   * const pic = await PocketIc.create(picServer.getUrl());
+   *
+   * await pic.setTime(date);
+   * // or
    * await pic.setTime(date.getTime());
+   *
    * const time = await pic.getTime();
+   *
+   * await pic.tearDown();
+   * await picServer.stop();
    * ```
    */
-  public async setTime(time: number): Promise<void> {
+  public async setTime(time: Date | number): Promise<void> {
+    if (time instanceof Date) {
+      time = time.getTime();
+    }
+
     await this.client.setTime({ millisSinceEpoch: time });
   }
 
@@ -738,13 +836,18 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { PocketIc } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
    *
-   * const pic = await PocketIc.create();
+   * const picServer = await PocketIcServer.create();
+   * const pic = await PocketIc.create(picServer.getUrl());
    *
    * const initialTime = await pic.getTime();
    * await pic.advanceTime(1_000);
+   *
    * const newTime = await pic.getTime();
+   *
+   * await pic.tearDown();
+   * await picServer.stop();
    * ```
    */
   public async advanceTime(duration: number): Promise<void> {
@@ -761,32 +864,43 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { PocketIc } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
    *
-   * const pic = await PocketIc.create();
+   * const picServer = await PocketIcServer.create();
+   * const pic = await PocketIc.create(picServer.getUrl());
+   *
    * const subnets = pic.getApplicationSubnets();
    * const pubKey = await pic.getPubKey(subnets[0].id);
+   *
+   * await pic.tearDown();
+   * await picServer.stop();
+   * ```
    */
   public async getPubKey(subnetId: Principal): Promise<ArrayBufferLike> {
     return await this.client.getPubKey({ subnetId });
   }
 
   /**
-   * Checks if the provided canister exists.
+   * Gets the subnet Id of the provided canister Id.
    *
-   * @param canisterId The Principal of the canister to check.
-   * @returns `true` if the canister exists, `false` otherwise.
+   * @param canisterId The Principal of the canister to get the subnet Id of.
+   * @returns The canister's subnet Id if the canister exists, `null` otherwise.
    *
    * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
    *
    * @example
    * ```ts
-   * import { PocketIc } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    *
-   * const pic = await PocketIc.create();
+   * const picServer = await PocketIcServer.create();
+   * const pic = await PocketIc.create(picServer.getUrl());
+   *
    * const subnetId = await pic.getCanisterSubnetId(canisterId);
+   *
+   * await pic.tearDown();
+   * await picServer.stop();
    * ```
    */
   public async getCanisterSubnetId(
@@ -907,12 +1021,17 @@ export class PocketIc {
    * @example
    * ```ts
    * import { Principal } from '@dfinity/principal';
-   * import { PocketIc } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    *
-   * const pic = await PocketIc.create();
+   * const picServer = await PocketIcServer.create();
+   * const pic = await PocketIc.create(picServer.getUrl());
+   *
    * const cyclesBalance = await pic.getCyclesBalance(canisterId);
+   *
+   * await pic.tearDown();
+   * await picServer.stop();
    * ```
    */
   public async getCyclesBalance(canisterId: Principal): Promise<number> {
@@ -933,12 +1052,17 @@ export class PocketIc {
    * @example
    * ```ts
    * import { Principal } from '@dfinity/principal';
-   * import { PocketIc } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    *
-   * const pic = await PocketIc.create();
+   * const picServer = await PocketIcServer.create();
+   * const pic = await PocketIc.create(picServer.getUrl());
+   *
    * const newCyclesBalance = await pic.addCycles(canisterId, 10_000_000);
+   *
+   * await pic.tearDown();
+   * await picServer.stop();
    * ```
    */
   public async addCycles(
@@ -961,13 +1085,18 @@ export class PocketIc {
    * @example
    * ```ts
    * import { Principal } from '@dfinity/principal';
-   * import { PocketIc } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    * const stableMemory = new Uint8Array([0, 1, 2, 3, 4]);
    *
-   * const pic = await PocketIc.create();
+   * const picServer = await PocketIcServer.create();
+   * const pic = await PocketIc.create(picServer.getUrl());
+   *
    * await pic.setStableMemory(canisterId, stableMemory);
+   *
+   * await pic.tearDown();
+   * await picServer.stop();
    * ```
    */
   public async setStableMemory(
@@ -992,12 +1121,17 @@ export class PocketIc {
    * @example
    * ```ts
    * import { Principal } from '@dfinity/principal';
-   * import { PocketIc } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    *
-   * const pic = await PocketIc.create();
+   * const picServer = await PocketIcServer.create();
+   * const pic = await PocketIc.create(picServer.getUrl());
+   *
    * const stableMemory = await pic.getStableMemory(canisterId);
+   *
+   * await pic.tearDown();
+   * await picServer.stop();
    * ```
    */
   public async getStableMemory(
