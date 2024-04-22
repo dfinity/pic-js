@@ -54,7 +54,7 @@ describe('NNS Proxy', () => {
     actor = fixture.actor;
 
     governance = new Governance(pic);
-  }, 15_000);
+  });
 
   afterEach(async () => {
     await pic.tearDown();
