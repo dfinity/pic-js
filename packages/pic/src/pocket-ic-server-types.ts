@@ -3,12 +3,12 @@
  */
 export interface StartServerOptions {
   /**
-   * Whether to pipe the server's stdout to the parent process's stdout.
+   * Whether to pipe the runtimes's logs to the parent process's stdout.
    */
-  pipeStdout?: boolean;
+  showRuntimeLogs?: boolean;
 
   /**
-   * Whether to pipe the server's stderr to the parent process's stderr.
+   * Whether to pipe the canister logs to the parent process's stderr.
    */
-  pipeStderr?: boolean;
+  showCanisterLogs?: boolean;
 }

@@ -72,11 +72,11 @@ export class PocketIcServer {
 
     const serverProcess = spawn(binPath, ['--pid', pid.toString()]);
 
-    if (options.pipeStdout) {
+    if (options.showRuntimeLogs) {
       serverProcess.stdout.pipe(process.stdout);
     }
 
-    if (options.pipeStderr) {
+    if (options.showCanisterLogs) {
       serverProcess.stderr.pipe(process.stderr);
     }
 

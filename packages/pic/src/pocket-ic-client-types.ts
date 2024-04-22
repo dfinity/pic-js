@@ -22,6 +22,7 @@ export interface CreateInstanceRequest {
   bitcoin?: boolean;
   system?: number;
   application?: number;
+  processingTimeoutMs?: number;
 }
 
 export interface EncodedCreateInstanceRequest {
@@ -564,25 +565,16 @@ export interface EncodedCanisterCallErrorResponse {
   };
 }
 
-export interface EncodedCanisterCallErrorMessageResponse {
-  message: string;
-}
-
 export type EncodedCanisterCallResponse =
   | EncodedCanisterCallSuccessResponse
   | EncodedCanisterCallRejectResponse
-  | EncodedCanisterCallErrorResponse
-  | EncodedCanisterCallErrorMessageResponse;
+  | EncodedCanisterCallErrorResponse;
 
 export function decodeCanisterCallResponse(
   res: EncodedCanisterCallResponse,
 ): CanisterCallResponse {
   if ('Err' in res) {
     throw new Error(res.Err.description);
-  }
-
-  if ('message' in res) {
-    throw new Error(res.message);
   }
 
   if ('Reject' in res.Ok) {

@@ -86,7 +86,7 @@ describe('NNS Proxy', () => {
         throw new Error('NNS subnet not found');
       }
 
-      const rootKey = pic.getPubKey(nnsSubnet.id);
+      const rootKey = await pic.getPubKey(nnsSubnet.id);
       expect(rootKey).toBeDefined();
     });
   });

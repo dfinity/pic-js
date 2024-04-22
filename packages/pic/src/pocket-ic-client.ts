@@ -1,9 +1,5 @@
-import {
-  HeadersInit,
-  HttpClient,
-  JSON_HEADER,
-  handleFetchError,
-} from './http-client';
+import { IncomingHttpHeaders } from 'http2';
+import { Http2Client } from './http2-client';
 import {
   EncodedAddCyclesRequest,
   EncodedAddCyclesResponse,
@@ -18,7 +14,6 @@ import {
   EncodedGetTimeResponse,
   EncodedSetTimeRequest,
   EncodedGetSubnetIdResponse,
-  SubnetTopology,
   decodeInstanceTopology,
   InstanceTopology,
   GetStableMemoryRequest,
@@ -46,7 +41,6 @@ import {
   encodeSetTimeRequest,
   CanisterCallRequest,
   encodeCanisterCallRequest,
-  decodeCanisterCallResponse,
   CanisterCallResponse,
   decodeUploadBlobResponse,
   UploadBlobResponse,
@@ -57,58 +51,65 @@ import {
   GetPubKeyRequest,
   EncodedGetPubKeyRequest,
   encodeGetPubKeyRequest,
+  EncodedSetStableMemoryRequest,
+  decodeCanisterCallResponse,
 } from './pocket-ic-client-types';
 
 const PROCESSING_TIME_HEADER = 'processing-timeout-ms';
 const PROCESSING_TIME_VALUE_MS = 300_000;
-const PROCESSING_HEADER: HeadersInit = {
-  [PROCESSING_TIME_HEADER]: PROCESSING_TIME_VALUE_MS.toString(),
-};
 
 export class PocketIcClient {
   private isInstanceDeleted = false;
+  private readonly processingHeader: IncomingHttpHeaders;
 
   private constructor(
-    private readonly instanceUrl: string,
-    private readonly serverUrl: string,
+    private readonly serverClient: Http2Client,
+    private readonly instancePath: string,
     private readonly topology: InstanceTopology,
-  ) {}
+    processingTimeoutMs: number,
+  ) {
+    this.processingHeader = {
+      [PROCESSING_TIME_HEADER]: processingTimeoutMs.toString(),
+    };
+  }
 
   public static async create(
     url: string,
     req?: CreateInstanceRequest,
   ): Promise<PocketIcClient> {
-    const [instanceId, topology] = await PocketIcClient.createInstance(
-      url,
-      req,
-    );
+    const serverClient = new Http2Client(url);
 
-    return new PocketIcClient(`${url}/instances/${instanceId}`, url, topology);
-  }
-
-  private static async createInstance(
-    url: string,
-    req?: CreateInstanceRequest,
-  ): Promise<[number, Record<string, SubnetTopology>]> {
-    const res = await HttpClient.post<
+    const res = await serverClient.jsonPost<
       EncodedCreateInstanceRequest,
       CreateInstanceResponse
-    >(`${url}/instances`, { body: encodeCreateInstanceRequest(req) });
+    >({
+      path: '/instances',
+      body: encodeCreateInstanceRequest(req),
+    });
 
     if ('Error' in res) {
+      console.error('Error creating instance', res.Error.message);
+
       throw new Error(res.Error.message);
     }
 
     const topology = decodeInstanceTopology(res.Created.topology);
+    const instanceId = res.Created.instance_id;
 
-    return [res.Created.instance_id, topology];
+    return new PocketIcClient(
+      serverClient,
+      `/instances/${instanceId}`,
+      topology,
+      req?.processingTimeoutMs ?? PROCESSING_TIME_VALUE_MS,
+    );
   }
 
   public async deleteInstance(): Promise<void> {
     this.assertInstanceNotDeleted();
 
-    await fetch(this.instanceUrl, {
+    await this.serverClient.request({
       method: 'DELETE',
+      path: this.instancePath,
     });
 
     this.isInstanceDeleted = true;
@@ -190,30 +191,23 @@ export class PocketIcClient {
   public async uploadBlob(req: UploadBlobRequest): Promise<UploadBlobResponse> {
     this.assertInstanceNotDeleted();
 
-    const res = await fetch(`${this.serverUrl}/blobstore`, {
+    const res = await this.serverClient.request({
       method: 'POST',
+      path: '/blobstore',
       body: encodeUploadBlobRequest(req),
     });
 
-    return decodeUploadBlobResponse(await res.text());
+    return decodeUploadBlobResponse(res.body);
   }
 
   public async setStableMemory(req: SetStableMemoryRequest): Promise<void> {
     this.assertInstanceNotDeleted();
 
-    // this endpoint does not return JSON encoded responses,
-    // so we make this request directly using fetch to avoid the automatic JSON decoding
-    // from HttpClient.post
-    const res = await fetch(`${this.instanceUrl}/update/set_stable_memory`, {
-      method: 'POST',
-      headers: {
-        ...JSON_HEADER,
-        ...PROCESSING_HEADER,
-      },
-      body: JSON.stringify(encodeSetStableMemoryRequest(req)),
+    await this.serverClient.jsonPost<EncodedSetStableMemoryRequest, null>({
+      path: `${this.instancePath}/update/set_stable_memory`,
+      headers: this.processingHeader,
+      body: encodeSetStableMemoryRequest(req),
     });
-
-    handleFetchError(res);
   }
 
   public async getStableMemory(
@@ -257,16 +251,18 @@ export class PocketIcClient {
     return decodeCanisterCallResponse(res);
   }
 
-  private async post<P, R>(endpoint: string, body?: P): Promise<R> {
-    return await HttpClient.post<P, R>(`${this.instanceUrl}${endpoint}`, {
+  private async post<B, R>(endpoint: string, body?: B): Promise<R> {
+    return await this.serverClient.jsonPost<B, R>({
+      path: `${this.instancePath}${endpoint}`,
+      headers: this.processingHeader,
       body,
-      headers: PROCESSING_HEADER,
     });
   }
 
-  private async get<R>(endpoint: string): Promise<R> {
-    return await HttpClient.get<R>(`${this.instanceUrl}${endpoint}`, {
-      headers: PROCESSING_HEADER,
+  private async get<R extends {}>(endpoint: string): Promise<R> {
+    return await this.serverClient.jsonGet<R>({
+      path: `${this.instancePath}${endpoint}`,
+      headers: this.processingHeader,
     });
   }
 

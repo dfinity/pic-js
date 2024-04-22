@@ -77,6 +77,11 @@ export interface CreateInstanceOptions {
    * Default is `1`.
    */
   application?: number;
+
+  /**
+   * How long the PocketIC client should wait for a response from the server.
+   */
+  processingTimeoutMs?: number;
 }
 
 /**

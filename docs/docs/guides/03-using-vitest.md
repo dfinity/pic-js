@@ -91,7 +91,7 @@ export async function teardown(): Promise<void> {
 
 To improve type-safety for `ctx.provide('PIC_URL')` and (later) `inject('PIC_URL')`, create a `types.d.ts` file:
 
-```typescript title="types.d.ts"
+```ts title="types.d.ts"
 export declare module 'vitest' {
   export interface ProvidedContext {
     PIC_URL: string;
@@ -101,7 +101,7 @@ export declare module 'vitest' {
 
 Create a `vitest.config.ts` file:
 
-```typescript title="vitest.config.ts"
+```ts title="vitest.config.ts"
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
@@ -119,7 +119,7 @@ export default defineConfig({
 
 The basic skeleton of all PicJS tests written with [Vitest](https://vitest.dev/) will look something like this:
 
-```typescript title="tests/example.spec.ts"
+```ts title="tests/example.spec.ts"
 import { describe, beforeEach, afterEach, it, expect, inject } from 'vitest';
 
 // Import generated types for your canister
