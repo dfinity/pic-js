@@ -16,6 +16,7 @@ import {
   isDarwin,
 } from './util';
 import { StartServerOptions } from './pocket-ic-server-types';
+import { Writable } from 'node:stream';
 
 /**
  * This class represents the main PocketIC server.
@@ -74,10 +75,14 @@ export class PocketIcServer {
 
     if (options.showRuntimeLogs) {
       serverProcess.stdout.pipe(process.stdout);
+    } else {
+      serverProcess.stdout.pipe(new NullStream());
     }
 
     if (options.showCanisterLogs) {
       serverProcess.stderr.pipe(process.stderr);
+    } else {
+      serverProcess.stderr.pipe(new NullStream());
     }
 
     serverProcess.on('error', error => {
@@ -142,5 +147,15 @@ export class PocketIcServer {
     }
 
     chmodSync(binPath, 0o700);
+  }
+}
+
+class NullStream extends Writable {
+  _write(
+    _chunk: any,
+    _encoding: BufferEncoding,
+    callback: (error?: Error | null) => void,
+  ): void {
+    callback();
   }
 }
