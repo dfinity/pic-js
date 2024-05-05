@@ -39,6 +39,12 @@ export class BinTimeoutError extends Error {
   }
 }
 
+export class ServerRequestTimeoutError extends Error {
+  constructor() {
+    super('A request to the PocketIC server timed out.');
+  }
+}
+
 export class InstanceDeletedError extends Error {
   constructor() {
     super(

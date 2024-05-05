@@ -1,4 +1,3 @@
-import { IncomingHttpHeaders } from 'http2';
 import { Http2Client } from './http2-client';
 import {
   EncodedAddCyclesRequest,
@@ -55,29 +54,24 @@ import {
   decodeCanisterCallResponse,
 } from './pocket-ic-client-types';
 
-const PROCESSING_TIME_HEADER = 'processing-timeout-ms';
-const PROCESSING_TIME_VALUE_MS = 300_000;
+const PROCESSING_TIME_VALUE_MS = 10_000;
 
 export class PocketIcClient {
   private isInstanceDeleted = false;
-  private readonly processingHeader: IncomingHttpHeaders;
 
   private constructor(
     private readonly serverClient: Http2Client,
     private readonly instancePath: string,
     private readonly topology: InstanceTopology,
-    processingTimeoutMs: number,
-  ) {
-    this.processingHeader = {
-      [PROCESSING_TIME_HEADER]: processingTimeoutMs.toString(),
-    };
-  }
+  ) {}
 
   public static async create(
     url: string,
     req?: CreateInstanceRequest,
   ): Promise<PocketIcClient> {
-    const serverClient = new Http2Client(url);
+    const processingTimeoutMs =
+      req?.processingTimeoutMs ?? PROCESSING_TIME_VALUE_MS;
+    const serverClient = new Http2Client(url, processingTimeoutMs);
 
     const res = await serverClient.jsonPost<
       EncodedCreateInstanceRequest,
@@ -100,7 +94,6 @@ export class PocketIcClient {
       serverClient,
       `/instances/${instanceId}`,
       topology,
-      req?.processingTimeoutMs ?? PROCESSING_TIME_VALUE_MS,
     );
   }
 
@@ -115,10 +108,10 @@ export class PocketIcClient {
     this.isInstanceDeleted = true;
   }
 
-  public async tick(): Promise<void> {
+  public async tick(): Promise<{}> {
     this.assertInstanceNotDeleted();
 
-    return await this.post<void, void>('/update/tick');
+    return await this.post<void, {}>('/update/tick');
   }
 
   public async getPubKey(req: GetPubKeyRequest): Promise<Uint8Array> {
@@ -145,7 +138,7 @@ export class PocketIcClient {
   public async setTime(req: SetTimeRequest): Promise<void> {
     this.assertInstanceNotDeleted();
 
-    await this.post<EncodedSetTimeRequest, void>(
+    await this.post<EncodedSetTimeRequest, {}>(
       '/update/set_time',
       encodeSetTimeRequest(req),
     );
@@ -197,15 +190,15 @@ export class PocketIcClient {
       body: encodeUploadBlobRequest(req),
     });
 
-    return decodeUploadBlobResponse(res.body);
+    const body = await res.text();
+    return decodeUploadBlobResponse(body);
   }
 
   public async setStableMemory(req: SetStableMemoryRequest): Promise<void> {
     this.assertInstanceNotDeleted();
 
-    await this.serverClient.jsonPost<EncodedSetStableMemoryRequest, null>({
+    await this.serverClient.jsonPost<EncodedSetStableMemoryRequest, {}>({
       path: `${this.instancePath}/update/set_stable_memory`,
-      headers: this.processingHeader,
       body: encodeSetStableMemoryRequest(req),
     });
   }
@@ -251,10 +244,9 @@ export class PocketIcClient {
     return decodeCanisterCallResponse(res);
   }
 
-  private async post<B, R>(endpoint: string, body?: B): Promise<R> {
+  private async post<B, R extends {}>(endpoint: string, body?: B): Promise<R> {
     return await this.serverClient.jsonPost<B, R>({
       path: `${this.instancePath}${endpoint}`,
-      headers: this.processingHeader,
       body,
     });
   }
@@ -262,7 +254,6 @@ export class PocketIcClient {
   private async get<R extends {}>(endpoint: string): Promise<R> {
     return await this.serverClient.jsonGet<R>({
       path: `${this.instancePath}${endpoint}`,
-      headers: this.processingHeader,
     });
   }
 

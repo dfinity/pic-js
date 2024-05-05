@@ -26,6 +26,12 @@ For example:
 POCKET_IC_LOG_DIR=./logs POCKET_IC_LOG_DIR_LEVELS=trace npm test
 ```
 
+It's also possible to set individual log levels for different modules, for examples:
+
+```shell
+POCKET_IC_LOG_DIR=./logs POCKET_IC_LOG_DIR_LEVELS=pocket_ic_server=trace,tower_http=info,axum::rejection=info npm test
+```
+
 ### Runtime logs
 
 Logs for the IC runtime can be configured when running the PocketIC server using the `showRuntimeLogs` option, for example:

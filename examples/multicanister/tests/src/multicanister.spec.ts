@@ -1,5 +1,5 @@
 import { resolve } from 'path';
-import { Actor, PocketIc } from '@hadronous/pic';
+import { Actor, PocketIc, SubnetStateType } from '@hadronous/pic';
 import { IDL } from '@dfinity/candid';
 
 import {
@@ -54,7 +54,12 @@ describe('Multicanister', () => {
   let actor: Actor<_SERVICE>;
 
   beforeEach(async () => {
-    pic = await PocketIc.create(process.env.PIC_URL, { application: 2 });
+    pic = await PocketIc.create(process.env.PIC_URL, {
+      application: [
+        { state: { type: SubnetStateType.New } },
+        { state: { type: SubnetStateType.New } },
+      ],
+    });
 
     const applicationSubnets = pic.getApplicationSubnets();
     const mainSubnet = applicationSubnets[0];

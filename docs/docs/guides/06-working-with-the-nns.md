@@ -208,8 +208,11 @@ Now you can setup your PocketIC instance to use the NNS state:
 ```ts
 const pic = await PocketIc.create({
   nns: {
-    fromPath: NNS_STATE_PATH,
-    subnetId: Principal.fromText(NNS_SUBNET_ID),
+    state: {
+      type: SubnetStateType.FromPath,
+      path: NNS_STATE_PATH,
+      subnetId: Principal.fromText(NNS_SUBNET_ID),
+    },
   },
 });
 ```

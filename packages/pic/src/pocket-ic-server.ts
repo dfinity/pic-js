@@ -11,9 +11,9 @@ import {
   exists,
   readFileAsString,
   tmpFile,
-  poll,
   isArm,
   isDarwin,
+  poll,
 } from './util';
 import { StartServerOptions } from './pocket-ic-server-types';
 import { Writable } from 'node:stream';
@@ -93,18 +93,21 @@ export class PocketIcServer {
       throw new BinStartError(error);
     });
 
-    return await poll(async () => {
-      const isPocketIcReady = await exists(readyFilePath);
+    return await poll(
+      async () => {
+        const isPocketIcReady = await exists(readyFilePath);
 
-      if (isPocketIcReady) {
-        const portString = await readFileAsString(portFilePath);
-        const port = parseInt(portString);
+        if (isPocketIcReady) {
+          const portString = await readFileAsString(portFilePath);
+          const port = parseInt(portString);
 
-        return new PocketIcServer(serverProcess, port);
-      }
+          return new PocketIcServer(serverProcess, port);
+        }
 
-      throw new BinTimeoutError();
-    });
+        throw new BinTimeoutError();
+      },
+      { intervalMs: POLL_INTERVAL_MS, timeoutMs: POLL_TIMEOUT_MS },
+    );
   }
 
   /**
@@ -149,6 +152,9 @@ export class PocketIcServer {
     chmodSync(binPath, 0o700);
   }
 }
+
+const POLL_INTERVAL_MS = 20;
+const POLL_TIMEOUT_MS = 5_000;
 
 class NullStream extends Writable {
   _write(

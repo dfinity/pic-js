@@ -1,6 +1,11 @@
 import { resolve } from 'path';
 import { Principal } from '@dfinity/principal';
-import { Actor, PocketIc, generateRandomIdentity } from '@hadronous/pic';
+import {
+  Actor,
+  PocketIc,
+  SubnetStateType,
+  generateRandomIdentity,
+} from '@hadronous/pic';
 import { _SERVICE, idlFactory } from '../../declarations/nns_proxy.did';
 import { Governance } from './support/governance';
 
@@ -40,8 +45,11 @@ describe('NNS Proxy', () => {
   beforeEach(async () => {
     pic = await PocketIc.create(process.env.PIC_URL, {
       nns: {
-        fromPath: NNS_STATE_PATH,
-        subnetId: Principal.fromText(NNS_SUBNET_ID),
+        state: {
+          type: SubnetStateType.FromPath,
+          path: NNS_STATE_PATH,
+          subnetId: Principal.fromText(NNS_SUBNET_ID),
+        },
       },
     });
     await pic.setTime(new Date(2024, 1, 30).getTime());

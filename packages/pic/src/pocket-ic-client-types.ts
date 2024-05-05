@@ -6,92 +6,175 @@ import {
   base64EncodePrincipal,
   hexDecode,
   isNil,
+  isNotNil,
 } from './util';
 import { TopologyValidationError } from './error';
 
+//#region CreateInstance
+
 export interface CreateInstanceRequest {
-  nns?:
-    | boolean
-    | {
-        fromPath: string;
-        subnetId: Principal;
-      };
-  sns?: boolean;
-  ii?: boolean;
-  fiduciary?: boolean;
-  bitcoin?: boolean;
-  system?: number;
-  application?: number;
+  nns?: NnsSubnetConfig;
+  sns?: SnsSubnetConfig;
+  ii?: IiSubnetConfig;
+  fiduciary?: FiduciarySubnetConfig;
+  bitcoin?: BitcoinSubnetConfig;
+  system?: SystemSubnetConfig[];
+  application?: ApplicationSubnetConfig[];
   processingTimeoutMs?: number;
 }
 
-export interface EncodedCreateInstanceRequest {
-  nns?:
-    | 'New'
-    | {
-        FromPath: [
-          string,
-          {
-            subnet_id: string;
-          },
-        ];
-      };
-  sns?: string;
-  ii?: string;
-  fiduciary?: string;
-  bitcoin?: string;
-  system: string[];
-  application: string[];
+export interface SubnetConfig<
+  T extends NewSubnetStateConfig | FromPathSubnetStateConfig =
+    | NewSubnetStateConfig
+    | FromPathSubnetStateConfig,
+> {
+  enableDeterministicTimeSlicing?: boolean;
+  enableBenchmarkingInstructionLimits?: boolean;
+  state: T;
 }
 
-function encodeNnsConfig(
-  nns: CreateInstanceRequest['nns'],
-): EncodedCreateInstanceRequest['nns'] {
-  if (isNil(nns)) {
+export type NnsSubnetConfig = SubnetConfig<NnsSubnetStateConfig>;
+export type NnsSubnetStateConfig =
+  | NewSubnetStateConfig
+  | FromPathSubnetStateConfig;
+
+export type SnsSubnetConfig = SubnetConfig<SnsSubnetStateConfig>;
+export type SnsSubnetStateConfig = NewSubnetStateConfig;
+
+export type IiSubnetConfig = SubnetConfig<IiSubnetStateConfig>;
+export type IiSubnetStateConfig = NewSubnetStateConfig;
+
+export type FiduciarySubnetConfig = SubnetConfig<FiduciarySubnetStateConfig>;
+export type FiduciarySubnetStateConfig = NewSubnetStateConfig;
+
+export type BitcoinSubnetConfig = SubnetConfig<BitcoinSubnetStateConfig>;
+export type BitcoinSubnetStateConfig = NewSubnetStateConfig;
+
+export type SystemSubnetConfig = SubnetConfig<SystemSubnetStateConfig>;
+export type SystemSubnetStateConfig = NewSubnetStateConfig;
+
+export type ApplicationSubnetConfig =
+  SubnetConfig<ApplicationSubnetStateConfig>;
+export type ApplicationSubnetStateConfig = NewSubnetStateConfig;
+
+export interface NewSubnetStateConfig {
+  type: SubnetStateType.New;
+}
+
+export interface FromPathSubnetStateConfig {
+  type: SubnetStateType.FromPath;
+  path: string;
+  subnetId: Principal;
+}
+
+export enum SubnetStateType {
+  New = 'new',
+  FromPath = 'fromPath',
+}
+
+export interface EncodedCreateInstanceRequest {
+  nns?: EncodedSubnetConfig;
+  sns?: EncodedSubnetConfig;
+  ii?: EncodedSubnetConfig;
+  fiduciary?: EncodedSubnetConfig;
+  bitcoin?: EncodedSubnetConfig;
+  system: EncodedSubnetConfig[];
+  application: EncodedSubnetConfig[];
+}
+
+export interface EncodedSubnetConfig {
+  dts_flag: 'Enabled' | 'Disabled';
+  instruction_config: 'Production' | 'Benchmarking';
+  state_config: 'New' | { FromPath: [string, { subnet_id: string }] };
+}
+
+function encodeManySubnetConfigs<T extends SubnetConfig>(
+  configs: T[] = [],
+): EncodedSubnetConfig[] {
+  return configs.map(encodeSubnetConfig).filter(isNotNil);
+}
+
+function encodeSubnetConfig<T extends SubnetConfig>(
+  config?: T,
+): EncodedSubnetConfig | undefined {
+  if (isNil(config)) {
     return undefined;
   }
 
-  if (nns === true) {
-    return 'New';
-  }
+  switch (config.state.type) {
+    default: {
+      return undefined;
+    }
 
-  if (nns === false) {
-    return undefined;
-  }
+    case SubnetStateType.New: {
+      return {
+        dts_flag: encodeDtsFlag(config.enableDeterministicTimeSlicing),
+        instruction_config: encodeInstructionConfig(
+          config.enableBenchmarkingInstructionLimits,
+        ),
+        state_config: 'New',
+      };
+    }
 
-  if ('fromPath' in nns) {
-    return {
-      FromPath: [
-        nns.fromPath,
-        { subnet_id: base64EncodePrincipal(nns.subnetId) },
-      ],
-    };
+    case SubnetStateType.FromPath: {
+      return {
+        dts_flag: encodeDtsFlag(config.enableDeterministicTimeSlicing),
+        instruction_config: encodeInstructionConfig(
+          config.enableBenchmarkingInstructionLimits,
+        ),
+        state_config: {
+          FromPath: [
+            config.state.path,
+            { subnet_id: base64EncodePrincipal(config.state.subnetId) },
+          ],
+        },
+      };
+    }
   }
+}
 
-  return undefined;
+function encodeDtsFlag(
+  enableDeterministicTimeSlicing?: boolean,
+): EncodedSubnetConfig['dts_flag'] {
+  return enableDeterministicTimeSlicing === false ? 'Disabled' : 'Enabled';
+}
+
+function encodeInstructionConfig(
+  enableBenchmarkingInstructionLimits?: boolean,
+): EncodedSubnetConfig['instruction_config'] {
+  return enableBenchmarkingInstructionLimits === true
+    ? 'Benchmarking'
+    : 'Production';
 }
 
 export function encodeCreateInstanceRequest(
   req?: CreateInstanceRequest,
 ): EncodedCreateInstanceRequest {
-  const defaultOptions = req ?? { application: 1 };
+  const defaultApplicationSubnet: ApplicationSubnetConfig = {
+    state: { type: SubnetStateType.New },
+  };
+  const defaultOptions: CreateInstanceRequest = req ?? {
+    application: [defaultApplicationSubnet],
+  };
 
   const options: EncodedCreateInstanceRequest = {
-    nns: encodeNnsConfig(defaultOptions.nns),
-    sns: defaultOptions.sns ? 'New' : undefined,
-    ii: defaultOptions.ii ? 'New' : undefined,
-    fiduciary: defaultOptions.fiduciary ? 'New' : undefined,
-    bitcoin: defaultOptions.bitcoin ? 'New' : undefined,
-    system: new Array(defaultOptions.system ?? 0).fill('New'),
-    application: new Array(defaultOptions.application ?? 1).fill('New'),
+    nns: encodeSubnetConfig(defaultOptions.nns),
+    sns: encodeSubnetConfig(defaultOptions.sns),
+    ii: encodeSubnetConfig(defaultOptions.ii),
+    fiduciary: encodeSubnetConfig(defaultOptions.fiduciary),
+    bitcoin: encodeSubnetConfig(defaultOptions.bitcoin),
+    system: encodeManySubnetConfigs(defaultOptions.system),
+    application: encodeManySubnetConfigs(
+      defaultOptions.application ?? [defaultApplicationSubnet],
+    ),
   };
 
   if (
-    (options.nns !== 'New' &&
-      options.sns !== 'New' &&
-      options.ii !== 'New' &&
-      options.fiduciary !== 'New' &&
-      options.bitcoin !== 'New' &&
+    (isNil(options.nns) &&
+      isNil(options.sns) &&
+      isNil(options.ii) &&
+      isNil(options.fiduciary) &&
+      isNil(options.bitcoin) &&
       options.system.length === 0 &&
       options.application.length === 0) ||
     options.system.length < 0 ||
@@ -102,6 +185,8 @@ export function encodeCreateInstanceRequest(
 
   return options;
 }
+
+//#endregion CreateInstance
 
 //#region GetPubKey
 
@@ -297,18 +382,24 @@ export type GetSubnetIdResponse = {
   subnetId: Principal | null;
 };
 
-export type EncodedGetSubnetIdResponse = {
-  subnet_id: string;
-} | null;
+export type EncodedGetSubnetIdResponse =
+  | {
+      subnet_id: string;
+    }
+  | {};
 
 export function decodeGetSubnetIdResponse(
   res: EncodedGetSubnetIdResponse,
 ): GetSubnetIdResponse {
-  const subnetId = isNil(res?.subnet_id)
-    ? null
-    : base64DecodePrincipal(res.subnet_id);
+  if (isNil(res)) {
+    return { subnetId: null };
+  }
 
-  return { subnetId };
+  if ('subnet_id' in res) {
+    return { subnetId: base64DecodePrincipal(res.subnet_id) };
+  }
+
+  return { subnetId: null };
 }
 
 //#endregion GetCanisterSubnetId
