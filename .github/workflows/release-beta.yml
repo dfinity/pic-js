@@ -21,7 +21,10 @@ jobs:
 
       - uses: ./.github/actions/setup-commitizen
 
-      - uses: ./.github/actions/setup-nodejs
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.node-version'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Build package
         run: bun build:pic

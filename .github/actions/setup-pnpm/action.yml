@@ -9,7 +9,10 @@ runs:
       with:
         run_install: false
 
-    - uses: ./.github/actions/setup-nodejs
+    - uses: actions/setup-node@v4
+      with:
+        node-version-file: '.node-version'
+        cache: 'pnpm'
 
     - name: Install dependencies
       shell: bash
