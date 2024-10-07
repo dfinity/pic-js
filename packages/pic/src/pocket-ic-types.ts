@@ -56,6 +56,12 @@ export interface CreateInstanceOptions {
    * How long the PocketIC client should wait for a response from the server.
    */
   processingTimeoutMs?: number;
+
+  /**
+   * Determines if non-mainnet features (e.g., best-effort responses) should be
+   * enabled for the PocketIC instance. Defaults to `false`.
+   */
+  nonmainnetFeatures?: boolean;
 }
 
 /**

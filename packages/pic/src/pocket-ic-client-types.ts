@@ -21,6 +21,7 @@ export interface CreateInstanceRequest {
   system?: SystemSubnetConfig[];
   application?: ApplicationSubnetConfig[];
   processingTimeoutMs?: number;
+  nonmainnetFeatures?: boolean;
 }
 
 export interface SubnetConfig<
@@ -73,6 +74,11 @@ export enum SubnetStateType {
 }
 
 export interface EncodedCreateInstanceRequest {
+  subnet_config_set: EncodedCreateInstanceSubnetConfig;
+  nonmainnet_features: boolean;
+}
+
+export interface EncodedCreateInstanceSubnetConfig {
   nns?: EncodedSubnetConfig;
   sns?: EncodedSubnetConfig;
   ii?: EncodedSubnetConfig;
@@ -158,27 +164,30 @@ export function encodeCreateInstanceRequest(
   };
 
   const options: EncodedCreateInstanceRequest = {
-    nns: encodeSubnetConfig(defaultOptions.nns),
-    sns: encodeSubnetConfig(defaultOptions.sns),
-    ii: encodeSubnetConfig(defaultOptions.ii),
-    fiduciary: encodeSubnetConfig(defaultOptions.fiduciary),
-    bitcoin: encodeSubnetConfig(defaultOptions.bitcoin),
-    system: encodeManySubnetConfigs(defaultOptions.system),
-    application: encodeManySubnetConfigs(
-      defaultOptions.application ?? [defaultApplicationSubnet],
-    ),
+    subnet_config_set: {
+      nns: encodeSubnetConfig(defaultOptions.nns),
+      sns: encodeSubnetConfig(defaultOptions.sns),
+      ii: encodeSubnetConfig(defaultOptions.ii),
+      fiduciary: encodeSubnetConfig(defaultOptions.fiduciary),
+      bitcoin: encodeSubnetConfig(defaultOptions.bitcoin),
+      system: encodeManySubnetConfigs(defaultOptions.system),
+      application: encodeManySubnetConfigs(
+        defaultOptions.application ?? [defaultApplicationSubnet],
+      ),
+    },
+    nonmainnet_features: defaultOptions.nonmainnetFeatures ?? false,
   };
 
   if (
-    (isNil(options.nns) &&
-      isNil(options.sns) &&
-      isNil(options.ii) &&
-      isNil(options.fiduciary) &&
-      isNil(options.bitcoin) &&
-      options.system.length === 0 &&
-      options.application.length === 0) ||
-    options.system.length < 0 ||
-    options.application.length < 0
+    (isNil(options.subnet_config_set.nns) &&
+      isNil(options.subnet_config_set.sns) &&
+      isNil(options.subnet_config_set.ii) &&
+      isNil(options.subnet_config_set.fiduciary) &&
+      isNil(options.subnet_config_set.bitcoin) &&
+      options.subnet_config_set.system.length === 0 &&
+      options.subnet_config_set.application.length === 0) ||
+    options.subnet_config_set.system.length < 0 ||
+    options.subnet_config_set.application.length < 0
   ) {
     throw new TopologyValidationError();
   }
