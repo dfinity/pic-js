@@ -1,5 +1,4 @@
 import Time "mo:base/Time";
-import { now } = "mo:base/Time";
 import { setTimer; recurringTimer } = "mo:base/Timer";
 import Debug "mo:base/Debug";
 
@@ -16,10 +15,10 @@ actor Clock {
     time := Time.now();
   };
 
-  ignore setTimer(
+  ignore setTimer<system>(
     #seconds(1),
     func() : async () {
-      ignore recurringTimer(#seconds 1, setTime);
+      ignore recurringTimer<system>(#seconds 1, setTime);
       await setTime();
     },
   );

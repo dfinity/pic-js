@@ -14,7 +14,7 @@ const WASM_PATH = resolve(
   'local',
   'canisters',
   'todo',
-  'todo.wasm',
+  'todo.wasm.gz',
 );
 
 describe('Todo', () => {

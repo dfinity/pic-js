@@ -14,7 +14,7 @@ const WASM_PATH = resolve(
   'local',
   'canisters',
   'clock',
-  'clock.wasm',
+  'clock.wasm.gz',
 );
 
 describe('Clock', () => {
@@ -25,7 +25,7 @@ describe('Clock', () => {
   beforeEach(async () => {
     pic = await PocketIc.create(process.env.PIC_URL);
     const fixture = await pic.setupCanister<_SERVICE>({
-      idlFactory: idlFactory,
+      idlFactory,
       wasm: WASM_PATH,
     });
     actor = fixture.actor;

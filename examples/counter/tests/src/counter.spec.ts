@@ -16,7 +16,7 @@ const WASM_PATH = resolve(
   'local',
   'canisters',
   'counter',
-  'counter.wasm',
+  'counter.wasm.gz',
 );
 
 describe('Counter', () => {

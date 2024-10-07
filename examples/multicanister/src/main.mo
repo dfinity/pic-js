@@ -1,4 +1,3 @@
-import Principal "mo:base/Principal";
 import PhoneBook "../declarations/phonebook/phonebook";
 import SuperHeroes "../declarations/superheroes/superheroes";
 

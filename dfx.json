@@ -1,83 +1,94 @@
 {
   "version": 1,
-  "dfx": "0.16.1",
+  "dfx": "0.24.0",
   "output_env_file": ".env",
   "networks": {
     "local": {
       "bind": "127.0.0.1:8080",
-      "type": "ephemeral",
-      "replica": {
-        "subnet_type": "system"
-      }
+      "type": "ephemeral"
     }
   },
   "canisters": {
     "counter": {
       "type": "motoko",
       "main": "examples/counter/src/main.mo",
-      "optimize": "cycles",
+      "init_arg": "'(42)'",
       "declarations": {
         "bindings": ["js", "ts"],
         "output": "examples/counter/declarations"
       },
-      "init_arg": "'(42)'"
+      "gzip": true,
+      "shrink": true,
+      "optimize": "cycles"
     },
     "clock": {
       "type": "motoko",
       "main": "examples/clock/src/main.mo",
-      "optimize": "cycles",
       "declarations": {
         "bindings": ["js", "ts"],
         "output": "examples/clock/declarations"
-      }
+      },
+      "gzip": true,
+      "shrink": true,
+      "optimize": "cycles"
     },
     "todo": {
       "type": "rust",
       "candid": "examples/todo/todo.did",
-      "optimize": "cycles",
       "package": "todo",
       "declarations": {
-        "bindings": ["js", "ts", "did"],
+        "bindings": ["js", "ts"],
         "output": "examples/todo/declarations"
-      }
+      },
+      "gzip": true,
+      "shrink": true,
+      "optimize": "cycles"
     },
     "multicanister": {
       "type": "motoko",
       "main": "examples/multicanister/src/main.mo",
       "dependencies": ["phonebook", "superheroes"],
-      "optimize": "cycles",
       "declarations": {
         "bindings": ["js", "ts"],
         "output": "examples/multicanister/declarations/multicanister"
-      }
+      },
+      "gzip": true,
+      "shrink": true,
+      "optimize": "cycles"
     },
     "phonebook": {
       "type": "motoko",
       "main": "examples/multicanister/src/phonebook.mo",
-      "optimize": "cycles",
       "declarations": {
         "bindings": ["mo"],
         "output": "examples/multicanister/declarations/phonebook"
-      }
+      },
+      "gzip": true,
+      "shrink": true,
+      "optimize": "cycles"
     },
     "superheroes": {
       "type": "motoko",
       "main": "examples/multicanister/src/superheroes.mo",
-      "optimize": "cycles",
       "declarations": {
         "bindings": ["mo"],
         "output": "examples/multicanister/declarations/superheroes"
-      }
+      },
+      "gzip": true,
+      "shrink": true,
+      "optimize": "cycles"
     },
     "nns_proxy": {
       "type": "rust",
       "candid": "examples/nns_proxy/nns_proxy.did",
-      "optimize": "cycles",
       "package": "nns_proxy",
       "declarations": {
-        "bindings": ["js", "ts", "did"],
+        "bindings": ["js", "ts"],
         "output": "examples/nns_proxy/declarations"
-      }
+      },
+      "gzip": true,
+      "shrink": true,
+      "optimize": "cycles"
     }
   }
 }

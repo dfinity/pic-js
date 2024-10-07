@@ -20,7 +20,7 @@ const MAIN_WASM_PATH = resolve(
   'local',
   'canisters',
   'multicanister',
-  'multicanister.wasm',
+  'multicanister.wasm.gz',
 );
 
 const PHONEBOOK_WASM_PATH = resolve(
@@ -33,7 +33,7 @@ const PHONEBOOK_WASM_PATH = resolve(
   'local',
   'canisters',
   'phonebook',
-  'phonebook.wasm',
+  'phonebook.wasm.gz',
 );
 
 const SUPERHEROES_WASM_PATH = resolve(
@@ -46,7 +46,7 @@ const SUPERHEROES_WASM_PATH = resolve(
   'local',
   'canisters',
   'superheroes',
-  'superheroes.wasm',
+  'superheroes.wasm.gz',
 );
 
 describe('Multicanister', () => {

@@ -33,7 +33,7 @@ jobs:
         run: echo "version=$(cz version --project)" >> "$GITHUB_ENV"
 
       - name: Push changes to repository
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: 'chore: release ${{ env.version }}'
           commit_options: '--no-verify --signoff'
