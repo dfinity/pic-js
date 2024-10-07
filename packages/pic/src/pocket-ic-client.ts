@@ -54,7 +54,7 @@ import {
   decodeCanisterCallResponse,
 } from './pocket-ic-client-types';
 
-const PROCESSING_TIME_VALUE_MS = 10_000;
+const PROCESSING_TIME_VALUE_MS = 30_000;
 
 export class PocketIcClient {
   private isInstanceDeleted = false;

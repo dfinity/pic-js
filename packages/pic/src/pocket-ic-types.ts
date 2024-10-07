@@ -53,6 +53,13 @@ export interface CreateInstanceOptions {
   application?: ApplicationSubnetConfig[];
 
   /**
+   * Configuration options for creating verified application subnets.
+   * A verified application subnet will be created for each configuration object provided.
+   * If no config objects are provided, no verified application subnets are setup.
+   */
+  verifiedApplication?: VerifiedApplicationSubnetConfig[];
+
+  /**
    * How long the PocketIC client should wait for a response from the server.
    */
   processingTimeoutMs?: number;
@@ -162,6 +169,17 @@ export type ApplicationSubnetConfig =
  * Options for an application subnet's state.
  */
 export type ApplicationSubnetStateConfig = NewSubnetStateConfig;
+
+/**
+ * Options for creating a verified application subnet.
+ */
+export type VerifiedApplicationSubnetConfig =
+  SubnetConfig<VerifiedApplicationSubnetStateConfig>;
+
+/**
+ * Options for a verified application subnet's state.
+ */
+export type VerifiedApplicationSubnetStateConfig = NewSubnetStateConfig;
 
 /**
  * Options for creating a new subnet an empty state.

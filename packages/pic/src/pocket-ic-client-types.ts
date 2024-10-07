@@ -20,6 +20,7 @@ export interface CreateInstanceRequest {
   bitcoin?: BitcoinSubnetConfig;
   system?: SystemSubnetConfig[];
   application?: ApplicationSubnetConfig[];
+  verifiedApplication?: VerifiedApplicationSubnetConfig[];
   processingTimeoutMs?: number;
   nonmainnetFeatures?: boolean;
 }
@@ -58,6 +59,10 @@ export type ApplicationSubnetConfig =
   SubnetConfig<ApplicationSubnetStateConfig>;
 export type ApplicationSubnetStateConfig = NewSubnetStateConfig;
 
+export type VerifiedApplicationSubnetConfig =
+  SubnetConfig<VerifiedApplicationSubnetStateConfig>;
+export type VerifiedApplicationSubnetStateConfig = NewSubnetStateConfig;
+
 export interface NewSubnetStateConfig {
   type: SubnetStateType.New;
 }
@@ -86,6 +91,7 @@ export interface EncodedCreateInstanceSubnetConfig {
   bitcoin?: EncodedSubnetConfig;
   system: EncodedSubnetConfig[];
   application: EncodedSubnetConfig[];
+  verified_application: EncodedSubnetConfig[];
 }
 
 export interface EncodedSubnetConfig {
@@ -173,6 +179,9 @@ export function encodeCreateInstanceRequest(
       system: encodeManySubnetConfigs(defaultOptions.system),
       application: encodeManySubnetConfigs(
         defaultOptions.application ?? [defaultApplicationSubnet],
+      ),
+      verified_application: encodeManySubnetConfigs(
+        defaultOptions.verifiedApplication,
       ),
     },
     nonmainnet_features: defaultOptions.nonmainnetFeatures ?? false,
