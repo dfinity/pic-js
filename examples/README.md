@@ -23,3 +23,5 @@ but `@hadronous/pic` can be used with JavaScript and any other testing runner, s
   This example demonstrates how to work with multiple canisters and multiple subnets.
 - [NNS Proxy](./nns_proxy/README.md)
   This example demonstrates how to work with an NNS state directory.
+- [Google Search](./google_search/README.md)
+  This example demonstrates how to mock HTTPS Outcalls.

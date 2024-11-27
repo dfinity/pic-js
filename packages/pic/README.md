@@ -70,3 +70,4 @@ but `@hadronous/pic` can be used with JavaScript and any other testing runner, s
 - The [Todo](https://github.com/hadronous/pic-js/tree/main/examples/todo/README.md) example demonstrates how to work with more complex canisters, identities, canister upgrades, and stable memory management.
 - The [Multicanister](https://github.com/hadronous/pic-js/tree/main/examples/multicanister/README.md) example demonstrates how to work with multiple canisters and multiple subnets.
 - The [NNS Proxy](https://github.com/hadronous/pic-js/tree/main/examples/nns_proxy/README.md) example demonstrates how to work with an NNS state directory.
+- [Google Search](./google_search/README.md) example demonstrates how to mock HTTPS Outcalls.
