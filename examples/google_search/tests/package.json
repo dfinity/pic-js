@@ -1,0 +1,6 @@
+{
+  "name": "google-search-tests",
+  "devDependencies": {
+    "@hadronous/pic": "workspace:*"
+  }
+}

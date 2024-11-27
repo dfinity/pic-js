@@ -115,7 +115,7 @@ function encodeSubnetConfig<T extends SubnetConfig>(
 
   switch (config.state.type) {
     default: {
-      return undefined;
+      throw new Error(`Unknown subnet state type: ${config.state}`);
     }
 
     case SubnetStateType.New: {
@@ -586,6 +586,200 @@ export function decodeGetStableMemoryResponse(
 
 //#endregion GetStableMemory
 
+//#region GetPendingHttpsOutcalls
+
+export interface GetPendingHttpsOutcallsResponse {
+  subnetId: Principal;
+  requestId: number;
+  httpMethod: CanisterHttpMethod;
+  url: string;
+  headers: CanisterHttpHeader[];
+  body: Uint8Array;
+  maxResponseBytes?: number;
+}
+
+export enum CanisterHttpMethod {
+  GET = 'GET',
+  POST = 'POST',
+  HEAD = 'HEAD',
+}
+
+export type CanisterHttpHeader = [string, string];
+
+export interface EncodedGetPendingHttpsOutcallsResponse {
+  subnet_id: {
+    subnet_id: string;
+  };
+  request_id: number;
+  http_method: EncodedCanisterHttpMethod;
+  url: string;
+  headers: EncodedCanisterHttpHeader[];
+  body: string;
+  max_response_bytes?: number;
+}
+
+export enum EncodedCanisterHttpMethod {
+  GET = 'GET',
+  POST = 'POST',
+  HEAD = 'HEAD',
+}
+
+export interface EncodedCanisterHttpHeader {
+  name: string;
+  value: string;
+}
+
+export function decodeGetPendingHttpsOutcallsResponse(
+  res: EncodedGetPendingHttpsOutcallsResponse[],
+): GetPendingHttpsOutcallsResponse[] {
+  return res.map(decodeHttpOutcall);
+}
+
+function decodeHttpOutcall(
+  res: EncodedGetPendingHttpsOutcallsResponse,
+): GetPendingHttpsOutcallsResponse {
+  return {
+    subnetId: base64DecodePrincipal(res.subnet_id.subnet_id),
+    requestId: res.request_id,
+    httpMethod: decodeCanisterHttpMethod(res.http_method),
+    url: res.url,
+    headers: res.headers.map(decodeHttpHeader),
+    body: base64Decode(res.body),
+    maxResponseBytes: res.max_response_bytes,
+  };
+}
+
+function decodeCanisterHttpMethod(
+  method: EncodedCanisterHttpMethod,
+): CanisterHttpMethod {
+  switch (method) {
+    default:
+      throw new Error(`Unknown canister HTTP method: ${method}`);
+    case EncodedCanisterHttpMethod.GET:
+      return CanisterHttpMethod.GET;
+    case EncodedCanisterHttpMethod.POST:
+      return CanisterHttpMethod.POST;
+    case EncodedCanisterHttpMethod.HEAD:
+      return CanisterHttpMethod.HEAD;
+  }
+}
+
+function decodeHttpHeader(
+  header: EncodedCanisterHttpHeader,
+): CanisterHttpHeader {
+  return [header.name, header.value];
+}
+
+//#endregion GetPendingHttpsOutcalls
+
+//#region MockPendingHttpsOutcall
+
+export interface MockPendingHttpsOutcallRequest {
+  subnetId: Principal;
+  requestId: number;
+  response: HttpsOutcallResponseMock;
+  additionalResponses: HttpsOutcallResponseMock[];
+}
+
+export type HttpsOutcallResponseMock =
+  | HttpsOutcallSuccessResponseMock
+  | HttpsOutcallRejectResponseMock;
+
+export interface HttpsOutcallSuccessResponseMock {
+  type: 'success';
+  statusCode: number;
+  headers: CanisterHttpHeader[];
+  body: Uint8Array;
+}
+
+export interface HttpsOutcallRejectResponseMock {
+  type: 'reject';
+  statusCode: number;
+  message: string;
+}
+
+export interface EncodedMockPendingHttpsOutcallRequest {
+  subnet_id: {
+    subnet_id: string;
+  };
+  request_id: number;
+  response: EncodedHttpsOutcallResponseMock;
+  additional_responses: EncodedHttpsOutcallResponseMock[];
+}
+
+export type EncodedHttpsOutcallResponseMock =
+  | EncodedHttpsOutcallSuccessResponseMock
+  | EncodedHttpsOutcallRejectResponseMock;
+
+export interface EncodedHttpsOutcallSuccessResponseMock {
+  CanisterHttpReply: {
+    status: number;
+    headers: EncodedCanisterHttpHeader[];
+    body: string;
+  };
+}
+
+export interface EncodedHttpsOutcallRejectResponseMock {
+  CanisterHttpReject: {
+    reject_code: number;
+    message: string;
+  };
+}
+
+export function encodeMockPendingHttpsOutcallRequest(
+  req: MockPendingHttpsOutcallRequest,
+): EncodedMockPendingHttpsOutcallRequest {
+  return {
+    subnet_id: {
+      subnet_id: base64EncodePrincipal(req.subnetId),
+    },
+    request_id: req.requestId,
+    response: encodeHttpsOutcallResponse(req.response),
+    additional_responses: req.additionalResponses.map(
+      encodeHttpsOutcallResponse,
+    ),
+  };
+}
+
+function encodeHttpsOutcallResponse(
+  res: HttpsOutcallResponseMock,
+): EncodedHttpsOutcallResponseMock {
+  switch (res.type) {
+    default:
+      throw new Error(`Unknown response type: ${res}`);
+
+    case 'success': {
+      return {
+        CanisterHttpReply: {
+          status: res.statusCode,
+          headers: res.headers.map(encodeHttpHeader),
+          body: base64Encode(res.body),
+        },
+      };
+    }
+
+    case 'reject': {
+      return {
+        CanisterHttpReject: {
+          reject_code: res.statusCode,
+          message: res.message,
+        },
+      };
+    }
+  }
+}
+
+function encodeHttpHeader(
+  header: CanisterHttpHeader,
+): EncodedCanisterHttpHeader {
+  return {
+    name: header[0],
+    value: header[1],
+  };
+}
+
+//#endregion MockPendingHttpsOutcall
+
 //#region CanisterCall
 
 export interface CanisterCallRequest {
@@ -622,7 +816,7 @@ export type EncodedEffectivePrincipal =
   | 'None';
 
 export function encodeEffectivePrincipal(
-  effectivePrincipal?: EffectivePrincipal,
+  effectivePrincipal?: EffectivePrincipal | null,
 ): EncodedEffectivePrincipal {
   if (isNil(effectivePrincipal)) {
     return 'None';
@@ -635,6 +829,22 @@ export function encodeEffectivePrincipal(
   } else {
     return {
       CanisterId: base64EncodePrincipal(effectivePrincipal.canisterId),
+    };
+  }
+}
+
+export function decodeEffectivePrincipal(
+  effectivePrincipal: EncodedEffectivePrincipal,
+): EffectivePrincipal | null {
+  if (effectivePrincipal === 'None') {
+    return null;
+  } else if ('SubnetId' in effectivePrincipal) {
+    return {
+      subnetId: base64DecodePrincipal(effectivePrincipal.SubnetId),
+    };
+  } else {
+    return {
+      canisterId: base64DecodePrincipal(effectivePrincipal.CanisterId),
     };
   }
 }
@@ -668,10 +878,12 @@ export interface EncodedCanisterCallRejectResponse {
 }
 
 export interface EncodedCanisterCallErrorResponse {
-  Err: {
-    code: string;
-    description: string;
-  };
+  Err: EncodedCanisterError;
+}
+
+export interface EncodedCanisterError {
+  code: string;
+  description: string;
 }
 
 export type EncodedCanisterCallResponse =
@@ -696,3 +908,79 @@ export function decodeCanisterCallResponse(
 }
 
 //#endregion CanisterCall
+
+//#region SubmitCanisterCall
+
+export type SubmitCanisterCallRequest = CanisterCallRequest;
+
+export type EncodedSubmitCanisterCallRequest = EncodedCanisterCallRequest;
+
+export function encodeSubmitCanisterCallRequest(
+  req: SubmitCanisterCallRequest,
+): EncodedSubmitCanisterCallRequest {
+  return encodeCanisterCallRequest(req);
+}
+
+export interface SubmitCanisterCallResponse {
+  effectivePrincipal: EffectivePrincipal | null;
+  messageId: Uint8Array;
+}
+
+export interface EncodedSubmitCanisterCallSuccessResponse {
+  Ok: EncodedCanisterCallId;
+}
+
+export interface EncodedCanisterCallId {
+  effective_principal: EncodedEffectivePrincipal;
+  message_id: Uint8Array;
+}
+
+export interface EncodedSubmitCanisterCallErrorResponse {
+  Err: EncodedCanisterError;
+}
+
+export type EncodedSubmitCanisterCallResponse =
+  | EncodedSubmitCanisterCallSuccessResponse
+  | EncodedSubmitCanisterCallErrorResponse;
+
+export function decodeSubmitCanisterCallResponse(
+  res: EncodedSubmitCanisterCallResponse,
+): SubmitCanisterCallResponse {
+  if ('Err' in res) {
+    throw new Error(res.Err.description);
+  }
+
+  return {
+    effectivePrincipal: decodeEffectivePrincipal(res.Ok.effective_principal),
+    messageId: res.Ok.message_id,
+  };
+}
+
+//#endregion SubmitCanisterCall
+
+//#region AwaitCanisterCall
+
+export type AwaitCanisterCallRequest = SubmitCanisterCallResponse;
+
+export type EncodedAwaitCanisterCallRequest = EncodedCanisterCallId;
+
+export function encodeAwaitCanisterCallRequest(
+  req: AwaitCanisterCallRequest,
+): EncodedAwaitCanisterCallRequest {
+  return {
+    effective_principal: encodeEffectivePrincipal(req.effectivePrincipal),
+    message_id: req.messageId,
+  };
+}
+
+export type AwaitCanisterCallResponse = CanisterCallResponse;
+
+export type EncodedAwaitCanisterCallResponse = EncodedCanisterCallResponse;
+
+export function decodeAwaitCanisterCallResponse(
+  res: EncodedAwaitCanisterCallResponse,
+): AwaitCanisterCallResponse {
+  return decodeCanisterCallResponse(res);
+}
+
+//#endregion AwaitCanisterCall

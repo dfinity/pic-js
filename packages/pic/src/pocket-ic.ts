@@ -18,6 +18,8 @@ import {
   StopCanisterOptions,
   QueryCallOptions,
   UpdateCallOptions,
+  PendingHttpsOutcall,
+  MockPendingHttpsOutcallOptions,
 } from './pocket-ic-types';
 import {
   MANAGEMENT_CANISTER_ID,
@@ -27,6 +29,10 @@ import {
   encodeStartCanisterRequest,
   encodeUpdateCanisterSettingsRequest,
 } from './management-canister';
+import {
+  createDeferredActorClass,
+  DeferredActor,
+} from './pocket-ic-deferred-actor';
 
 /**
  * This class represents the main PocketIC client.
@@ -140,7 +146,7 @@ export class PocketIc {
    * await picServer.stop();
    * ```
    */
-  public async setupCanister<T = ActorInterface>({
+  public async setupCanister<T extends ActorInterface<T> = ActorInterface>({
     sender,
     arg,
     wasm,
@@ -554,12 +560,12 @@ export class PocketIc {
   /**
    * Creates an {@link Actor} for the given canister.
    * An {@link Actor} is a typesafe class that implements the Candid interface of a canister.
-   * To create a canister for the Actor, see {@link createCanister}.
+   * To create a canister for the {@link Actor}, see {@link createCanister}.
    * For a more convenient way of creating a PocketIC instance,
    * creating a canister and installing code, see {@link setupCanister}.
    *
    * @param interfaceFactory The InterfaceFactory to use for the {@link Actor}.
-   * @param canisterId The Principal of the canister to create the Actor for.
+   * @param canisterId The Principal of the canister to create the {@link Actor} for.
    * @typeparam T The type of the {@link Actor}. Must implement {@link ActorInterface}.
    * @returns The {@link Actor} instance.
    *
@@ -586,7 +592,7 @@ export class PocketIc {
    * await picServer.stop();
    * ```
    */
-  public createActor<T = ActorInterface>(
+  public createActor<T extends ActorInterface<T> = ActorInterface>(
     interfaceFactory: IDL.InterfaceFactory,
     canisterId: Principal,
   ): Actor<T> {
@@ -597,6 +603,41 @@ export class PocketIc {
     );
 
     return new Actor();
+  }
+
+  /**
+   * Creates a {@link DeferredActor} for the given canister.
+   * A {@link DeferredActor} is a typesafe class that implements the Candid interface of a canister.
+   *
+   * A {@link DeferredActor} in contrast to a normal {@link Actor} will submit the call to the PocketIc replica,
+   * but the call will not be executed immediately. Instead, the calls are queued and a `Promise` is returned
+   * by the {@link DeferredActor} that can be awaited to process the pending canister call.
+   *
+   * To create a canister for the {@link DeferredActor}, see {@link createCanister}.
+   * For a more convenient way of creating a PocketIC instance,
+   * creating a canister and installing code, see {@link setupCanister}.
+   *
+   * @param interfaceFactory The InterfaceFactory to use for the {@link DeferredActor}.
+   * @param canisterId The Principal of the canister to create the {@link DeferredActor} for.
+   * @typeparam T The type of the {@link DeferredActor}. Must implement {@link ActorInterface}.
+   * @returns The {@link DeferredActor} instance.
+   *
+   * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+   * @see [InterfaceFactory](https://agent-js.icp.xyz/candid/modules/IDL.html#InterfaceFactory)
+   *
+   * @example
+   */
+  public createDeferredActor<T extends ActorInterface<T> = ActorInterface>(
+    interfaceFactory: IDL.InterfaceFactory,
+    canisterId: Principal,
+  ): DeferredActor<T> {
+    const DeferredActor = createDeferredActorClass<T>(
+      interfaceFactory,
+      canisterId,
+      this.client,
+    );
+
+    return new DeferredActor();
   }
 
   /**
@@ -1140,5 +1181,118 @@ export class PocketIc {
     const { blob } = await this.client.getStableMemory({ canisterId });
 
     return blob;
+  }
+
+  /**
+   * Get all pending HTTPS Outcalls across all subnets on this
+   * PocketIC instance.
+   *
+   * @returns An array of pending HTTPS Outcalls.
+   *
+   * @example
+   * ```ts
+   * import { Principal } from '@dfinity/principal';
+   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
+   *
+   * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
+   *
+   * const picServer = await PocketIcServer.create();
+   * const pic = await PocketIc.create(picServer.getUrl());
+   *
+   * // queue the canister message that will send the HTTPS Outcall
+   * const executeGoogleSearch = await deferredActor.google_search();
+   *
+   * // tick for two rounds to allow the canister message to be processed
+   * // and for the HTTPS Outcall to be queued
+   * await pic.tick(2);
+   *
+   * // get all queued HTTPS Outcalls
+   * const pendingHttpsOutcalls = await pic.getPendingHttpsOutcalls();
+   *
+   * // get the first pending HTTPS Outcall
+   * const pendingGoogleSearchOutcall = pendingHttpsOutcalls[0];
+   *
+   * // mock the HTTPS Outcall
+   * await pic.mockPendingHttpsOutcall({
+   *   requestId: pendingGoogleSearchOutcall.requestId,
+   *   subnetId: pendingGoogleSearchOutcall.subnetId,
+   *   response: {
+   *     type: 'success',
+   *     body: new TextEncoder().encode('Google search result'),
+   *     statusCode: 200,
+   *     headers: [],
+   *   },
+   * });
+   *
+   * // finish executing the message, including the HTTPS Outcall
+   * const result = await executeGoogleSearch();
+   *
+   * await pic.tearDown();
+   * await picServer.stop();
+   * ```
+   */
+  public async getPendingHttpsOutcalls(): Promise<PendingHttpsOutcall[]> {
+    return await this.client.getPendingHttpsOutcalls();
+  }
+
+  /**
+   * Mock a pending HTTPS Outcall.
+   *
+   * @param options Options for mocking the pending HTTPS Outcall, see {@link MockPendingHttpsOutcallOptions}.
+   *
+   * @example
+   * ```ts
+   * import { Principal } from '@dfinity/principal';
+   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
+   *
+   * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
+   *
+   * const picServer = await PocketIcServer.create();
+   * const pic = await PocketIc.create(picServer.getUrl());
+   *
+   * // queue the canister message that will send the HTTPS Outcall
+   * const executeGoogleSearch = await deferredActor.google_search();
+   *
+   * // tick for two rounds to allow the canister message to be processed
+   * // and for the HTTPS Outcall to be queued
+   * await pic.tick(2);
+   *
+   * // get all queued HTTPS Outcalls
+   * const pendingHttpsOutcalls = await pic.getPendingHttpsOutcalls();
+   *
+   * // get the first pending HTTPS Outcall
+   * const pendingGoogleSearchOutcall = pendingHttpsOutcalls[0];
+   *
+   * // mock the HTTPS Outcall
+   * await pic.mockPendingHttpsOutcall({
+   *   requestId: pendingGoogleSearchOutcall.requestId,
+   *   subnetId: pendingGoogleSearchOutcall.subnetId,
+   *   response: {
+   *     type: 'success',
+   *     body: new TextEncoder().encode('Google search result'),
+   *     statusCode: 200,
+   *     headers: [],
+   *   },
+   * });
+   *
+   * // finish executing the message, including the HTTPS Outcall
+   * const result = await executeGoogleSearch();
+   *
+   * await pic.tearDown();
+   * await picServer.stop();
+   * ```
+   */
+  public async mockPendingHttpsOutcall({
+    requestId,
+    response,
+    subnetId,
+    additionalResponses = [],
+  }: MockPendingHttpsOutcallOptions): Promise<void> {
+    return await this.client.mockPendingHttpsOutcall({
+      requestId,
+      response,
+      subnetId,
+      additionalResponses,
+    });
   }
 }

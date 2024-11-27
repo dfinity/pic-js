@@ -1,17 +1,15 @@
-import { IDL, JsonValue } from '@dfinity/candid';
+import { IDL } from '@dfinity/candid';
 import { Principal } from '@dfinity/principal';
 import { Identity } from '@dfinity/agent';
 import { PocketIcClient } from './pocket-ic-client';
+import { decodeCandid } from './util';
 
 /**
  * Typesafe method of a canister.
  *
  * @category Types
  */
-export interface ActorMethod<
-  Args extends unknown[] = unknown[],
-  Ret = unknown,
-> {
+export interface ActorMethod<Args extends any[] = any[], Ret = any> {
   (...args: Args): Promise<Ret>;
 }
 
@@ -20,7 +18,7 @@ export interface ActorMethod<
  *
  * @category Types
  */
-export type ActorInterface = Record<string, ActorMethod>;
+export type ActorInterface<T = object> = { [K in keyof T]: ActorMethod };
 
 /**
  * A typesafe class that implements the Candid interface of a canister.
@@ -31,7 +29,7 @@ export type ActorInterface = Record<string, ActorMethod>;
  * @typeparam T The type of the {@link Actor}. Must implement {@link ActorInterface}.
  * @interface
  */
-export type Actor<T = ActorInterface> = T & {
+export type Actor<T extends ActorInterface<T> = ActorInterface> = T & {
   /**
    * @ignore
    */
@@ -89,29 +87,13 @@ export type Actor<T = ActorInterface> = T & {
   setIdentity(identity: Identity): void;
 };
 
-export function createActorClass<T = ActorInterface>(
+export function createActorClass<T extends ActorInterface<T> = ActorInterface>(
   interfaceFactory: IDL.InterfaceFactory,
   canisterId: Principal,
   pocketIcClient: PocketIcClient,
 ): Actor<T> {
   const service = interfaceFactory({ IDL });
   let sender: Principal | null = null;
-
-  function decodeReturnValue(
-    types: IDL.Type[],
-    msg: ArrayBufferLike,
-  ): JsonValue | undefined {
-    const returnValues = IDL.decode(types, msg as ArrayBuffer);
-
-    switch (returnValues.length) {
-      case 0:
-        return undefined;
-      case 1:
-        return returnValues[0];
-      default:
-        return returnValues;
-    }
-  }
 
   function createActorMethod(
     methodName: string,
@@ -143,7 +125,7 @@ export function createActorClass<T = ActorInterface>(
         payload: new Uint8Array(arg),
       });
 
-      return decodeReturnValue(func.retTypes, res.body);
+      return decodeCandid(func.retTypes, res.body);
     };
   }
 
@@ -159,7 +141,7 @@ export function createActorClass<T = ActorInterface>(
         payload: new Uint8Array(arg),
       });
 
-      return decodeReturnValue(func.retTypes, res.body);
+      return decodeCandid(func.retTypes, res.body);
     };
   }
 
@@ -177,5 +159,5 @@ export function createActorClass<T = ActorInterface>(
     Actor.prototype[methodName] = createActorMethod(methodName, func);
   });
 
-  return Actor as Actor<T>;
+  return Actor as never as Actor<T>;
 }

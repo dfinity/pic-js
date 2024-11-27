@@ -9,6 +9,17 @@
     }
   },
   "canisters": {
+    "clock": {
+      "type": "motoko",
+      "main": "examples/clock/src/main.mo",
+      "declarations": {
+        "bindings": ["js", "ts"],
+        "output": "examples/clock/declarations"
+      },
+      "gzip": true,
+      "shrink": true,
+      "optimize": "cycles"
+    },
     "counter": {
       "type": "motoko",
       "main": "examples/counter/src/main.mo",
@@ -21,24 +32,12 @@
       "shrink": true,
       "optimize": "cycles"
     },
-    "clock": {
+    "google_search": {
       "type": "motoko",
-      "main": "examples/clock/src/main.mo",
+      "main": "examples/google_search/src/main.mo",
       "declarations": {
         "bindings": ["js", "ts"],
-        "output": "examples/clock/declarations"
-      },
-      "gzip": true,
-      "shrink": true,
-      "optimize": "cycles"
-    },
-    "todo": {
-      "type": "rust",
-      "candid": "examples/todo/todo.did",
-      "package": "todo",
-      "declarations": {
-        "bindings": ["js", "ts"],
-        "output": "examples/todo/declarations"
+        "output": "examples/google_search/declarations"
       },
       "gzip": true,
       "shrink": true,
@@ -51,6 +50,30 @@
       "declarations": {
         "bindings": ["js", "ts"],
         "output": "examples/multicanister/declarations/multicanister"
+      },
+      "gzip": true,
+      "shrink": true,
+      "optimize": "cycles"
+    },
+    "nns_proxy": {
+      "type": "rust",
+      "candid": "examples/nns_proxy/nns_proxy.did",
+      "package": "nns_proxy",
+      "declarations": {
+        "bindings": ["js", "ts"],
+        "output": "examples/nns_proxy/declarations"
+      },
+      "gzip": true,
+      "shrink": true,
+      "optimize": "cycles"
+    },
+    "todo": {
+      "type": "rust",
+      "candid": "examples/todo/todo.did",
+      "package": "todo",
+      "declarations": {
+        "bindings": ["js", "ts"],
+        "output": "examples/todo/declarations"
       },
       "gzip": true,
       "shrink": true,
@@ -73,18 +96,6 @@
       "declarations": {
         "bindings": ["mo"],
         "output": "examples/multicanister/declarations/superheroes"
-      },
-      "gzip": true,
-      "shrink": true,
-      "optimize": "cycles"
-    },
-    "nns_proxy": {
-      "type": "rust",
-      "candid": "examples/nns_proxy/nns_proxy.did",
-      "package": "nns_proxy",
-      "declarations": {
-        "bindings": ["js", "ts"],
-        "output": "examples/nns_proxy/declarations"
       },
       "gzip": true,
       "shrink": true,

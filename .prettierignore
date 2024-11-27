@@ -15,8 +15,8 @@
 /examples/counter/declarations/
 /examples/counter/tests/node_modules/
 
-/examples/todo/declarations/
-/examples/todo/tests/node_modules/
+/examples/google_search/declarations/
+/examples/google_search/tests/node_modules/
 
 /examples/multicanister/declarations/
 /examples/multicanister/tests/node_modules/
@@ -24,6 +24,9 @@
 /examples/nns_proxy/declarations/
 /examples/nns_proxy/tests/node_modules/
 /examples/nns_proxy/tests/state/nns_state/
+
+/examples/todo/declarations/
+/examples/todo/tests/node_modules/
 
 /docs/.docusaurus/
 /docs/build/

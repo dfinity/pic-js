@@ -52,6 +52,24 @@ import {
   encodeGetPubKeyRequest,
   EncodedSetStableMemoryRequest,
   decodeCanisterCallResponse,
+  EncodedGetPendingHttpsOutcallsResponse,
+  GetPendingHttpsOutcallsResponse,
+  decodeGetPendingHttpsOutcallsResponse,
+  EncodedMockPendingHttpsOutcallRequest,
+  encodeMockPendingHttpsOutcallRequest,
+  MockPendingHttpsOutcallRequest,
+  EncodedSubmitCanisterCallResponse,
+  decodeSubmitCanisterCallResponse,
+  SubmitCanisterCallResponse,
+  SubmitCanisterCallRequest,
+  encodeSubmitCanisterCallRequest,
+  EncodedSubmitCanisterCallRequest,
+  encodeAwaitCanisterCallRequest,
+  AwaitCanisterCallRequest,
+  EncodedAwaitCanisterCallRequest,
+  AwaitCanisterCallResponse,
+  EncodedAwaitCanisterCallResponse,
+  decodeAwaitCanisterCallResponse,
 } from './pocket-ic-client-types';
 
 const PROCESSING_TIME_VALUE_MS = 30_000;
@@ -216,6 +234,29 @@ export class PocketIcClient {
     return decodeGetStableMemoryResponse(res);
   }
 
+  public async getPendingHttpsOutcalls(): Promise<
+    GetPendingHttpsOutcallsResponse[]
+  > {
+    this.assertInstanceNotDeleted();
+
+    const res = await this.get<EncodedGetPendingHttpsOutcallsResponse[]>(
+      '/read/get_canister_http',
+    );
+
+    return decodeGetPendingHttpsOutcallsResponse(res);
+  }
+
+  public async mockPendingHttpsOutcall(
+    req: MockPendingHttpsOutcallRequest,
+  ): Promise<void> {
+    this.assertInstanceNotDeleted();
+
+    await this.post<EncodedMockPendingHttpsOutcallRequest, {}>(
+      '/update/mock_canister_http',
+      encodeMockPendingHttpsOutcallRequest(req),
+    );
+  }
+
   public async updateCall(
     req: CanisterCallRequest,
   ): Promise<CanisterCallResponse> {
@@ -230,6 +271,32 @@ export class PocketIcClient {
     this.assertInstanceNotDeleted();
 
     return await this.canisterCall('/read/query', req);
+  }
+
+  public async submitCall(
+    req: SubmitCanisterCallRequest,
+  ): Promise<SubmitCanisterCallResponse> {
+    this.assertInstanceNotDeleted();
+
+    const res = await this.post<
+      EncodedSubmitCanisterCallRequest,
+      EncodedSubmitCanisterCallResponse
+    >('/update/submit_ingress_message', encodeSubmitCanisterCallRequest(req));
+
+    return decodeSubmitCanisterCallResponse(res);
+  }
+
+  public async awaitCall(
+    req: AwaitCanisterCallRequest,
+  ): Promise<AwaitCanisterCallResponse> {
+    this.assertInstanceNotDeleted();
+
+    const res = await this.post<
+      EncodedAwaitCanisterCallRequest,
+      EncodedAwaitCanisterCallResponse
+    >('/update/await_ingress_message', encodeAwaitCanisterCallRequest(req));
+
+    return decodeAwaitCanisterCallResponse(res);
   }
 
   private async canisterCall(

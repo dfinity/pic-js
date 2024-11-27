@@ -315,6 +315,8 @@ export enum SubnetType {
 
 //#endregion CreateInstance
 
+//#region SetupCanister
+
 /**
  * Options for setting up a canister.
  */
@@ -351,7 +353,7 @@ export interface SetupCanisterOptions extends CreateCanisterOptions {
  * @category Types
  * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
  */
-export interface CanisterFixture<T = ActorInterface> {
+export interface CanisterFixture<T extends ActorInterface<T> = ActorInterface> {
   /**
    * The {@link Actor} instance.
    */
@@ -428,8 +430,12 @@ export interface CreateCanisterOptions extends CanisterSettings {
   targetCanisterId?: Principal;
 }
 
+//#engregion SetupCanister
+
+//#region CanisterLifecycle
+
 /**
- * Options for stopping a given canister.
+ * Options for starting a given canister.
  *
  * @category Types
  * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
@@ -597,6 +603,10 @@ export interface UpdateCanisterSettingsOptions
   sender?: Principal;
 }
 
+//#endregion CanisterLifecycle
+
+//#region CanisterCall
+
 /**
  * Options for making a query call to a given canister.
  *
@@ -667,3 +677,150 @@ export interface UpdateCallOptions {
    */
   targetSubnetId?: Principal;
 }
+
+//#endregion CanisterCall
+
+//#region HTTPS Outcalls
+
+/**
+ * A pending HTTPS outcall.
+ */
+export interface PendingHttpsOutcall {
+  /**
+   * The subnet ID to that the HTTPS Outcall is being sent from.
+   */
+  subnetId: Principal;
+
+  /**
+   * The HTTPS Outcall request Id. Use this Id when setting a mock response
+   * for this request.
+   */
+  requestId: number;
+
+  /**
+   * The HTTP method used for this request.
+   */
+  httpMethod: CanisterHttpMethod;
+
+  /**
+   * The target URL of the pending request.
+   */
+  url: string;
+
+  /**
+   * The headers of the pending request.
+   */
+  headers: CanisterHttpHeader[];
+
+  /**
+   * The body of the pending request.
+   */
+  body: Uint8Array;
+
+  /**
+   * The maximum number of bytes expected in the response body that was set
+   * by the canister making the request.
+   */
+  maxResponseBytes?: number;
+}
+
+/**
+ * The HTTP method used for an HTTPS outcall.
+ */
+export enum CanisterHttpMethod {
+  /**
+   * A GET request.
+   */
+  GET = 'GET',
+
+  /**
+   * A POST request.
+   */
+  POST = 'POST',
+
+  /**
+   * A HEAD request.
+   */
+  HEAD = 'HEAD',
+}
+
+/**
+ * An HTTP header for an HTTPS outcall.
+ */
+export type CanisterHttpHeader = [string, string];
+
+/**
+ * Options for mocking a response to a pending HTTPS outcall.
+ */
+export interface MockPendingHttpsOutcallOptions {
+  /**
+   * The subnet ID to that the HTTPS Outcall is being sent from.
+   */
+  subnetId: Principal;
+
+  /**
+   * The HTTPS Outcall request Id to mock a response for.
+   */
+  requestId: number;
+
+  /**
+   * The response to mock for the pending HTTPS outcall.
+   */
+  response: HttpsOutcallResponseMock;
+
+  /**
+   * Additional responses to mock for the pending HTTPS outcall.
+   *
+   * If non-empty, the total number of responses (one plus the number of additional responses)
+   * must be equal to the size of the subnet on which the canister making the HTTP outcall is deployed.
+   */
+  additionalResponses?: HttpsOutcallResponseMock[];
+}
+
+/**
+ * An HTTPS Outcall response mock.
+ */
+export type HttpsOutcallResponseMock =
+  | HttpsOutcallSuccessResponse
+  | HttpsOutcallRejectResponse;
+
+export interface HttpsOutcallSuccessResponse {
+  /**
+   * The type of the response, either `'success'` or `'response'`.
+   */
+  type: 'success';
+
+  /**
+   * The status code of the response.
+   */
+  statusCode: number;
+
+  /**
+   * The headers of the response.
+   */
+  headers: CanisterHttpHeader[];
+
+  /**
+   * The body of the response.
+   */
+  body: Uint8Array;
+}
+
+export interface HttpsOutcallRejectResponse {
+  /**
+   * The type of the response, either `'reject'` or `'response'`.
+   */
+  type: 'reject';
+
+  /**
+   * The status code of the response.
+   */
+  statusCode: number;
+
+  /**
+   * The message of the response.
+   */
+  message: string;
+}
+
+//#endregion HTTPS Outcalls

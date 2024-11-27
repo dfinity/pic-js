@@ -1,6 +1,7 @@
 packages:
   - 'examples/clock/tests'
   - 'examples/counter/tests'
+  - 'examples/google_search/tests'
   - 'examples/multicanister/tests'
   - 'examples/nns_proxy/tests'
   - 'examples/todo/tests'
