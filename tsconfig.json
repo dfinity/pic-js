@@ -1,15 +1,6 @@
 {
+  "extends": "@tsconfig/node22/tsconfig.json",
   "compilerOptions": {
-    // compilation
-    "module": "NodeNext",
-    "target": "ESNext",
-    "lib": ["ESNext"],
-
-    // resolution
-    "moduleResolution": "NodeNext",
-    "moduleDetection": "force",
-
-    // type checking
     "strict": true,
     "allowJs": false,
     "downlevelIteration": true,

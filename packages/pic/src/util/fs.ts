@@ -15,10 +15,8 @@ export function tmpFile(filePath: string) {
   return resolve(tmpdir(), filePath);
 }
 
-export async function readFileAsBytes(filePath: string): Promise<Uint8Array> {
-  const buffer = await readFile(filePath);
-
-  return Uint8Array.from(buffer);
+export async function readFileAsBytes(filePath: string): Promise<Buffer> {
+  return await readFile(filePath);
 }
 
 export async function readFileAsString(filePath: string): Promise<string> {

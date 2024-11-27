@@ -1,5 +1,6 @@
 import { IDL } from '@dfinity/candid';
 import { Principal } from '@dfinity/principal';
+import { decodeCandid, isNil } from './util';
 
 export const MANAGEMENT_CANISTER_ID = Principal.fromText('aaaaa-aa');
 
@@ -48,10 +49,16 @@ export interface CreateCanisterResponse {
 export function decodeCreateCanisterResponse(
   arg: Uint8Array,
 ): CreateCanisterResponse {
-  const [payload] = IDL.decode([CreateCanisterResponse], arg);
+  const payload = decodeCandid<CreateCanisterResponse>(
+    [CreateCanisterResponse],
+    arg,
+  );
 
-  // [TODO] - type check?
-  return payload as unknown as CreateCanisterResponse;
+  if (isNil(payload)) {
+    throw new Error('Failed to decode CreateCanisterResponse');
+  }
+
+  return payload;
 }
 
 const StartCanisterRequest = IDL.Record({
