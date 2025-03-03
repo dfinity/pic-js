@@ -1,4 +1,4 @@
-import { Actor, PocketIc } from '@hadronous/pic';
+import { Actor, PocketIc } from '@dfinity/pic';
 import { AnonymousIdentity, Identity } from '@dfinity/agent';
 import { Principal } from '@dfinity/principal';
 import { createHash, randomBytes } from 'node:crypto';

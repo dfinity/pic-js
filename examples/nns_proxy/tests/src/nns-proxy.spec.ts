@@ -5,7 +5,7 @@ import {
   PocketIc,
   SubnetStateType,
   generateRandomIdentity,
-} from '@hadronous/pic';
+} from '@dfinity/pic';
 import { _SERVICE, idlFactory } from '../../declarations/nns_proxy.did';
 import { Governance } from './support/governance';
 

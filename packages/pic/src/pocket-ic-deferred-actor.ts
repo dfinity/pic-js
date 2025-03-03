@@ -34,7 +34,7 @@ export type DeferredActor<T extends ActorInterface<T> = ActorInterface> =
      *
      * @example
      * ```ts
-     * import { PocketIc } from '@hadronous/pic';
+     * import { PocketIc } from '@dfinity/pic';
      * import { Principal } from '@dfinity/principal';
      * import { _SERVICE, idlFactory } from '../declarations';
      *
@@ -61,7 +61,7 @@ export type DeferredActor<T extends ActorInterface<T> = ActorInterface> =
      *
      * @example
      * ```ts
-     * import { PocketIc } from '@hadronous/pic';
+     * import { PocketIc } from '@dfinity/pic';
      * import { AnonymousIdentity } from '@dfinity/agent';
      * import { _SERVICE, idlFactory } from '../declarations';
      *

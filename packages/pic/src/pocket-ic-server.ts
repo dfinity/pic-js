@@ -27,7 +27,7 @@ import { Writable } from 'node:stream';
  *
  * @example
  * ```ts
- * import { PocketIc, PocketIcServer } from '@hadronous/pic';
+ * import { PocketIc, PocketIcServer } from '@dfinity/pic';
  * import { _SERVICE, idlFactory } from '../declarations';
  *
  * const wasmPath = resolve('..', '..', 'canister.wasm');

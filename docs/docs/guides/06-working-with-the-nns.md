@@ -224,4 +224,4 @@ await pic.setTime(new Date(2024, 1, 30).getTime());
 await pic.tick();
 ```
 
-Check out the [`NNS Proxy`](https://github.com/hadronous/pic-js/tree/main/examples/nns_proxy) example for a full example of how to use the NNS state in your tests.
+Check out the [`NNS Proxy`](https://github.com/dfinity/pic-js/tree/main/examples/nns_proxy) example for a full example of how to use the NNS state in your tests.

@@ -1,7 +1,7 @@
 import { resolve } from 'node:path';
 import { Principal } from '@dfinity/principal';
 import { AnonymousIdentity } from '@dfinity/agent';
-import { Actor, PocketIc, createIdentity } from '@hadronous/pic';
+import { Actor, PocketIc, createIdentity } from '@dfinity/pic';
 import { _SERVICE, idlFactory } from '../../declarations/todo.did';
 
 const WASM_PATH = resolve(

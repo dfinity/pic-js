@@ -1,6 +1,6 @@
 import { AnonymousIdentity, Identity } from '@dfinity/agent';
 import { Principal } from '@dfinity/principal';
-import { Actor, PocketIc } from '@hadronous/pic';
+import { Actor, PocketIc } from '@dfinity/pic';
 import {
   _SERVICE as LedgerService,
   SubAccount,

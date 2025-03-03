@@ -108,37 +108,37 @@ importers:
 
   examples/clock/tests:
     devDependencies:
-      '@hadronous/pic':
+      '@dfinity/pic':
         specifier: workspace:*
         version: link:../../../packages/pic
 
   examples/counter/tests:
     devDependencies:
-      '@hadronous/pic':
+      '@dfinity/pic':
         specifier: workspace:*
         version: link:../../../packages/pic
 
   examples/google_search/tests:
     devDependencies:
-      '@hadronous/pic':
+      '@dfinity/pic':
         specifier: workspace:*
         version: link:../../../packages/pic
 
   examples/multicanister/tests:
     devDependencies:
-      '@hadronous/pic':
+      '@dfinity/pic':
         specifier: workspace:*
         version: link:../../../packages/pic
 
   examples/nns_proxy/tests:
     devDependencies:
-      '@hadronous/pic':
+      '@dfinity/pic':
         specifier: workspace:*
         version: link:../../../packages/pic
 
   examples/todo/tests:
     devDependencies:
-      '@hadronous/pic':
+      '@dfinity/pic':
         specifier: workspace:*
         version: link:../../../packages/pic
 

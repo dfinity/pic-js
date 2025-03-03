@@ -44,7 +44,7 @@ import {
  * @example
  * The easist way to use PocketIC is to use {@link setupCanister} convenience method:
  * ```ts
- * import { PocketIc, PocketIcServer } from '@hadronous/pic';
+ * import { PocketIc, PocketIcServer } from '@dfinity/pic';
  * import { _SERVICE, idlFactory } from '../declarations';
  *
  * const wasmPath = resolve('..', '..', 'canister.wasm');
@@ -64,7 +64,7 @@ import {
  * If more control is needed, then the {@link createCanister}, {@link installCode} and
  * {@link createActor} methods can be used directly:
  * ```ts
- * import { PocketIc, PocketIcServer } from '@hadronous/pic';
+ * import { PocketIc, PocketIcServer } from '@dfinity/pic';
  * import { _SERVICE, idlFactory } from '../declarations';
  *
  * const wasm = resolve('..', '..', 'canister.wasm');
@@ -94,7 +94,7 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
    * const picServer = await PocketIcServer.create();
    * const pic = await PocketIc.create(picServer.getUrl());
@@ -131,7 +131,7 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    * import { _SERVICE, idlFactory } from '../declarations';
    *
    * const wasmPath = resolve('..', '..', 'canister.wasm');
@@ -191,7 +191,7 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
    * const picServer = await PocketIcServer.create();
    * const pic = await PocketIc.create(picServer.getUrl());
@@ -252,7 +252,7 @@ export class PocketIc {
    * @example
    * ```ts
    * import { Principal } from '@dfinity/principal';
-   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    *
@@ -297,7 +297,7 @@ export class PocketIc {
    * @example
    * ```ts
    * import { Principal } from '@dfinity/principal';
-   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    *
@@ -345,7 +345,7 @@ export class PocketIc {
    * @example
    * ```ts
    * import { Principal } from '@dfinity/principal';
-   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    * import { resolve } from 'node:path';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
@@ -406,7 +406,7 @@ export class PocketIc {
    * @example
    * ```ts
    * import { Principal } from '@dfinity/principal';
-   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    * import { resolve } from 'node:path';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
@@ -461,7 +461,7 @@ export class PocketIc {
    * @example
    * ```ts
    * import { Principal } from '@dfinity/principal';
-   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    * import { resolve } from 'node:path';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
@@ -513,7 +513,7 @@ export class PocketIc {
    * @example
    * ```ts
    * import { Principal } from '@dfinity/principal';
-   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    *
@@ -575,7 +575,7 @@ export class PocketIc {
    * @example
    * ```ts
    * import { Principal } from '@dfinity/principal';
-   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    * import { _SERVICE, idlFactory } from '../declarations';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
@@ -649,7 +649,7 @@ export class PocketIc {
    * @example
    * ```ts
    * import { Principal } from '@dfinity/principal';
-   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    * import { _SERVICE, idlFactory } from '../declarations';
    *
    * const wasm = resolve('..', '..', 'canister.wasm');
@@ -702,7 +702,7 @@ export class PocketIc {
    * @example
    * ```ts
    * import { Principal } from '@dfinity/principal';
-   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    * import { _SERVICE, idlFactory } from '../declarations';
    *
    * const wasm = resolve('..', '..', 'canister.wasm');
@@ -751,7 +751,7 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
    * const picServer = await PocketIcServer.create();
    * const pic = await PocketIc.create(picServer.getUrl());
@@ -771,7 +771,7 @@ export class PocketIc {
    * @param times The number of new blocks to produce and progress by. Defaults to `1`.
    *
    * ```ts
-   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
    * const picServer = await PocketIcServer.create();
    * const pic = await PocketIc.create(picServer.getUrl());
@@ -798,7 +798,7 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
    * const picServer = await PocketIcServer.create();
    * const pic = await PocketIc.create(picServer.getUrl());
@@ -820,7 +820,7 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
    * const picServer = await PocketIcServer.create();
    * const pic = await PocketIc.create(picServer.getUrl());
@@ -843,7 +843,7 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
    * const pic = await PocketIc.create();
    *
@@ -877,7 +877,7 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
    * const picServer = await PocketIcServer.create();
    * const pic = await PocketIc.create(picServer.getUrl());
@@ -905,7 +905,7 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
    * const picServer = await PocketIcServer.create();
    * const pic = await PocketIc.create(picServer.getUrl());
@@ -931,7 +931,7 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    *
@@ -1062,7 +1062,7 @@ export class PocketIc {
    * @example
    * ```ts
    * import { Principal } from '@dfinity/principal';
-   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    *
@@ -1093,7 +1093,7 @@ export class PocketIc {
    * @example
    * ```ts
    * import { Principal } from '@dfinity/principal';
-   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    *
@@ -1126,7 +1126,7 @@ export class PocketIc {
    * @example
    * ```ts
    * import { Principal } from '@dfinity/principal';
-   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    * const stableMemory = new Uint8Array([0, 1, 2, 3, 4]);
@@ -1162,7 +1162,7 @@ export class PocketIc {
    * @example
    * ```ts
    * import { Principal } from '@dfinity/principal';
-   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    *
@@ -1192,7 +1192,7 @@ export class PocketIc {
    * @example
    * ```ts
    * import { Principal } from '@dfinity/principal';
-   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    *
@@ -1243,7 +1243,7 @@ export class PocketIc {
    * @example
    * ```ts
    * import { Principal } from '@dfinity/principal';
-   * import { PocketIc, PocketIcServer } from '@hadronous/pic';
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    *

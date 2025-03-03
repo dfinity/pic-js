@@ -1,12 +1,11 @@
 # Pic JS
 
-[![NPM](https://badge.fury.io/js/@hadronous%2Fpic.svg)](https://badge.fury.io/js/@hadronous%2Fpic)
-![Dependencies](https://img.shields.io/librariesio/release/npm/%40hadronous/pic)
+[![NPM](https://badge.fury.io/js/@dfinity%2Fpic.svg)](https://badge.fury.io/js/@dfinity%2Fpic)
+![Dependencies](https://img.shields.io/librariesio/release/npm/%40dfinity/pic)
 
-[![Test (NodeJS)](https://github.com/hadronous/pic-js/actions/workflows/test-nodejs.yml/badge.svg)](https://github.com/hadronous/pic-js/actions/workflows/test-nodejs.yml)
-[![Test (Bun)](https://github.com/hadronous/pic-js/actions/workflows/test-bun.yml/badge.svg)](https://github.com/hadronous/pic-js/actions/workflows/test-bun.yml)
-[![Lint](https://github.com/hadronous/pic-js/actions/workflows/lint.yml/badge.svg)](https://github.com/hadronous/pic-js/actions/workflows/lint.yml)
-[![CodeQL](https://github.com/hadronous/pic-js/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/hadronous/pic-js/actions/workflows/github-code-scanning/codeql)
+[![Test (NodeJS)](https://github.com/dfinity/pic-js/actions/workflows/test-nodejs.yml/badge.svg)](https://github.com/dfinity/pic-js/actions/workflows/test-nodejs.yml)
+[![Test (Bun)](https://github.com/dfinity/pic-js/actions/workflows/test-bun.yml/badge.svg)](https://github.com/dfinity/pic-js/actions/workflows/test-bun.yml)
+[![Lint](https://github.com/dfinity/pic-js/actions/workflows/lint.yml/badge.svg)](https://github.com/dfinity/pic-js/actions/workflows/lint.yml)
 
 Pic JS is a library for interacting with a local instance of `pocket-ic` from TypeScript.
 
@@ -16,13 +15,15 @@ Other languages available include [Python](https://github.com/dfinity/pocketic-p
 
 ## API Docs
 
-More detailed documentation is available in the [API docs](https://hadronous.github.io/pic-js/).
+More detailed documentation is available in the [API docs](https://dfinity.github.io/pic-js/).
 
 ## Examples
 
 Examples are available in the [examples](./examples/README.md) directory.
 
 ## Contributing
+
+Check out the [contribution guidelines](./.github/CONTRIBUTING.md).
 
 ### Setup
 

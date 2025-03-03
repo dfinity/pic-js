@@ -96,7 +96,7 @@ Fixes for these issues are already merged into Candid, but they need to be relea
 
   ```ts
   import { IDL } from '@dfinity/candid';
-  import { Actor } from '@hadronous/pic';
+  import { Actor } from '@dfinity/pic';
   import { _SERVICE } from '../../declarations/counter.did';
 
   export declare const idlFactory: IDL.InterfaceFactory;

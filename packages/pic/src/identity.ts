@@ -22,7 +22,7 @@ import { Ed25519KeyIdentity } from '@dfinity/identity';
  *
  * @example
  * ```ts
- * import { PocketIc, PocketIcServer, createIdentity } from '@hadronous/pic';
+ * import { PocketIc, PocketIcServer, createIdentity } from '@dfinity/pic';
  * import { AnonymousIdentity } from '@dfinity/agent';
  * import { _SERVICE, idlFactory } from '../declarations';
  *
@@ -71,7 +71,7 @@ function generateMnemonic(): string {
  *
  * @example
  * ```ts
- * import { PocketIc, PocketIcServer, generateRandomIdentity } from '@hadronous/pic';
+ * import { PocketIc, PocketIcServer, generateRandomIdentity } from '@dfinity/pic';
  * import { AnonymousIdentity } from '@dfinity/agent';
  * import { _SERVICE, idlFactory } from '../declarations';
  *

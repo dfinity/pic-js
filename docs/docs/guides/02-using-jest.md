@@ -106,7 +106,7 @@ Then, add a `test` script to your `package.json`:
 The PocketIC server needs to be started before running tests and stopped once they're finished running. This can be done by creating `global-setup.ts` and `global-teardown.ts` files in your project's root directory:
 
 ```ts title="global-setup.ts"
-import { PocketIcServer } from '@hadronous/pic';
+import { PocketIcServer } from '@dfinity/pic';
 
 module.exports = async function (): Promise<void> {
   const pic = await PocketIcServer.start();
@@ -126,7 +126,7 @@ module.exports = async function () {
 To improve type-safety for `process.env.PIC_URL` and `global.__PIC__`, create a `types.d.ts` file:
 
 ```ts title="types.d.ts"
-import { PocketIcServer } from '@hadronous/pic';
+import { PocketIcServer } from '@dfinity/pic';
 
 declare global {
   declare var __PIC__: PocketIcServer;

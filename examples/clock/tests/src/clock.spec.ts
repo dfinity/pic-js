@@ -1,6 +1,6 @@
 import { resolve } from 'node:path';
 import { Principal } from '@dfinity/principal';
-import { Actor, PocketIc } from '@hadronous/pic';
+import { Actor, PocketIc } from '@dfinity/pic';
 
 import { _SERVICE, idlFactory } from '../../declarations/clock.did';
 

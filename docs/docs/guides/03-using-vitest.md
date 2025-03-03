@@ -73,7 +73,7 @@ The PocketIC server needs to be started before running tests and stopped once th
 
 ```ts title="global-setup.ts"
 import type { GlobalSetupContext } from 'vitest/node';
-import { PocketIcServer } from '@hadronous/pic';
+import { PocketIcServer } from '@dfinity/pic';
 
 let pic: PocketIcServer | undefined;
 

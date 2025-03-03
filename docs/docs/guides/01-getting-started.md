@@ -12,11 +12,11 @@ To get started with PicJS, you will need to have a JavaScript runtime environmen
 
 [Bun](https://bun.sh/) is an alternative JavaScript runtime environment that is compatible with PicJS. Bun has several features that make it a great choice for running PicJS tests, such as a built-in test runner and assertion library in addition to being much more performant than [NodeJS](https://nodejs.org/en). Bun is not very widely used yet, so it is not recommended for beginners.
 
-[Deno](https://deno.com/) in theory should also work, but it is not officially supported and compatibility is not actively tested. If you choose Deno and run into issues, please open an issue on the [GitHub repository](https://github.com/hadronous/pic-js/issues). Deno is also not widely used, so it is not recommended for developers that are unfamiliar with it.
+[Deno](https://deno.com/) in theory should also work, but it is not officially supported and compatibility is not actively tested. If you choose Deno and run into issues, please open an issue on the [GitHub repository](https://github.com/dfinity/pic-js/issues). Deno is also not widely used, so it is not recommended for developers that are unfamiliar with it.
 
 ## Package manager
 
-PicJS is a JavaScript/TypeScript package distributed on [NPM](https://www.npmjs.com/package/@hadronous/pic). To install and manage NPM packages, you will need to have an NPM-compatible package manager.
+PicJS is a JavaScript/TypeScript package distributed on [NPM](https://www.npmjs.com/package/@dfinity/pic). To install and manage NPM packages, you will need to have an NPM-compatible package manager.
 
 - [npm](https://nodejs.org/en/learn/getting-started/an-introduction-to-the-npm-package-manager)
   - This is the official package manager for [NodeJS](https://nodejs.org/en) and comes pre-installed.

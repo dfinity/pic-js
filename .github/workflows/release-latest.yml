@@ -10,7 +10,7 @@ jobs:
       contents: write
     environment:
       name: npm
-      url: https://www.npmjs.com/package/@hadronous/pic
+      url: https://www.npmjs.com/package/@dfinity/pic
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -56,7 +56,7 @@ jobs:
       - name: Create Github release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: 'hadronous-pic-${{ env.version }}.tgz'
+          artifacts: 'dfinity-pic-${{ env.version }}.tgz'
           bodyFile: 'RELEASE_NOTES.md'
           tag: '${{ env.version }}'
           commit: 'main'

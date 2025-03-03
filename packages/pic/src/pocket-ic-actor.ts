@@ -44,7 +44,7 @@ export type Actor<T extends ActorInterface<T> = ActorInterface> = T & {
    *
    * @example
    * ```ts
-   * import { PocketIc } from '@hadronous/pic';
+   * import { PocketIc } from '@dfinity/pic';
    * import { Principal } from '@dfinity/principal';
    * import { _SERVICE, idlFactory } from '../declarations';
    *
@@ -71,7 +71,7 @@ export type Actor<T extends ActorInterface<T> = ActorInterface> = T & {
    *
    * @example
    * ```ts
-   * import { PocketIc } from '@hadronous/pic';
+   * import { PocketIc } from '@dfinity/pic';
    * import { AnonymousIdentity } from '@dfinity/agent';
    * import { _SERVICE, idlFactory } from '../declarations';
    *

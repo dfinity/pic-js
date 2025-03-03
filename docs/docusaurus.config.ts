@@ -25,9 +25,9 @@ const commonTypeDocOptions = {
 const config: Config = {
   title: 'PicJS',
   tagline: 'An ICP canister testing library for TypeScript and JavaScript.',
-  url: 'https://hadronous.github.io',
+  url: 'https://dfinity.github.io',
   baseUrl: '/pic-js',
-  organizationName: 'hadronous',
+  organizationName: 'dfinity',
   projectName: 'pic-js',
 
   onBrokenLinks: 'throw',
@@ -89,7 +89,7 @@ const config: Config = {
           label: 'API Docs',
         },
         {
-          href: 'https://github.com/hadronous/pic-js',
+          href: 'https://github.com/dfinity/pic-js',
           label: 'GitHub',
           position: 'right',
         },
@@ -98,7 +98,7 @@ const config: Config = {
     footer: {
       style: 'dark',
       links: [],
-      copyright: `Copyright © ${new Date().getFullYear()} Hadronous Labs.`,
+      copyright: `Copyright © ${new Date().getFullYear()} DFINITY Stiftung.`,
     },
     prism: {
       theme: prismThemes.github,

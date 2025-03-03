@@ -92,25 +92,6 @@ export default function Home(): JSX.Element {
               </p>
             </div>
           </div>
-
-          <div className="row">
-            <div className="col">
-              <h2 className="text--center margin-vert--lg">
-                Other projects by Hadronous Labs
-              </h2>
-
-              <p className="text--center">
-                <a
-                  href="https://hadronous.github.io/ic-angular"
-                  target="_blank"
-                >
-                  IC Angular
-                </a>{' '}
-                provides native support for Internet Computer applications for
-                Angular.
-              </p>
-            </div>
-          </div>
         </div>
       </main>
     </Layout>

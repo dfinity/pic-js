@@ -2,6 +2,6 @@
   "name": "counter-tests",
   "type": "module",
   "devDependencies": {
-    "@hadronous/pic": "workspace:*"
+    "@dfinity/pic": "workspace:*"
   }
 }

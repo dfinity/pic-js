@@ -1,5 +1,5 @@
 import { resolve } from 'path';
-import { Actor, PocketIc, SubnetStateType } from '@hadronous/pic';
+import { Actor, PocketIc, SubnetStateType } from '@dfinity/pic';
 import { IDL } from '@dfinity/candid';
 
 import {

@@ -1,12 +1,12 @@
 {
-  "name": "@hadronous/pic-server",
+  "name": "@dfinity/pic-server",
   "description": "PocketIC server stubs",
   "version": "0.4.0",
-  "author": "Hadronous Labs",
+  "author": "DFINITY Stiftung",
   "license": "Apache-2.0",
-  "repository": "github:hadronous/pic-js",
-  "bugs": "https://github.com/hadronous/pic-js/issues",
-  "homepage": "https://hadronous.github.io/pic-js",
+  "repository": "github:dfinity/pic-js",
+  "bugs": "https://github.com/dfinity/pic-js/issues",
+  "homepage": "https://dfinity.github.io/pic-js",
   "keywords": [
     "internet-computer",
     "internet-computer-protocol",

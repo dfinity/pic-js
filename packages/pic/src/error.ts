@@ -28,7 +28,7 @@ ${cause.stack}`,
 export class BinNotFoundError extends Error {
   constructor(picBinPath: string) {
     super(
-      `Could not find the PocketIC binary. The PocketIC binary could not be found at ${picBinPath}. Please try installing @hadronous/pic again.`,
+      `Could not find the PocketIC binary. The PocketIC binary could not be found at ${picBinPath}. Please try installing @dfinity/pic again.`,
     );
   }
 }

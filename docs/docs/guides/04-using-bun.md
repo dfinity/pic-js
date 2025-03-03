@@ -100,7 +100,7 @@ The PocketIC server needs to be started before running tests and stopped once th
 
 ```ts title="global-setup.ts"
 import { beforeAll, afterAll } from 'bun:test';
-import { PocketIcServer } from '@hadronous/pic';
+import { PocketIcServer } from '@dfinity/pic';
 
 let pic: PocketIcServer | undefined;
 
@@ -211,10 +211,10 @@ You can also check out the official [Bun test runner documentation](https://bun.
 
 ## As a package manager
 
-PicJS leverages a [`postinstall`](https://docs.npmjs.com/cli/v9/using-npm/scripts#npm-install) script to download the `pocket-ic` binary. This is done to avoid bundling the binary with the library. If you are using [bun](https://bun.sh) to manage your project's dependencies, then you will need to add `@hadronous/pic` as a [trusted dependency](https://bun.sh/docs/install/lifecycle#trusteddependencies) in your `package.json`:
+PicJS leverages a [`postinstall`](https://docs.npmjs.com/cli/v9/using-npm/scripts#npm-install) script to download the `pocket-ic` binary. This is done to avoid bundling the binary with the library. If you are using [bun](https://bun.sh) to manage your project's dependencies, then you will need to add `@dfinity/pic` as a [trusted dependency](https://bun.sh/docs/install/lifecycle#trusteddependencies) in your `package.json`:
 
 ```json title="package.json"
 {
-  "trustedDependencies": ["@hadronous/pic"]
+  "trustedDependencies": ["@dfinity/pic"]
 }
 ```
