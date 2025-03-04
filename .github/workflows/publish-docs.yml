@@ -1,0 +1,42 @@
+name: Publish Docs
+
+on: workflow_dispatch
+
+jobs:
+  build_docs:
+    name: Build Docs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-pnpm
+
+      - name: Build Docs
+        run: pnpm -F docs build
+
+      - name: Fix permissions
+        run: |
+          chmod -c -R +rX "docs/build/" | while read line; do
+            echo "::warning title=Invalid file permissions automatically fixed::$line"
+          done
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: docs/build/
+
+  deploy_docs:
+    name: Deploy Docs
+    runs-on: ubuntu-latest
+    needs: build_docs
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
