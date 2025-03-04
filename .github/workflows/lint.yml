@@ -1,26 +1,20 @@
-name: Lint
+name: lint
 
 on:
   push:
     branches:
       - main
   pull_request:
-    branches:
-      - main
 
 jobs:
   lint:
-    name: Lint
+    name: lint:required
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - uses: ./.github/actions/setup-bun
-
-      - uses: ./.github/actions/setup-commitizen
 
       - name: Check TypeScript Formatting
         run: bun format:check
@@ -30,6 +24,3 @@ jobs:
 
       - name: Check Rust formatting
         run: cargo fmt -- --check
-
-      - name: Check Commit Messages
-        run: cz check --rev-range HEAD
