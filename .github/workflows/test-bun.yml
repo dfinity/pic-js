@@ -1,16 +1,14 @@
-name: Test (Bun)
+name: test_bun
 
 on:
   push:
     branches:
       - main
   pull_request:
-    branches:
-      - main
 
 jobs:
   test_bun:
-    name: Test (Bun)
+    name: test_bun:required
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
@@ -21,7 +19,10 @@ jobs:
 
       - uses: ./.github/actions/setup-bun
 
-      - uses: ./.github/actions/setup-dfx
+      - name: Setup DFX
+        uses: dfinity/setup-dfx@main
+        with:
+          dfx-version: 'auto'
 
       - name: Build
         run: bun run build

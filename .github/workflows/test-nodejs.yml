@@ -1,16 +1,14 @@
-name: Test (NodeJS)
+name: test_nodejs
 
 on:
   push:
     branches:
       - main
   pull_request:
-    branches:
-      - main
 
 jobs:
   test_nodejs:
-    name: Test (NodeJS)
+    name: test_nodejs:required
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
@@ -19,9 +17,13 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - uses: ./.github/actions/setup-pnpm
+      - name: Setup PNPM
+        uses: dfinity/ci-tools/actions/setup-pnpm@main
 
-      - uses: ./.github/actions/setup-dfx
+      - name: Setup DFX
+        uses: dfinity/setup-dfx@main
+        with:
+          dfx-version: 'auto'
 
       - name: Build
         run: pnpm run build
