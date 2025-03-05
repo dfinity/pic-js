@@ -65,6 +65,15 @@ export type VerifiedApplicationSubnetStateConfig = NewSubnetStateConfig;
 
 export interface NewSubnetStateConfig {
   type: SubnetStateType.New;
+  /**
+   * The subnet ID to setup the subnet on.
+   *
+   * The value can be obtained, e.g., via the following command for an NNS subnet:
+   * ```bash
+   * ic-regedit snapshot <path-to-ic_registry_local_store> | jq -r ".nns_subnet_id"
+   * ```
+   */
+  subnetId?: Principal;
 }
 
 export interface FromPathSubnetStateConfig {
@@ -119,13 +128,28 @@ function encodeSubnetConfig<T extends SubnetConfig>(
     }
 
     case SubnetStateType.New: {
-      return {
-        dts_flag: encodeDtsFlag(config.enableDeterministicTimeSlicing),
-        instruction_config: encodeInstructionConfig(
-          config.enableBenchmarkingInstructionLimits,
-        ),
-        state_config: 'New',
-      };
+      if (isNil(config.state.subnetId)) {
+        return {
+          dts_flag: encodeDtsFlag(config.enableDeterministicTimeSlicing),
+          instruction_config: encodeInstructionConfig(
+            config.enableBenchmarkingInstructionLimits,
+          ),
+          state_config: 'New',
+        };
+      } else {
+        return {
+          dts_flag: encodeDtsFlag(config.enableDeterministicTimeSlicing),
+          instruction_config: encodeInstructionConfig(
+            config.enableBenchmarkingInstructionLimits,
+          ),
+          state_config: {
+            FromPath: [
+              config.state.path,
+              { subnet_id: base64EncodePrincipal(config.state.subnetId) },
+            ],
+          },
+        };
+      }
     }
 
     case SubnetStateType.FromPath: {
