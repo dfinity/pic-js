@@ -70,7 +70,7 @@ export class PocketIcServer {
     const picFilePrefix = `pocket_ic_${pid}`;
     const portFilePath = tmpFile(`${picFilePrefix}.port`);
 
-    const serverProcess = spawn(binPath, ['--pid', pid.toString()]);
+    const serverProcess = spawn(binPath, ['--port-file', portFilePath]);
 
     if (options.showRuntimeLogs) {
       serverProcess.stdout.pipe(process.stdout);
