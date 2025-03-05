@@ -5,9 +5,22 @@ on:
 
 jobs:
   check_commit_messages:
-    name: check_commit_messages:required
-    uses: dfinity/ci-tools/.github/workflows/check-commit-messages.yaml@main
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout repository'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 'Setup Python'
+        uses: dfinity/ci-tools/actions/setup-python@nathan/fix-check-commit-messages
+
+      - name: 'Setup Commitizen'
+        uses: dfinity/ci-tools/actions/setup-commitizen@nathan/fix-check-commit-messages
+
+      - name: 'Check commit messages'
+        uses: dfinity/ci-tools/actions/check-commit-messages@nathan/fix-check-commit-messages
 
   check_pr_title:
     name: check_pr_title:required
-    uses: dfinity/ci-tools/.github/workflows/check-pr-title.yaml@main
+    uses: dfinity/ci-tools/.github/workflows/check-pr-title.yaml@nathan/fix-check-commit-messages
