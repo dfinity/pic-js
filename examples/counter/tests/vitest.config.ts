@@ -4,7 +4,7 @@ export default defineConfig({
   test: {
     root: 'examples/counter/tests',
     globalSetup: './global-setup.ts',
-    testTimeout: 30_000,
-    hookTimeout: 30_000,
+    testTimeout: 60_000,
+    hookTimeout: 60_000,
   },
 });

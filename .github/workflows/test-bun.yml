@@ -17,7 +17,14 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - uses: ./.github/actions/setup-bun
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: '.bun-version'
+
+      - name: Install Dependencies
+        shell: bash
+        run: bun i --frozen-lockfile
 
       - name: Setup DFX
         uses: dfinity/setup-dfx@main
