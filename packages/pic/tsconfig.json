@@ -1,10 +1,12 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src"],
+  "include": ["src", "test"],
   "compilerOptions": {
     "outDir": "dist",
     "declaration": true,
     "sourceMap": true,
-    "stripInternal": true
+    "stripInternal": true,
+    "moduleResolution": "bundler",
+    "module": "ESNext"
   }
 }
