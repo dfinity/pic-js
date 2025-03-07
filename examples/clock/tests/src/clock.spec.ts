@@ -1,6 +1,7 @@
 import { resolve } from 'node:path';
 import { Principal } from '@dfinity/principal';
-import { Actor, PocketIc } from '@dfinity/pic';
+import { Actor, generateRandomIdentity, PocketIc } from '@dfinity/pic';
+import { Identity } from '@dfinity/agent';
 
 import { _SERVICE, idlFactory } from '../../declarations/clock.did';
 
@@ -22,11 +23,22 @@ describe('Clock', () => {
   let pic: PocketIc;
   let canisterId: Principal;
 
+  let controllerIdentity: Identity;
+  let otherControllerIdentity: Identity;
+
   beforeEach(async () => {
+    controllerIdentity = generateRandomIdentity();
+    otherControllerIdentity = generateRandomIdentity();
+
     pic = await PocketIc.create(process.env.PIC_URL);
     const fixture = await pic.setupCanister<_SERVICE>({
       idlFactory,
       wasm: WASM_PATH,
+      sender: controllerIdentity.getPrincipal(),
+      controllers: [
+        controllerIdentity.getPrincipal(),
+        otherControllerIdentity.getPrincipal(),
+      ],
     });
     actor = fixture.actor;
     canisterId = fixture.canisterId;
@@ -40,6 +52,13 @@ describe('Clock', () => {
     const canisterExists = await pic.getCanisterSubnetId(canisterId);
 
     expect(canisterExists).toBeTruthy();
+  });
+
+  it('should assign the correct controllers', async () => {
+    const controllers = await pic.getControllers(canisterId);
+
+    expect(controllers).toContainEqual(controllerIdentity.getPrincipal());
+    expect(controllers).toContainEqual(otherControllerIdentity.getPrincipal());
   });
 
   it('should not create any other canister', async () => {

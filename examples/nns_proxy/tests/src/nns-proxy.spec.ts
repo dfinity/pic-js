@@ -89,7 +89,7 @@ describe('NNS Proxy', () => {
 
   describe('fetchRootKey', () => {
     it('should fetch the root key of the NNS subnet', async () => {
-      const nnsSubnet = pic.getNnsSubnet();
+      const nnsSubnet = await pic.getNnsSubnet();
       if (!nnsSubnet) {
         throw new Error('NNS subnet not found');
       }

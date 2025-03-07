@@ -250,7 +250,12 @@ export enum SubnetType {
   System = 'System',
 }
 
-export type EncodedInstanceTopology = Record<string, EncodedSubnetTopology>;
+export interface EncodedGetTopologyResponse {
+  subnet_configs: Record<string, EncodedSubnetTopology>;
+  default_effective_canister_id: {
+    canister_id: string;
+  };
+}
 
 export interface EncodedSubnetTopology {
   subnet_kind: EncodedSubnetKind;
@@ -274,11 +279,11 @@ export type EncodedSubnetKind =
   | 'SNS'
   | 'System';
 
-export function decodeInstanceTopology(
-  encoded: EncodedInstanceTopology,
+export function decodeGetTopologyResponse(
+  encoded: EncodedGetTopologyResponse,
 ): InstanceTopology {
   return Object.fromEntries(
-    Object.entries(encoded).map(([subnetId, subnetTopology]) => [
+    Object.entries(encoded.subnet_configs).map(([subnetId, subnetTopology]) => [
       subnetId,
       decodeSubnetTopology(subnetId, subnetTopology),
     ]),
@@ -324,7 +329,7 @@ export function decodeSubnetKind(kind: EncodedSubnetKind): SubnetType {
 export interface CreateInstanceSuccessResponse {
   Created: {
     instance_id: number;
-    topology: EncodedInstanceTopology;
+    topology: EncodedGetTopologyResponse;
   };
 }
 export interface CreateInstanceErrorResponse {
@@ -337,6 +342,38 @@ export type CreateInstanceResponse =
   | CreateInstanceErrorResponse;
 
 //#endregion GetTopology
+
+//#region GetControllers
+
+export interface GetControllersRequest {
+  canisterId: Principal;
+}
+
+export interface EncodedGetControllersRequest {
+  canister_id: string;
+}
+
+export function encodeGetControllersRequest(
+  req: GetControllersRequest,
+): EncodedGetControllersRequest {
+  return {
+    canister_id: base64EncodePrincipal(req.canisterId),
+  };
+}
+
+export type GetControllersResponse = Principal[];
+
+export type EncodedGetControllersResponse = {
+  principal_id: string;
+}[];
+
+export function decodeGetControllersResponse(
+  res: EncodedGetControllersResponse,
+): GetControllersResponse {
+  return res.map(({ principal_id }) => base64DecodePrincipal(principal_id));
+}
+
+//#endregion GetControllers
 
 //#region GetTime
 

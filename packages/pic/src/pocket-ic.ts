@@ -792,6 +792,32 @@ export class PocketIc {
   }
 
   /**
+   * Get the controllers of the specified canister.
+   *
+   * @param canisterId The Principal of the canister to get the controllers of.
+   * @returns The controllers of the specified canister.
+   *
+   * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+   *
+   * @example
+   * ```ts
+   * import { Principal } from '@dfinity/principal';
+   *
+   * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
+   *
+   * const picServer = await PocketIcServer.create();
+   * const pic = await PocketIc.create(picServer.getUrl());
+   *
+   * const controllers = await pic.getControllers(canisterId);
+   *
+   * await pic.tearDown();
+   * await picServer.stop();
+   */
+  public async getControllers(canisterId: Principal): Promise<Principal[]> {
+    return await this.client.getControllers({ canisterId });
+  }
+
+  /**
    * Get the current time of the IC in milliseconds since the Unix epoch.
    *
    * @returns The current time in milliseconds since the UNIX epoch.
@@ -960,8 +986,10 @@ export class PocketIc {
    *
    * @returns An array of subnet topologies, see {@link SubnetTopology}.
    */
-  public getTopology(): SubnetTopology[] {
-    return Object.values(this.client.getTopology());
+  public async getTopology(): Promise<SubnetTopology[]> {
+    const topology = await this.client.getTopology();
+
+    return Object.values(topology);
   }
 
   /**
@@ -971,10 +999,10 @@ export class PocketIc {
    * @returns The subnet topology for the Bitcoin subnet,
    * if it exists on this instance's network.
    */
-  public getBitcoinSubnet(): SubnetTopology | undefined {
-    return this.getTopology().find(
-      subnet => subnet.type === SubnetType.Bitcoin,
-    );
+  public async getBitcoinSubnet(): Promise<SubnetTopology | undefined> {
+    const topology = await this.getTopology();
+
+    return topology.find(subnet => subnet.type === SubnetType.Bitcoin);
   }
 
   /**
@@ -984,10 +1012,10 @@ export class PocketIc {
    * @returns The subnet topology for the Fiduciary subnet,
    * if it exists on this instance's network.
    */
-  public getFiduciarySubnet(): SubnetTopology | undefined {
-    return this.getTopology().find(
-      subnet => subnet.type === SubnetType.Fiduciary,
-    );
+  public async getFiduciarySubnet(): Promise<SubnetTopology | undefined> {
+    const topology = await this.getTopology();
+
+    return topology.find(subnet => subnet.type === SubnetType.Fiduciary);
   }
 
   /**
@@ -997,10 +1025,12 @@ export class PocketIc {
    * @returns The subnet topology for the Internet Identity subnet,
    * if it exists on this instance's network.
    */
-  public getInternetIdentitySubnet(): SubnetTopology | undefined {
-    return this.getTopology().find(
-      subnet => subnet.type === SubnetType.InternetIdentity,
-    );
+  public async getInternetIdentitySubnet(): Promise<
+    SubnetTopology | undefined
+  > {
+    const topology = await this.getTopology();
+
+    return topology.find(subnet => subnet.type === SubnetType.InternetIdentity);
   }
 
   /**
@@ -1010,8 +1040,10 @@ export class PocketIc {
    * @returns The subnet topology for the NNS subnet,
    * if it exists on this instance's network.
    */
-  public getNnsSubnet(): SubnetTopology | undefined {
-    return this.getTopology().find(subnet => subnet.type === SubnetType.NNS);
+  public async getNnsSubnet(): Promise<SubnetTopology | undefined> {
+    const topology = await this.getTopology();
+
+    return topology.find(subnet => subnet.type === SubnetType.NNS);
   }
 
   /**
@@ -1021,8 +1053,10 @@ export class PocketIc {
    * @returns The subnet topology for the SNS subnet,
    * if it exists on this instance's network.
    */
-  public getSnsSubnet(): SubnetTopology | undefined {
-    return this.getTopology().find(subnet => subnet.type === SubnetType.SNS);
+  public async getSnsSubnet(): Promise<SubnetTopology | undefined> {
+    const topology = await this.getTopology();
+
+    return topology.find(subnet => subnet.type === SubnetType.SNS);
   }
 
   /**
@@ -1032,10 +1066,10 @@ export class PocketIc {
    * @returns An array of subnet topologies for each application subnet
    * that exists on this instance's network.
    */
-  public getApplicationSubnets(): SubnetTopology[] {
-    return this.getTopology().filter(
-      subnet => subnet.type === SubnetType.Application,
-    );
+  public async getApplicationSubnets(): Promise<SubnetTopology[]> {
+    const topology = await this.getTopology();
+
+    return topology.filter(subnet => subnet.type === SubnetType.Application);
   }
 
   /**
@@ -1045,10 +1079,10 @@ export class PocketIc {
    * @returns An array of subnet topologies for each system subnet
    * that exists on this instance's network.
    */
-  public getSystemSubnets(): SubnetTopology[] {
-    return this.getTopology().filter(
-      subnet => subnet.type === SubnetType.System,
-    );
+  public async getSystemSubnets(): Promise<SubnetTopology[]> {
+    const topology = await this.getTopology();
+
+    return topology.filter(subnet => subnet.type === SubnetType.System);
   }
 
   /**

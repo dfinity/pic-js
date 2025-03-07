@@ -61,7 +61,7 @@ describe('Multicanister', () => {
       ],
     });
 
-    const applicationSubnets = pic.getApplicationSubnets();
+    const applicationSubnets = await pic.getApplicationSubnets();
     const mainSubnet = applicationSubnets[0];
     const heroesSubnet = applicationSubnets[1];
 
