@@ -13,7 +13,7 @@ import {
   EncodedGetTimeResponse,
   EncodedSetTimeRequest,
   EncodedGetSubnetIdResponse,
-  decodeInstanceTopology,
+  decodeGetTopologyResponse,
   InstanceTopology,
   GetStableMemoryRequest,
   encodeGetStableMemoryRequest,
@@ -70,6 +70,13 @@ import {
   AwaitCanisterCallResponse,
   EncodedAwaitCanisterCallResponse,
   decodeAwaitCanisterCallResponse,
+  EncodedGetTopologyResponse,
+  EncodedGetControllersRequest,
+  EncodedGetControllersResponse,
+  GetControllersRequest,
+  GetControllersResponse,
+  decodeGetControllersResponse,
+  encodeGetControllersRequest,
 } from './pocket-ic-client-types';
 
 const PROCESSING_TIME_VALUE_MS = 30_000;
@@ -80,7 +87,6 @@ export class PocketIcClient {
   private constructor(
     private readonly serverClient: Http2Client,
     private readonly instancePath: string,
-    private readonly topology: InstanceTopology,
   ) {}
 
   public static async create(
@@ -105,14 +111,9 @@ export class PocketIcClient {
       throw new Error(res.Error.message);
     }
 
-    const topology = decodeInstanceTopology(res.Created.topology);
     const instanceId = res.Created.instance_id;
 
-    return new PocketIcClient(
-      serverClient,
-      `/instances/${instanceId}`,
-      topology,
-    );
+    return new PocketIcClient(serverClient, `/instances/${instanceId}`);
   }
 
   public async deleteInstance(): Promise<void> {
@@ -124,6 +125,19 @@ export class PocketIcClient {
     });
 
     this.isInstanceDeleted = true;
+  }
+
+  public async getControllers(
+    req: GetControllersRequest,
+  ): Promise<GetControllersResponse> {
+    this.assertInstanceNotDeleted();
+
+    const res = await this.post<
+      EncodedGetControllersRequest,
+      EncodedGetControllersResponse
+    >('/read/get_controllers', encodeGetControllersRequest(req));
+
+    return decodeGetControllersResponse(res);
   }
 
   public async tick(): Promise<{}> {
@@ -141,8 +155,12 @@ export class PocketIcClient {
     );
   }
 
-  public getTopology(): InstanceTopology {
-    return this.topology;
+  public async getTopology(): Promise<InstanceTopology> {
+    this.assertInstanceNotDeleted();
+
+    const res = await this.get<EncodedGetTopologyResponse>('/_/topology');
+
+    return decodeGetTopologyResponse(res);
   }
 
   public async getTime(): Promise<GetTimeResponse> {
