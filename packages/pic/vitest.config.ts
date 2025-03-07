@@ -18,8 +18,5 @@ export default defineConfig({
     },
     testTimeout: 30000,
     hookTimeout: 30000,
-    // Add delay between tests when running in Wallaby.js
-    // Ensure proper cleanup between test runs
-    setupFiles: ['./test/setup.ts'],
   },
 }); 
