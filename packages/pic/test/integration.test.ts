@@ -1,60 +1,33 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { ActorMethod, PocketIc, PocketIcServer } from '../src/index.js';
+import { ActorMethod, PocketIc } from '../src/index.js';
+import { readPicUrl } from './test-utils.js';
 import { IDL as IDLType } from '@dfinity/candid';
 import { Principal } from '@dfinity/principal';
 import { Identity } from '@dfinity/agent';
 import { Ed25519KeyIdentity } from '@dfinity/identity';
+import { setup, teardown } from './test-setup.js';
 
 describe('PocketIc Integration Tests', () => {
-  let pic: PocketIc;
-  let picServer: PocketIcServer;
   let identity: Identity;
-
-  // Helper function to safely stop the server with timeout
-  const safeStopServer = async () => {
-    if (!picServer) return;
-
-    try {
-      await Promise.race([
-        picServer.stop(),
-        new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Server stop timeout')), 5000),
-        ),
-      ]);
-    } catch (error) {
-      console.error('Error stopping server:', error);
-      // If we have a process ID, try to force kill it
-      try {
-        if (picServer && process.kill(process.pid, 0)) {
-          process.kill(process.pid);
-        }
-      } catch (killError) {
-        console.error('Error force killing server:', killError);
-      }
-    }
-  };
-
-  // Handle unexpected termination
-  process.on('SIGINT', async () => {
-    await safeStopServer();
-    process.exit();
-  });
-
-  process.on('SIGTERM', async () => {
-    await safeStopServer();
-    process.exit();
-  });
+  let pic: PocketIc;
 
   beforeAll(async () => {
-    picServer = await PocketIcServer.start();
-    pic = await PocketIc.create(picServer.getUrl());
     const seed = new Uint8Array(32).fill(1);
     identity = await Ed25519KeyIdentity.generate(seed);
-  }, 20_000);
 
-  afterAll(async () => {
-    await safeStopServer();
+    // Start the server and get its URL
+    await setup();
+    const url = await readPicUrl();
+    if (!url) {
+      throw new Error('Failed to get PIC server URL from temp file');
+    }
+
+    // Create PIC instance
+    pic = await PocketIc.create(url);
   }, 20_000);
+  afterAll(async () => {
+    await teardown();
+  });
 
   it('should create a new canister', async () => {
     const canisterId = await pic.createCanister({
@@ -63,6 +36,7 @@ describe('PocketIc Integration Tests', () => {
     expect(canisterId).toBeDefined();
     expect(canisterId.toText()).toBe('ivcos-eqaaa-aaaab-qablq-cai');
   });
+
   it('should load a canister and be able to call it', async () => {
     interface CreateTodoRequest {
       text: string;
@@ -124,8 +98,7 @@ describe('PocketIc Integration Tests', () => {
 
     const actor = pic.createActor<_SERVICE>(idlFactory, canisterId);
     actor.setIdentity(identity);
-    actor;
     const result = await actor.get_todos();
     expect(result).toStrictEqual({ todos: [] });
   });
-}); 
+});
