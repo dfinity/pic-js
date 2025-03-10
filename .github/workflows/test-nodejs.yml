@@ -1,9 +1,7 @@
 name: test_nodejs
 
 on:
-  push:
-    branches:
-      - main
+  merge_group:
   pull_request:
 
 jobs:
