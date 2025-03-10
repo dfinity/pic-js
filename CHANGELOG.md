@@ -2,6 +2,7 @@
 
 ### Feat
 
+- add support get controllers and get topology endpoints
 - update dependencies
 
 ### Fix
