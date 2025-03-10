@@ -898,50 +898,41 @@ export function encodeCanisterCallRequest(
   };
 }
 
+export type EncodedCanisterCallResult<T> =
+  | { Ok: T }
+  | { Err: EncodedCanisterCallRejectResponse };
+
+export interface EncodedCanisterCallRejectResponse {
+  reject_code: number;
+  reject_message: string;
+  error_code: number;
+  certified: boolean;
+}
+
 export interface CanisterCallResponse {
   body: Uint8Array;
 }
 
-export interface EncodedCanisterCallSuccessResponse {
-  Ok: {
-    Reply: string;
-  };
-}
-
-export interface EncodedCanisterCallRejectResponse {
-  Ok: {
-    Reject: string;
-  };
-}
-
-export interface EncodedCanisterCallErrorResponse {
-  Err: EncodedCanisterError;
-}
-
-export interface EncodedCanisterError {
-  code: string;
-  description: string;
-}
-
-export type EncodedCanisterCallResponse =
-  | EncodedCanisterCallSuccessResponse
-  | EncodedCanisterCallRejectResponse
-  | EncodedCanisterCallErrorResponse;
+export type EncodedCanisterCallResponse = EncodedCanisterCallResult<string>;
 
 export function decodeCanisterCallResponse(
   res: EncodedCanisterCallResponse,
 ): CanisterCallResponse {
-  if ('Err' in res) {
-    throw new Error(res.Err.description);
-  }
-
-  if ('Reject' in res.Ok) {
-    throw new Error(res.Ok.Reject);
-  }
+  const okRes = decodeResultResponse<string>(res);
 
   return {
-    body: base64Decode(res.Ok.Reply),
+    body: base64Decode(okRes),
   };
+}
+
+function decodeResultResponse<T>(res: EncodedCanisterCallResult<T>): T {
+  if ('Err' in res) {
+    throw new Error(
+      `Canister call failed: ${res.Err.reject_message}. Reject code: ${res.Err.reject_code}. Error code: ${res.Err.error_code}. Certified: ${res.Err.certified}`,
+    );
+  }
+
+  return res.Ok;
 }
 
 //#endregion CanisterCall
@@ -963,33 +954,22 @@ export interface SubmitCanisterCallResponse {
   messageId: Uint8Array;
 }
 
-export interface EncodedSubmitCanisterCallSuccessResponse {
-  Ok: EncodedCanisterCallId;
-}
-
 export interface EncodedCanisterCallId {
   effective_principal: EncodedEffectivePrincipal;
   message_id: Uint8Array;
 }
 
-export interface EncodedSubmitCanisterCallErrorResponse {
-  Err: EncodedCanisterError;
-}
-
 export type EncodedSubmitCanisterCallResponse =
-  | EncodedSubmitCanisterCallSuccessResponse
-  | EncodedSubmitCanisterCallErrorResponse;
+  EncodedCanisterCallResult<EncodedCanisterCallId>;
 
 export function decodeSubmitCanisterCallResponse(
   res: EncodedSubmitCanisterCallResponse,
 ): SubmitCanisterCallResponse {
-  if ('Err' in res) {
-    throw new Error(res.Err.description);
-  }
+  const okRes = decodeResultResponse<EncodedCanisterCallId>(res);
 
   return {
-    effectivePrincipal: decodeEffectivePrincipal(res.Ok.effective_principal),
-    messageId: res.Ok.message_id,
+    effectivePrincipal: decodeEffectivePrincipal(okRes.effective_principal),
+    messageId: okRes.message_id,
   };
 }
 

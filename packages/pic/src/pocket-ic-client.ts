@@ -143,7 +143,7 @@ export class PocketIcClient {
   public async tick(): Promise<{}> {
     this.assertInstanceNotDeleted();
 
-    return await this.post<void, {}>('/update/tick');
+    return await this.post<{}, {}>('/update/tick', {});
   }
 
   public async getPubKey(req: GetPubKeyRequest): Promise<Uint8Array> {
@@ -280,7 +280,8 @@ export class PocketIcClient {
   ): Promise<CanisterCallResponse> {
     this.assertInstanceNotDeleted();
 
-    return await this.canisterCall('/update/execute_ingress_message', req);
+    const res = await this.submitCall(req);
+    return await this.awaitCall(res);
   }
 
   public async queryCall(
@@ -288,7 +289,12 @@ export class PocketIcClient {
   ): Promise<CanisterCallResponse> {
     this.assertInstanceNotDeleted();
 
-    return await this.canisterCall('/read/query', req);
+    const res = await this.post<
+      EncodedCanisterCallRequest,
+      EncodedCanisterCallResponse
+    >('/read/query', encodeCanisterCallRequest(req));
+
+    return decodeCanisterCallResponse(res);
   }
 
   public async submitCall(
@@ -315,18 +321,6 @@ export class PocketIcClient {
     >('/update/await_ingress_message', encodeAwaitCanisterCallRequest(req));
 
     return decodeAwaitCanisterCallResponse(res);
-  }
-
-  private async canisterCall(
-    endpoint: string,
-    req: CanisterCallRequest,
-  ): Promise<CanisterCallResponse> {
-    const res = await this.post<
-      EncodedCanisterCallRequest,
-      EncodedCanisterCallResponse
-    >(endpoint, encodeCanisterCallRequest(req));
-
-    return decodeCanisterCallResponse(res);
   }
 
   private async post<B, R extends {}>(endpoint: string, body?: B): Promise<R> {
