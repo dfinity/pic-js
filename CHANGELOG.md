@@ -2,6 +2,7 @@
 
 ### Feat
 
+- upgrade to pocketic version 8.0.0 (#96)
 - add support get controllers and get topology endpoints
 - update dependencies
 
