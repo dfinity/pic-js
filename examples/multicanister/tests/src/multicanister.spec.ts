@@ -9,6 +9,7 @@ import {
   idlFactory,
   init,
 } from '../../declarations/multicanister/multicanister.did';
+import { Principal } from '@dfinity/principal';
 
 const MAIN_WASM_PATH = resolve(
   __dirname,
@@ -57,7 +58,14 @@ describe('Multicanister', () => {
     pic = await PocketIc.create(process.env.PIC_URL, {
       application: [
         { state: { type: SubnetStateType.New } },
-        { state: { type: SubnetStateType.New } },
+        {
+          state: {
+            type: SubnetStateType.New,
+            subnetId: Principal.fromText(
+              'eq6en-6jqla-fbu5s-daskr-h6hx2-376n5-iqabl-qgrng-gfqmv-n3yjr-mqe',
+            ),
+          },
+        },
       ],
     });
 

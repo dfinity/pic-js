@@ -57,7 +57,9 @@ export type SystemSubnetStateConfig = NewSubnetStateConfig;
 
 export type ApplicationSubnetConfig =
   SubnetConfig<ApplicationSubnetStateConfig>;
-export type ApplicationSubnetStateConfig = NewSubnetStateConfig;
+export type ApplicationSubnetStateConfig =
+  | NewSubnetStateConfig
+  | FromPathSubnetStateConfig;
 
 export type VerifiedApplicationSubnetConfig =
   SubnetConfig<VerifiedApplicationSubnetStateConfig>;
