@@ -1,0 +1,7 @@
+{
+  "name": "todo-proxy-tests",
+  "type": "module",
+  "devDependencies": {
+    "@dfinity/pic": "workspace:*"
+  }
+} 

@@ -75,9 +75,7 @@ export interface CreateInstanceOptions {
  * Common options for creating a subnet.
  */
 export interface SubnetConfig<
-  T extends NewSubnetStateConfig | FromPathSubnetStateConfig =
-    | NewSubnetStateConfig
-    | FromPathSubnetStateConfig,
+  T = NewSubnetStateConfig | FromPathSubnetStateConfig,
 > {
   /**
    * Whether to enable deterministic time slicing.
@@ -168,7 +166,9 @@ export type ApplicationSubnetConfig =
 /**
  * Options for an application subnet's state.
  */
-export type ApplicationSubnetStateConfig = NewSubnetStateConfig;
+export type ApplicationSubnetStateConfig =
+  | NewSubnetStateConfig
+  | FromPathSubnetStateConfig;
 
 /**
  * Options for creating a verified application subnet.
