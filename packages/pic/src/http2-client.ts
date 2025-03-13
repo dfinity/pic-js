@@ -29,6 +29,18 @@ export const JSON_HEADER: RequestHeaders = {
   'Content-Type': 'application/json',
 };
 
+export class JsonGetError extends Error {
+  public readonly name = 'JsonGetError';
+  public readonly message: string;
+  public readonly response?: Response;
+
+  constructor(message: string, response?: Response) {
+    super(message);
+    this.message = message;
+    this.response = response;
+  }
+}
+
 export class Http2Client {
   constructor(
     private readonly baseUrl: string,
@@ -92,7 +104,7 @@ export class Http2Client {
             resBody.message,
           );
 
-          throw new Error(resBody.message);
+          throw new JsonGetError(resBody.message, res);
         }
 
         // the server has started processing or is busy
@@ -110,6 +122,11 @@ export class Http2Client {
 
           // something weird happened, throw and try again
           throw new Error('Unknown state');
+        }
+
+        // Throw error if the response was an error
+        if (res.status >= 400) {
+          throw new JsonGetError(`Error: ${res.status} ${res.statusText}`, res);
         }
 
         // the request was successful, exit the loop
