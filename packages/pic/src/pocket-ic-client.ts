@@ -106,6 +106,12 @@ export class PocketIcClient {
       body: encodeCreateInstanceRequest(req),
     });
 
+    if ('Error' in res) {
+      console.error('Error creating instance', res.Error.message);
+
+      throw new Error(res.Error.message);
+    }
+
     const instanceId = res.Created.instance_id;
 
     return new PocketIcClient(serverClient, `/instances/${instanceId}`);

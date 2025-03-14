@@ -97,7 +97,7 @@ export class Http2Client {
     return Promise.race([makeRequest(), cancelAfterTimeout()]);
   }
 
-  async #handleJsonResponse<R extends Record<string, unknown>>(
+  async #handleJsonResponse<R extends object>(
     res: Response,
     resBody: ApiResponse<R>,
   ): Promise<R> {
@@ -137,7 +137,7 @@ export class Http2Client {
     return resBody as R;
   }
 
-  public async jsonGet<R extends Record<string, unknown>>(
+  public async jsonGet<R extends object>(
     init: JsonGetRequest,
   ): Promise<R> {
     // poll the request until it is successful or times out
@@ -160,7 +160,7 @@ export class Http2Client {
     );
   }
 
-  public async jsonPost<B, R extends Record<string, unknown>>(
+  public async jsonPost<B, R extends object>(
     init: JsonPostRequest<B>,
   ): Promise<R> {
     const reqBody = init.body
@@ -231,7 +231,7 @@ interface ErrorResponse {
   message: string;
 }
 
-type ApiResponse<R extends Record<string, unknown>> =
+type ApiResponse<R extends object> =
   | StartedOrBusyApiResponse
   | ErrorResponse
   | R;
