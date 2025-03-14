@@ -22,4 +22,4 @@ export async function deletePicUrl(): Promise<void> {
   } catch {
     // Ignore errors if file doesn't exist
   }
-} 
+}

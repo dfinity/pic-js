@@ -137,9 +137,7 @@ export class Http2Client {
     return resBody as R;
   }
 
-  public async jsonGet<R extends object>(
-    init: JsonGetRequest,
-  ): Promise<R> {
+  public async jsonGet<R extends object>(init: JsonGetRequest): Promise<R> {
     // poll the request until it is successful or times out
     return await poll(
       async () => {

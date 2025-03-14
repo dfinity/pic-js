@@ -56,4 +56,4 @@ export class InstanceDeletedError extends Error {
       'This PocketIC instance has been torn down. Please create a new instance before interacting further with PocketIC.',
     );
   }
-} 
+}
