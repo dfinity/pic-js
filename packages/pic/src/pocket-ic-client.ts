@@ -95,7 +95,8 @@ export class PocketIcClient {
   ): Promise<PocketIcClient> {
     const processingTimeoutMs =
       req?.processingTimeoutMs ?? PROCESSING_TIME_VALUE_MS;
-    const serverClient = new Http2Client(url, processingTimeoutMs);
+    const retryTimes = req?.retryTimes ?? 3;
+    const serverClient = new Http2Client(url, processingTimeoutMs, retryTimes);
 
     const res = await serverClient.jsonPost<
       EncodedCreateInstanceRequest,
@@ -104,12 +105,6 @@ export class PocketIcClient {
       path: '/instances',
       body: encodeCreateInstanceRequest(req),
     });
-
-    if ('Error' in res) {
-      console.error('Error creating instance', res.Error.message);
-
-      throw new Error(res.Error.message);
-    }
 
     const instanceId = res.Created.instance_id;
 

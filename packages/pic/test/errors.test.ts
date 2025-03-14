@@ -4,6 +4,7 @@ import Express from 'express';
 import { Http2Client } from '../src/http2-client';
 import { ServerBusyError, ServerResponseError } from '../src/errors';
 import { poll } from '../src/util';
+import exp from 'constants';
 
 interface MockResponse {
   status: number;
@@ -13,15 +14,15 @@ interface MockResponse {
 const makeFakeServer = (port: number, mockResponse: MockResponse) => {
   const app = Express();
   app.use(Express.json());
-  
+
   app.get('*', (req, res) => {
     res.status(mockResponse.status).send(mockResponse.body);
   });
-  
+
   app.post('*', (req, res) => {
     res.status(mockResponse.status).send(mockResponse.body);
   });
-  
+
   return app.listen(port);
 };
 
@@ -62,7 +63,7 @@ describe('PocketIc.create error handling', () => {
     expect(response).toBeInstanceOf(ServerBusyError);
     expect(response.message).toBe('Server busy');
     expect(response.response?.status).toBe(409);
-    
+
     fakeReplicaServer.close();
   });
 
@@ -73,11 +74,14 @@ describe('PocketIc.create error handling', () => {
     });
 
     const client = new Http2Client('http://localhost:4323', 1000);
-    const response = client.jsonGet<Record<string, unknown>>({ path: '/test', headers: {} });
+    const response = client.jsonGet<Record<string, unknown>>({
+      path: '/test',
+      headers: {},
+    });
 
     await expect(response).rejects.toThrow(ServerResponseError);
     await expect(response).rejects.toThrow('500 Internal Server Error');
-    
+
     fakeReplicaServer.close();
   });
 
@@ -92,11 +96,11 @@ describe('PocketIc.create error handling', () => {
     const encodedBody = new TextEncoder().encode(JSON.stringify(bodyData));
 
     const response = await client
-      .request({ 
-        method: 'POST', 
-        path: '/test', 
+      .request({
+        method: 'POST',
+        path: '/test',
         headers: { 'Content-Type': 'application/json' },
-        body: encodedBody
+        body: encodedBody,
       })
       .then(res => {
         console.log(res);
@@ -118,17 +122,17 @@ describe('PocketIc.create error handling', () => {
     const client = new Http2Client('http://localhost:4325', 1000);
 
     const response = await client
-      .jsonPost<{ test: string }, Record<string, unknown>>({ 
-        path: '/test', 
+      .jsonPost<{ test: string }, Record<string, unknown>>({
+        path: '/test',
         headers: { 'Content-Type': 'application/json' },
-        body: { test: 'data' }
+        body: { test: 'data' },
       })
       .catch(e => e);
 
     expect(response).toBeInstanceOf(ServerBusyError);
     expect(response.message).toBe('Server busy');
     expect(response.response?.status).toBe(409);
-    
+
     fakeReplicaServer.close();
   });
 
@@ -139,15 +143,17 @@ describe('PocketIc.create error handling', () => {
     });
 
     const client = new Http2Client('http://localhost:4326', 1000);
-    const response = client.jsonPost<{ test: string }, Record<string, unknown>>({ 
-      path: '/test', 
-      headers: { 'Content-Type': 'application/json' },
-      body: { test: 'data' }
-    });
+    const response = client.jsonPost<{ test: string }, Record<string, unknown>>(
+      {
+        path: '/test',
+        headers: { 'Content-Type': 'application/json' },
+        body: { test: 'data' },
+      },
+    );
 
     await expect(response).rejects.toThrow(ServerResponseError);
     await expect(response).rejects.toThrow('Server error: Service Unavailable');
-    
+
     fakeReplicaServer.close();
   });
 
@@ -159,15 +165,40 @@ describe('PocketIc.create error handling', () => {
     });
 
     const startTime = Date.now();
-    await expect(poll(mockFn, { 
-      intervalMs: 10, 
-      timeoutMs: 1000,
-      retryTimes: 3 
-    })).rejects.toThrow('Test error');
+    await expect(
+      poll(mockFn, {
+        intervalMs: 10,
+        timeoutMs: 1000,
+        retryTimes: 3,
+      }),
+    ).rejects.toThrow('Test error');
     const endTime = Date.now();
 
     expect(attempts).toBe(4); // Initial attempt + 3 retries
     expect(mockFn).toHaveBeenCalledTimes(4);
     expect(endTime - startTime).toBeGreaterThanOrEqual(30); // At least 3 * 10ms intervals
+  });
+
+  it('should respect custom retry times configuration', async () => {
+    const mockFetch = vi.fn().mockImplementation(async () => {
+      throw new ServerBusyError('Server busy', { status: 409 } as any);
+    });
+
+    vi.spyOn(globalThis, 'fetch').mockImplementation(mockFetch);
+
+    const client = new Http2Client('http://localhost:4327', 1000, 1); // Only retry once
+
+    const response = await client
+      .jsonGet<Record<string, unknown>>({ path: '/test', headers: {} })
+      .catch(e => {
+        return e;
+      });
+
+    expect(response).toBeInstanceOf(ServerBusyError);
+    expect(response.message).toBe('Server busy');
+    expect(response.response?.status).toBe(409);
+    expect(mockFetch).toHaveBeenCalledTimes(2); // Initial attempt + 1 retry
+
+    vi.restoreAllMocks();
   });
 });

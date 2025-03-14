@@ -50,10 +50,16 @@ export class JsonGetError extends Error {
 export class Http2Client {
   #baseUrl: string;
   #processingTimeoutMs: number;
+  #retryTimes: number;
 
-  constructor(baseUrl: string, processingTimeoutMs: number) {
+  constructor(
+    baseUrl: string,
+    processingTimeoutMs: number,
+    retryTimes: number = 3,
+  ) {
     this.#baseUrl = baseUrl;
     this.#processingTimeoutMs = processingTimeoutMs;
+    this.#retryTimes = retryTimes;
   }
 
   public request(init: RequestOptions): Promise<Response> {
@@ -146,7 +152,11 @@ export class Http2Client {
         const resBody = (await res.json()) as ApiResponse<R>;
         return this.#handleJsonResponse(res, resBody);
       },
-      { intervalMs: POLLING_INTERVAL_MS, timeoutMs: this.#processingTimeoutMs },
+      {
+        intervalMs: POLLING_INTERVAL_MS,
+        timeoutMs: this.#processingTimeoutMs,
+        retryTimes: this.#retryTimes,
+      },
     );
   }
 
@@ -194,13 +204,18 @@ export class Http2Client {
               {
                 intervalMs: POLLING_INTERVAL_MS,
                 timeoutMs: this.#processingTimeoutMs,
+                retryTimes: this.#retryTimes,
               },
             );
           }
           throw error;
         }
       },
-      { intervalMs: POLLING_INTERVAL_MS, timeoutMs: this.#processingTimeoutMs },
+      {
+        intervalMs: POLLING_INTERVAL_MS,
+        timeoutMs: this.#processingTimeoutMs,
+        retryTimes: this.#retryTimes,
+      },
     );
   }
 }

@@ -10,17 +10,25 @@ export class Http2ClientError extends Error {
 
 export class ServerBusyError extends Http2ClientError {
   public override readonly name: string = 'ServerBusyError';
+
+  constructor(message: string, response: Response) {
+    super(message, response);
+  }
 }
 
 export class ServerProcessingError extends Http2ClientError {
   public override readonly name: string = 'ServerProcessingError';
+
+  constructor(message: string, response: Response) {
+    super(message, response);
+  }
 }
 
 export class ServerRequestTimeoutError extends Http2ClientError {
   public override readonly name: string = 'ServerRequestTimeoutError';
-  
+
   constructor() {
-    super('A request to the PocketIC server timed out.');
+    super('A request to the PocketIC server timed out.', undefined);
   }
 }
 
