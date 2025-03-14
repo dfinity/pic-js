@@ -1,4 +1,10 @@
-import { ServerRequestTimeoutError } from './error';
+import {
+  ServerBusyError,
+  ServerProcessingError,
+  ServerRequestTimeoutError,
+  ServerResponseError,
+  UnknownStateError,
+} from './errors';
 import { isNil, poll } from './util';
 
 export interface RequestOptions {
@@ -29,11 +35,32 @@ export const JSON_HEADER: RequestHeaders = {
   'Content-Type': 'application/json',
 };
 
+export class JsonGetError extends Error {
+  public readonly name = 'JsonGetError';
+  public readonly message: string;
+  public readonly response?: Response;
+
+  constructor(message: string, response?: Response) {
+    super(message);
+    this.message = message;
+    this.response = response;
+  }
+}
+
 export class Http2Client {
+  #baseUrl: string;
+  #processingTimeoutMs: number;
+  #retryTimes: number;
+
   constructor(
-    private readonly baseUrl: string,
-    private readonly processingTimeoutMs: number,
-  ) {}
+    baseUrl: string,
+    processingTimeoutMs: number,
+    retryTimes: number = 3,
+  ) {
+    this.#baseUrl = baseUrl;
+    this.#processingTimeoutMs = processingTimeoutMs;
+    this.#retryTimes = retryTimes;
+  }
 
   public request(init: RequestOptions): Promise<Response> {
     const timeoutAbortController = new AbortController();
@@ -44,7 +71,7 @@ export class Http2Client {
         const timeoutId = setTimeout(() => {
           requestAbortController.abort();
           reject(new ServerRequestTimeoutError());
-        }, this.processingTimeoutMs);
+        }, this.#processingTimeoutMs);
 
         timeoutAbortController.signal.addEventListener('abort', () => {
           clearTimeout(timeoutId);
@@ -54,7 +81,7 @@ export class Http2Client {
     };
 
     const makeRequest = async (): Promise<Response> => {
-      const url = `${this.baseUrl}${init.path}`;
+      const url = `${this.#baseUrl}${init.path}`;
 
       const res = await fetch(url, {
         method: init.method,
@@ -70,7 +97,47 @@ export class Http2Client {
     return Promise.race([makeRequest(), cancelAfterTimeout()]);
   }
 
-  public async jsonGet<R extends {}>(init: JsonGetRequest): Promise<R> {
+  async #handleJsonResponse<R extends object>(
+    res: Response,
+    resBody: ApiResponse<R>,
+  ): Promise<R> {
+    if (!resBody) {
+      return resBody;
+    }
+
+    // Handle server busy state first
+    if (res.status === 409) {
+      throw new ServerBusyError('Server busy', res);
+    }
+
+    // server encountered an error, throw and try again
+    if ('message' in resBody && typeof resBody.message === 'string') {
+      console.error('PocketIC server encountered an error', resBody.message);
+
+      throw new ServerResponseError(resBody.message, res);
+    }
+
+    // the server has started processing or is busy
+    if ('state_label' in resBody && typeof resBody.state_label === 'string') {
+      // the server has started processing the request
+      if (res.status === 202) {
+        throw new ServerProcessingError('Server started processing', res);
+      }
+
+      // something weird happened, throw and try again
+      throw new UnknownStateError(res);
+    }
+
+    // Throw error if the response was an error
+    if (res.status >= 400) {
+      throw new ServerResponseError(`${res.status} ${res.statusText}`, res);
+    }
+
+    // the request was successful, exit the loop
+    return resBody as R;
+  }
+
+  public async jsonGet<R extends object>(init: JsonGetRequest): Promise<R> {
     // poll the request until it is successful or times out
     return await poll(
       async () => {
@@ -81,45 +148,19 @@ export class Http2Client {
         });
 
         const resBody = (await res.json()) as ApiResponse<R>;
-        if (!resBody) {
-          return resBody;
-        }
-
-        // server encountered an error, throw and try again
-        if ('message' in resBody) {
-          console.error(
-            'PocketIC server encountered an error',
-            resBody.message,
-          );
-
-          throw new Error(resBody.message);
-        }
-
-        // the server has started processing or is busy
-        if ('state_label' in resBody) {
-          // the server is too busy to process the request, throw and try again
-          if (res.status === 409) {
-            throw new Error('Server busy');
-          }
-
-          // the server has started processing the request
-          // this shouldn't happen for GET requests, throw and try again
-          if (res.status === 202) {
-            throw new Error('Server started processing');
-          }
-
-          // something weird happened, throw and try again
-          throw new Error('Unknown state');
-        }
-
-        // the request was successful, exit the loop
-        return resBody;
+        return this.#handleJsonResponse(res, resBody);
       },
-      { intervalMs: POLLING_INTERVAL_MS, timeoutMs: this.processingTimeoutMs },
+      {
+        intervalMs: POLLING_INTERVAL_MS,
+        timeoutMs: this.#processingTimeoutMs,
+        retryTimes: this.#retryTimes,
+      },
     );
   }
 
-  public async jsonPost<B, R extends {}>(init: JsonPostRequest<B>): Promise<R> {
+  public async jsonPost<B, R extends object>(
+    init: JsonPostRequest<B>,
+  ): Promise<R> {
     const reqBody = init.body
       ? new TextEncoder().encode(JSON.stringify(init.body))
       : undefined;
@@ -139,25 +180,15 @@ export class Http2Client {
           return resBody;
         }
 
-        // server encountered an error, throw and try again
-        if ('message' in resBody) {
-          console.error(
-            'PocketIC server encountered an error',
-            resBody.message,
-          );
-
-          throw new Error(resBody.message);
-        }
-
-        // the server has started processing or is busy
-        if ('state_label' in resBody) {
-          // the server is too busy to process the request, throw and try again
-          if (res.status === 409) {
-            throw new Error('Server busy');
-          }
-
-          // the server has started processing the request, poll until it is done
-          if (res.status === 202) {
+        try {
+          return await this.#handleJsonResponse(res, resBody);
+        } catch (error) {
+          // If we get a 202 (processing) status, handle the polling for completion
+          if (
+            error instanceof ServerProcessingError &&
+            'state_label' in resBody &&
+            typeof resBody.state_label === 'string'
+          ) {
             return await poll(
               async () => {
                 const stateRes = await this.request({
@@ -166,34 +197,23 @@ export class Http2Client {
                 });
 
                 const stateBody = (await stateRes.json()) as ApiResponse<R>;
-
-                // the server encountered an error, throw and try again
-                if (
-                  isNil(stateBody) ||
-                  'message' in stateBody ||
-                  'state_label' in stateBody
-                ) {
-                  throw new Error('Polling has not succeeded yet');
-                }
-
-                // the request was successful, exit the loop
-                return stateBody;
+                return this.#handleJsonResponse(stateRes, stateBody);
               },
               {
                 intervalMs: POLLING_INTERVAL_MS,
-                timeoutMs: this.processingTimeoutMs,
+                timeoutMs: this.#processingTimeoutMs,
+                retryTimes: this.#retryTimes,
               },
             );
           }
-
-          // something weird happened, throw and try again
-          throw new Error('Unknown state');
+          throw error;
         }
-
-        // the request was successful, exit the loop
-        return resBody;
       },
-      { intervalMs: POLLING_INTERVAL_MS, timeoutMs: this.processingTimeoutMs },
+      {
+        intervalMs: POLLING_INTERVAL_MS,
+        timeoutMs: this.#processingTimeoutMs,
+        retryTimes: this.#retryTimes,
+      },
     );
   }
 }
@@ -209,4 +229,7 @@ interface ErrorResponse {
   message: string;
 }
 
-type ApiResponse<R extends {}> = StartedOrBusyApiResponse | ErrorResponse | R;
+type ApiResponse<R extends object> =
+  | StartedOrBusyApiResponse
+  | ErrorResponse
+  | R;

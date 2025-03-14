@@ -65,6 +65,12 @@ export interface CreateInstanceOptions {
   processingTimeoutMs?: number;
 
   /**
+   * The number of times to retry a failed request before giving up.
+   * Defaults to 3.
+   */
+  retryTimes?: number;
+
+  /**
    * Determines if non-mainnet features (e.g., best-effort responses) should be
    * enabled for the PocketIC instance. Defaults to `false`.
    */
@@ -824,3 +830,67 @@ export interface HttpsOutcallRejectResponse {
 }
 
 //#endregion HTTPS Outcalls
+
+export interface CreateInstanceRequest {
+  /**
+   * Configuration options for creating an NNS subnet.
+   * If no config is provided, the NNS subnet is not setup.
+   */
+  nns?: NnsSubnetConfig;
+
+  /**
+   * Configuration options for creating an SNS subnet.
+   * If no config is provided, the SNS subnet is not setup.
+   */
+  sns?: SnsSubnetConfig;
+
+  /**
+   * Configuration options for creating an II subnet.
+   * If no config is provided, the II subnet is not setup.
+   */
+  ii?: IiSubnetConfig;
+
+  /**
+   * Configuration options for creating a Fiduciary subnet.
+   * If no config is provided, the Fiduciary subnet is not setup.
+   */
+  fiduciary?: FiduciarySubnetConfig;
+
+  /**
+   * Configuration options for creating a Bitcoin subnet.
+   * If no config is provided, the Bitcoin subnet is not setup.
+   */
+  bitcoin?: BitcoinSubnetConfig;
+
+  /**
+   * Configuration options for creating system subnets.
+   * A system subnet will be created for each configuration object provided.
+   * If no config objects are provided, no system subnets are setup.
+   */
+  system?: SystemSubnetConfig[];
+
+  /**
+   * Configuration options for creating application subnets.
+   * An application subnet will be created for each configuration object provided.
+   * If no config objects are provided, no application subnets are setup.
+   */
+  application?: ApplicationSubnetConfig[];
+
+  /**
+   * Configuration options for creating verified application subnets.
+   * A verified application subnet will be created for each configuration object provided.
+   * If no config objects are provided, no verified application subnets are setup.
+   */
+  verifiedApplication?: VerifiedApplicationSubnetConfig[];
+
+  /**
+   * How long the PocketIC client should wait for a response from the server.
+   */
+  processingTimeoutMs?: number;
+
+  /**
+   * The number of times to retry a failed request before giving up.
+   * Defaults to 3.
+   */
+  retryTimes?: number;
+}

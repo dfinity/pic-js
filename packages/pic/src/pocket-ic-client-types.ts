@@ -23,6 +23,7 @@ export interface CreateInstanceRequest {
   verifiedApplication?: VerifiedApplicationSubnetConfig[];
   processingTimeoutMs?: number;
   nonmainnetFeatures?: boolean;
+  retryTimes?: number;
 }
 
 export interface SubnetConfig<
