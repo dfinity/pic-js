@@ -95,8 +95,7 @@ export class PocketIcClient {
   ): Promise<PocketIcClient> {
     const processingTimeoutMs =
       req?.processingTimeoutMs ?? PROCESSING_TIME_VALUE_MS;
-    const retryTimes = req?.retryTimes ?? 3;
-    const serverClient = new Http2Client(url, processingTimeoutMs, retryTimes);
+    const serverClient = new Http2Client(url, processingTimeoutMs);
 
     const res = await serverClient.jsonPost<
       EncodedCreateInstanceRequest,

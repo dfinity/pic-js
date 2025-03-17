@@ -50,16 +50,10 @@ export class JsonGetError extends Error {
 export class Http2Client {
   #baseUrl: string;
   #processingTimeoutMs: number;
-  #retryTimes: number;
 
-  constructor(
-    baseUrl: string,
-    processingTimeoutMs: number,
-    retryTimes: number = 3,
-  ) {
+  constructor(baseUrl: string, processingTimeoutMs: number) {
     this.#baseUrl = baseUrl;
     this.#processingTimeoutMs = processingTimeoutMs;
-    this.#retryTimes = retryTimes;
   }
 
   public request(init: RequestOptions): Promise<Response> {
@@ -153,7 +147,6 @@ export class Http2Client {
       {
         intervalMs: POLLING_INTERVAL_MS,
         timeoutMs: this.#processingTimeoutMs,
-        retryTimes: this.#retryTimes,
       },
     );
   }
@@ -202,7 +195,6 @@ export class Http2Client {
               {
                 intervalMs: POLLING_INTERVAL_MS,
                 timeoutMs: this.#processingTimeoutMs,
-                retryTimes: this.#retryTimes,
               },
             );
           }
@@ -212,7 +204,6 @@ export class Http2Client {
       {
         intervalMs: POLLING_INTERVAL_MS,
         timeoutMs: this.#processingTimeoutMs,
-        retryTimes: this.#retryTimes,
       },
     );
   }
