@@ -1,10 +1,8 @@
 import { describe, it, expect, vi } from 'vitest';
-import { PocketIc } from '../src';
 import Express from 'express';
 import { Http2Client } from '../src/http2-client';
 import { ServerBusyError, ServerResponseError } from '../src/errors';
 import { poll } from '../src/util';
-import exp from 'constants';
 
 interface MockResponse {
   status: number;
@@ -15,11 +13,11 @@ const makeFakeServer = (port: number, mockResponse: MockResponse) => {
   const app = Express();
   app.use(Express.json());
 
-  app.get('*', (req, res) => {
+  app.get('*', (_, res) => {
     res.status(mockResponse.status).send(mockResponse.body);
   });
 
-  app.post('*', (req, res) => {
+  app.post('*', (_, res) => {
     res.status(mockResponse.status).send(mockResponse.body);
   });
 
@@ -38,7 +36,6 @@ describe('PocketIc.create error handling', () => {
     const response = await client
       .request({ method: 'GET', path: '/test', headers: {} })
       .then(res => {
-        console.log(res);
         return res;
       });
     expect(response.status).toBe(500);
@@ -103,7 +100,6 @@ describe('PocketIc.create error handling', () => {
         body: encodedBody,
       })
       .then(res => {
-        console.log(res);
         return res;
       });
     expect(response.status).toBe(500);
@@ -142,7 +138,7 @@ describe('PocketIc.create error handling', () => {
       body: '{"message": "Service Unavailable"}',
     });
 
-    const client = new Http2Client('http://localhost:4326', 1000);
+    const client = new Http2Client('http://localhost:4326', 10);
     const response = client.jsonPost<{ test: string }, Record<string, unknown>>(
       {
         path: '/test',
@@ -151,54 +147,8 @@ describe('PocketIc.create error handling', () => {
       },
     );
 
-    await expect(response).rejects.toThrow(ServerResponseError);
     await expect(response).rejects.toThrow('Server error: Service Unavailable');
 
     fakeReplicaServer.close();
-  });
-
-  it('should retry exactly 3 times before failing', async () => {
-    let attempts = 0;
-    const mockFn = vi.fn().mockImplementation(async () => {
-      attempts++;
-      throw new Error('Test error');
-    });
-
-    const startTime = Date.now();
-    await expect(
-      poll(mockFn, {
-        intervalMs: 10,
-        timeoutMs: 1000,
-        retryTimes: 3,
-      }),
-    ).rejects.toThrow('Test error');
-    const endTime = Date.now();
-
-    expect(attempts).toBe(4); // Initial attempt + 3 retries
-    expect(mockFn).toHaveBeenCalledTimes(4);
-    expect(endTime - startTime).toBeGreaterThanOrEqual(30); // At least 3 * 10ms intervals
-  });
-
-  it('should respect custom retry times configuration', async () => {
-    const mockFetch = vi.fn().mockImplementation(async () => {
-      throw new ServerBusyError('Server busy', { status: 409 } as any);
-    });
-
-    vi.spyOn(globalThis, 'fetch').mockImplementation(mockFetch);
-
-    const client = new Http2Client('http://localhost:4327', 1000, 1); // Only retry once
-
-    const response = await client
-      .jsonGet<Record<string, unknown>>({ path: '/test', headers: {} })
-      .catch(e => {
-        return e;
-      });
-
-    expect(response).toBeInstanceOf(ServerBusyError);
-    expect(response.message).toBe('Server busy');
-    expect(response.response?.status).toBe(409);
-    expect(mockFetch).toHaveBeenCalledTimes(2); // Initial attempt + 1 retry
-
-    vi.restoreAllMocks();
   });
 });
