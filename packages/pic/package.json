@@ -20,7 +20,12 @@
     "testing-tools"
   ],
   "files": [
-    "dist",
+    "dist/*.js",
+    "dist/*.d.ts",
+    "dist/*.map",
+    "dist/util/*.js",
+    "dist/util/*.d.ts",
+    "dist/util/*.map",
     "postinstall.mjs"
   ],
   "main": "./dist/index.js",

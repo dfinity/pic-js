@@ -1,0 +1,25 @@
+# Test files
+**/*.test.ts
+**/*.test.js
+**/*.spec.ts
+**/__tests__/
+**/test/
+dist/test
+
+# Source files (since we publish dist)
+src/
+
+# Development files
+.eslintrc*
+.prettierrc*
+.editorconfig
+.gitignore
+.npmignore
+tsconfig.json
+vitest.config.ts
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo 
