@@ -13,55 +13,23 @@ import { TopologyValidationError } from './error';
 //#region CreateInstance
 
 export interface CreateInstanceRequest {
-  nns?: NnsSubnetConfig;
-  sns?: SnsSubnetConfig;
-  ii?: IiSubnetConfig;
-  fiduciary?: FiduciarySubnetConfig;
-  bitcoin?: BitcoinSubnetConfig;
-  system?: SystemSubnetConfig[];
-  application?: ApplicationSubnetConfig[];
-  verifiedApplication?: VerifiedApplicationSubnetConfig[];
+  nns?: SubnetConfig;
+  sns?: SubnetConfig;
+  ii?: SubnetConfig;
+  fiduciary?: SubnetConfig;
+  bitcoin?: SubnetConfig;
+  system?: SubnetConfig[];
+  application?: SubnetConfig[];
+  verifiedApplication?: SubnetConfig[];
   processingTimeoutMs?: number;
   nonmainnetFeatures?: boolean;
 }
 
-export interface SubnetConfig<
-  T extends NewSubnetStateConfig | FromPathSubnetStateConfig =
-    | NewSubnetStateConfig
-    | FromPathSubnetStateConfig,
-> {
+export interface SubnetConfig {
   enableDeterministicTimeSlicing?: boolean;
   enableBenchmarkingInstructionLimits?: boolean;
-  state: T;
+  state: NewSubnetStateConfig | FromPathSubnetStateConfig;
 }
-
-export type NnsSubnetConfig = SubnetConfig<NnsSubnetStateConfig>;
-export type NnsSubnetStateConfig =
-  | NewSubnetStateConfig
-  | FromPathSubnetStateConfig;
-
-export type SnsSubnetConfig = SubnetConfig<SnsSubnetStateConfig>;
-export type SnsSubnetStateConfig = NewSubnetStateConfig;
-
-export type IiSubnetConfig = SubnetConfig<IiSubnetStateConfig>;
-export type IiSubnetStateConfig = NewSubnetStateConfig;
-
-export type FiduciarySubnetConfig = SubnetConfig<FiduciarySubnetStateConfig>;
-export type FiduciarySubnetStateConfig = NewSubnetStateConfig;
-
-export type BitcoinSubnetConfig = SubnetConfig<BitcoinSubnetStateConfig>;
-export type BitcoinSubnetStateConfig = NewSubnetStateConfig;
-
-export type SystemSubnetConfig = SubnetConfig<SystemSubnetStateConfig>;
-export type SystemSubnetStateConfig = NewSubnetStateConfig;
-
-export type ApplicationSubnetConfig =
-  SubnetConfig<ApplicationSubnetStateConfig>;
-export type ApplicationSubnetStateConfig = NewSubnetStateConfig;
-
-export type VerifiedApplicationSubnetConfig =
-  SubnetConfig<VerifiedApplicationSubnetStateConfig>;
-export type VerifiedApplicationSubnetStateConfig = NewSubnetStateConfig;
 
 export interface NewSubnetStateConfig {
   type: SubnetStateType.New;
@@ -162,7 +130,7 @@ function encodeInstructionConfig(
 export function encodeCreateInstanceRequest(
   req?: CreateInstanceRequest,
 ): EncodedCreateInstanceRequest {
-  const defaultApplicationSubnet: ApplicationSubnetConfig = {
+  const defaultApplicationSubnet: SubnetConfig = {
     state: { type: SubnetStateType.New },
   };
   const defaultOptions: CreateInstanceRequest = req ?? {

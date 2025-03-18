@@ -32,7 +32,8 @@
     "test:nns-proxy": "jest -c ./examples/nns_proxy/tests/jest.config.ts",
     "build:todo": "dfx generate todo && dfx build todo --check",
     "test:todo": "jest -c ./examples/todo/tests/jest.config.ts",
-    "postinstall": "tar -xvf examples/nns_proxy/tests/state/nns_state.tar.gz -C examples/nns_proxy/tests/state"
+    "test:todo-proxy": "jest -c ./examples/todo_proxy/tests/jest.config.ts",
+    "postinstall": "./postinstall.sh"
   },
   "devDependencies": {
     "@dfinity/agent": "^2.1.3",
