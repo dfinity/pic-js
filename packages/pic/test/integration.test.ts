@@ -1,30 +1,31 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { ActorMethod, PocketIc } from '../src/index.js';
-import { readPicUrl } from './test-utils.js';
 import { IDL as IDLType } from '@dfinity/candid';
 import { Principal } from '@dfinity/principal';
 import { Identity } from '@dfinity/agent';
 import { Ed25519KeyIdentity } from '@dfinity/identity';
-import { setup, teardown } from './test-setup.js';
+import { picServer, teardown } from './test-setup.js';
 
 describe('PocketIc Integration Tests', () => {
   let identity: Identity;
   let pic: PocketIc;
 
   beforeAll(async () => {
+    console.log('here');
     const seed = new Uint8Array(32).fill(1);
     identity = await Ed25519KeyIdentity.generate(seed);
-
+    console.log('here');
     // Start the server and get its URL
-    await setup();
-    const url = await readPicUrl();
+    const url = await picServer.getUrl();
     if (!url) {
       throw new Error('Failed to get PIC server URL from temp file');
     }
 
+    console.log(url);
     // Create PIC instance
     pic = await PocketIc.create(url);
-  }, 20_000);
+    console.log(pic);
+  }, 30_000);
   afterAll(async () => {
     await teardown();
   });
