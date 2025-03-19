@@ -3,7 +3,6 @@ import {
   ServerProcessingError,
   ServerRequestTimeoutError,
   ServerResponseError,
-  UnknownStateError,
 } from './errors';
 import { isNil, poll } from './util';
 
@@ -34,6 +33,13 @@ export type Method = 'GET' | 'POST' | 'PUT' | 'DELETE';
 export const JSON_HEADER: RequestHeaders = {
   'Content-Type': 'application/json',
 };
+
+export enum HttpStatus {
+  OK = 200,
+  ACCEPTED = 202, // Includes 404 as well
+  CONFLICT = 409,
+  OTHER = -1, // Represents any other status
+}
 
 export class Http2Client {
   #baseUrl: string;
@@ -79,44 +85,87 @@ export class Http2Client {
     return Promise.race([makeRequest(), cancelAfterTimeout()]);
   }
 
-  async #handleJsonResponse<R extends object>(
-    res: Response,
-    resBody: ApiResponse<R>,
-  ): Promise<R> {
-    if (!resBody) {
-      return resBody;
+  #simplifyStatus(status: number): HttpStatus {
+    status === HttpStatus.ACCEPTED || status === 404
+      ? HttpStatus.ACCEPTED
+      : Object.values(HttpStatus).includes(status)
+        ? status
+        : HttpStatus.OTHER;
+
+    if (status === HttpStatus.ACCEPTED || status === 404) {
+      return HttpStatus.ACCEPTED;
     }
-
-    // Handle server busy state first
-    if (res.status === 409) {
-      throw new ServerBusyError('Server busy', res);
+    if (Object.values(HttpStatus).includes(status)) {
+      return status as HttpStatus;
     }
+    return HttpStatus.OTHER;
+  }
 
-    // server encountered an error, throw and try again
-    if ('message' in resBody && typeof resBody.message === 'string') {
-      console.error('PocketIC server encountered an error', resBody.message);
+  async #handleJsonResponse<R extends object>(res: Response): Promise<R> {
+    const status = this.#simplifyStatus(res.status);
 
-      throw new ServerResponseError(resBody.message, res);
-    }
-
-    // the server has started processing or is busy
-    if ('state_label' in resBody && typeof resBody.state_label === 'string') {
-      // the server has started processing the request
-      if (res.status === 202) {
-        throw new ServerProcessingError('Server started processing', res);
+    switch (status) {
+      case HttpStatus.OK: {
+        try {
+          const data = await res.json();
+          return data as R;
+        } catch (e) {
+          throw new ServerResponseError(`Could not parse response: ${String(e)}`, res);
+        }
       }
+      case HttpStatus.ACCEPTED: {
+        try {
+          const result = await res.json();
+          guard<StartedOrBusyApiResponse>(result);
+          const { state_label, op_id } = result as StartedOrBusyApiResponse;
+          console.debug(
+            `Instance has started or polling: state_label=${state_label}, op_id=${op_id}`,
+          );
+          while (true) {
+            await new Promise((resolve) =>
+              setTimeout(resolve, POLLING_INTERVAL_MS),
+            );
 
-      // something weird happened, throw and try again
-      throw new UnknownStateError(res);
+            const stateRes = await this.request({
+              method: 'GET',
+              path: `/read_graph/${state_label}/${op_id}`,
+            });
+
+            if (stateRes.status === 404) {
+              const message = await stateRes.text();
+              console.debug(`Polling has not succeeded yet: ${message}`);
+              continue;
+            }
+
+            return await this.#handleJsonResponse<R>(stateRes);
+          }
+        } catch (e) {
+          throw new ServerResponseError(`Could not parse response: ${String(e)}`, res);
+        }
+      }
+      case HttpStatus.CONFLICT: {
+        try {
+          const result = await res.json();
+          guard<StartedOrBusyApiResponse>(result);
+          const { state_label, op_id } = result as StartedOrBusyApiResponse;
+          console.debug(
+            `Instance is busy: state_label=${state_label}, op_id=${op_id}`,
+          );
+          throw new ServerBusyError('Server busy', res);
+        } catch (e) {
+          throw new ServerResponseError(`Could not parse response: ${String(e)}`, res);
+        }
+      }
+      case HttpStatus.OTHER:
+      default: {
+        try {
+          const { message } = await res.json() as ErrorResponse;
+          throw new ServerResponseError(message, res);
+        } catch (e) {
+          throw new ServerResponseError(`Could not parse error: ${String(e)}`, res);
+        }
+      }
     }
-
-    // Throw error if the response was an error
-    if (res.status >= 400) {
-      throw new ServerResponseError(`${res.status} ${res.statusText}`, res);
-    }
-
-    // the request was successful, exit the loop
-    return resBody as R;
   }
 
   public async jsonGet<R extends object>(init: JsonGetRequest): Promise<R> {
@@ -128,9 +177,7 @@ export class Http2Client {
           path: init.path,
           headers: { ...init.headers, ...JSON_HEADER },
         });
-
-        const resBody = (await res.json()) as ApiResponse<R>;
-        return this.#handleJsonResponse(res, resBody);
+        return this.#handleJsonResponse<R>(res);
       },
       {
         intervalMs: POLLING_INTERVAL_MS,
@@ -162,7 +209,7 @@ export class Http2Client {
         }
 
         try {
-          return await this.#handleJsonResponse(res, resBody);
+          return await this.#handleJsonResponse<R>(res);
         } catch (error) {
           // If we get a 202 (processing) status, handle the polling for completion
           if (
@@ -177,8 +224,7 @@ export class Http2Client {
                   path: `/read_graph/${resBody.state_label}/${resBody.op_id}`,
                 });
 
-                const stateBody = (await stateRes.json()) as ApiResponse<R>;
-                return this.#handleJsonResponse(stateRes, stateBody);
+                return this.#handleJsonResponse<R>(stateRes);
               },
               {
                 intervalMs: POLLING_INTERVAL_MS,
@@ -194,6 +240,27 @@ export class Http2Client {
         timeoutMs: this.#processingTimeoutMs,
       },
     );
+  }
+}
+
+function guard<T>(value: unknown): asserts value is T {
+  if (typeof value !== 'object' || value === null) {
+    throw new Error('Value is not an object');
+  }
+  if (!('state_label' in value) || !('op_id' in value)) {
+    throw new Error('Value does not have state_label or op_id');
+  }
+  if (typeof (value as any).state_label !== 'string') {
+    throw new Error('state_label is not a string');
+  }
+  if (typeof (value as any).op_id !== 'string') {
+    throw new Error('op_id is not a string');
+  }
+  if (typeof (value as any).message !== 'undefined') {
+    throw new Error('Value has message property');
+  }
+  if (typeof (value as any).error !== 'undefined') {
+    throw new Error('Value has error property');
   }
 }
 
