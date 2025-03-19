@@ -34,13 +34,6 @@ export const JSON_HEADER: RequestHeaders = {
   'Content-Type': 'application/json',
 };
 
-export enum HttpStatus {
-  OK = 200,
-  ACCEPTED = 202, // Includes 404 as well
-  CONFLICT = 409,
-  OTHER = -1, // Represents any other status
-}
-
 export class Http2Client {
   #baseUrl: string;
   #processingTimeoutMs: number;
@@ -86,12 +79,6 @@ export class Http2Client {
   }
 
   #simplifyStatus(status: number): HttpStatus {
-    status === HttpStatus.ACCEPTED || status === 404
-      ? HttpStatus.ACCEPTED
-      : Object.values(HttpStatus).includes(status)
-        ? status
-        : HttpStatus.OTHER;
-
     if (status === HttpStatus.ACCEPTED || status === 404) {
       return HttpStatus.ACCEPTED;
     }
@@ -101,28 +88,34 @@ export class Http2Client {
     return HttpStatus.OTHER;
   }
 
-  async #handleJsonResponse<R extends object>(res: Response): Promise<R> {
+  /**
+   * Handles the JSON response from the server.
+   * @param res - The response object.
+   * @param resBody - The response body object
+   * @returns The parsed JSON response.
+   */
+  async #handleJsonResponse<R extends object>(
+    res: Response,
+    resBody: ApiResponse<R>,
+  ): Promise<R> {
+    if (!resBody) {
+      return resBody;
+    }
     const status = this.#simplifyStatus(res.status);
 
     switch (status) {
       case HttpStatus.OK: {
-        try {
-          const data = await res.json();
-          return data as R;
-        } catch (e) {
-          throw new ServerResponseError(`Could not parse response: ${String(e)}`, res);
-        }
+        return resBody as R;
       }
       case HttpStatus.ACCEPTED: {
         try {
-          const result = await res.json();
-          guard<StartedOrBusyApiResponse>(result);
-          const { state_label, op_id } = result as StartedOrBusyApiResponse;
+          guard<StartedOrBusyApiResponse>(resBody);
+          const { state_label, op_id } = resBody as StartedOrBusyApiResponse;
           console.debug(
             `Instance has started or polling: state_label=${state_label}, op_id=${op_id}`,
           );
           while (true) {
-            await new Promise((resolve) =>
+            await new Promise(resolve =>
               setTimeout(resolve, POLLING_INTERVAL_MS),
             );
 
@@ -137,33 +130,24 @@ export class Http2Client {
               continue;
             }
 
-            return await this.#handleJsonResponse<R>(stateRes);
+            return await this.#handleJsonResponse<R>(stateRes, resBody);
           }
         } catch (e) {
-          throw new ServerResponseError(`Could not parse response: ${String(e)}`, res);
+          throw new ServerResponseError(
+            `Could not parse response: ${String(e)}`,
+            res,
+          );
         }
       }
       case HttpStatus.CONFLICT: {
-        try {
-          const result = await res.json();
-          guard<StartedOrBusyApiResponse>(result);
-          const { state_label, op_id } = result as StartedOrBusyApiResponse;
-          console.debug(
-            `Instance is busy: state_label=${state_label}, op_id=${op_id}`,
-          );
-          throw new ServerBusyError('Server busy', res);
-        } catch (e) {
-          throw new ServerResponseError(`Could not parse response: ${String(e)}`, res);
-        }
+        throw new ServerBusyError('Server busy', res);
       }
       case HttpStatus.OTHER:
       default: {
-        try {
-          const { message } = await res.json() as ErrorResponse;
-          throw new ServerResponseError(message, res);
-        } catch (e) {
-          throw new ServerResponseError(`Could not parse error: ${String(e)}`, res);
+        if ('message' in resBody) {
+          throw new ServerResponseError(resBody.message, res);
         }
+        throw new ServerResponseError(`unexpected error`, res);
       }
     }
   }
@@ -177,7 +161,8 @@ export class Http2Client {
           path: init.path,
           headers: { ...init.headers, ...JSON_HEADER },
         });
-        return this.#handleJsonResponse<R>(res);
+        const resBody = (await res.json()) as ApiResponse<R>;
+        return this.#handleJsonResponse(res, resBody);
       },
       {
         intervalMs: POLLING_INTERVAL_MS,
@@ -209,7 +194,7 @@ export class Http2Client {
         }
 
         try {
-          return await this.#handleJsonResponse<R>(res);
+          return await this.#handleJsonResponse<R>(res, resBody);
         } catch (error) {
           // If we get a 202 (processing) status, handle the polling for completion
           if (
@@ -224,7 +209,8 @@ export class Http2Client {
                   path: `/read_graph/${resBody.state_label}/${resBody.op_id}`,
                 });
 
-                return this.#handleJsonResponse<R>(stateRes);
+                const stateBody = (await stateRes.json()) as ApiResponse<R>;
+                return this.#handleJsonResponse(stateRes, stateBody);
               },
               {
                 intervalMs: POLLING_INTERVAL_MS,
@@ -266,16 +252,23 @@ function guard<T>(value: unknown): asserts value is T {
 
 const POLLING_INTERVAL_MS = 10;
 
-interface StartedOrBusyApiResponse {
+export interface StartedOrBusyApiResponse {
   state_label: string;
   op_id: string;
 }
 
-interface ErrorResponse {
+export interface ErrorResponse {
   message: string;
 }
 
-type ApiResponse<R extends object> =
+export type ApiResponse<R extends object> =
   | StartedOrBusyApiResponse
   | ErrorResponse
   | R;
+
+export enum HttpStatus {
+  OK = 200,
+  ACCEPTED = 202, // Includes 404 as well
+  CONFLICT = 409,
+  OTHER = -1, // Represents any other status
+}

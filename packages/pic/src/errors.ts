@@ -36,7 +36,7 @@ export class ServerResponseError extends Http2ClientError {
   public override readonly name: string = 'ServerResponseError';
 
   constructor(message: string, response: Response) {
-    super(`Server error: ${message}`, response);
+    super(`Server error with code ${response.status}: ${message}`, response);
   }
 }
 

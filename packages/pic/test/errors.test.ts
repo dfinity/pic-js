@@ -1,8 +1,7 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import Express from 'express';
-import { Http2Client } from '../src/http2-client';
+import { Http2Client, StartedOrBusyApiResponse } from '../src/http2-client';
 import { ServerBusyError, ServerResponseError } from '../src/errors';
-import { poll } from '../src/util';
 
 interface MockResponse {
   status: number;
@@ -46,9 +45,14 @@ describe('PocketIc.create error handling', () => {
   });
 
   it('should throw a ServerBusyError from `get` polling', async () => {
+    const serverBusyResponse: StartedOrBusyApiResponse = {
+      state_label: 'something',
+      op_id: 'op_id',
+    };
+
     const fakeReplicaServer = makeFakeServer(4322, {
       status: 409,
-      body: '{"message": "Server busy"}',
+      body: JSON.stringify(serverBusyResponse),
     });
 
     const client = new Http2Client('http://localhost:4322', 1000);
@@ -67,7 +71,7 @@ describe('PocketIc.create error handling', () => {
   it('should throw a ServerResponseError from `get` polling when message is not provided', async () => {
     const fakeReplicaServer = makeFakeServer(4323, {
       status: 500,
-      body: '{"res": "Service Unavailable"}',
+      body: '{"invalid_contents": "Service Unavailable"}',
     });
 
     const client = new Http2Client('http://localhost:4323', 1000);
@@ -77,7 +81,9 @@ describe('PocketIc.create error handling', () => {
     });
 
     await expect(response).rejects.toThrow(ServerResponseError);
-    await expect(response).rejects.toThrow('500 Internal Server Error');
+    await expect(response).rejects.toThrow(
+      'Server error with code 500: unexpected error',
+    );
 
     fakeReplicaServer.close();
   });
@@ -147,7 +153,9 @@ describe('PocketIc.create error handling', () => {
       },
     );
 
-    await expect(response).rejects.toThrow('Server error: Service Unavailable');
+    await expect(response).rejects.toThrow(
+      'Server error with code 500: Service Unavailable',
+    );
 
     fakeReplicaServer.close();
   });
