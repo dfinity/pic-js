@@ -12,52 +12,52 @@ export interface CreateInstanceOptions {
    * Configuration options for creating an NNS subnet.
    * If no config is provided, the NNS subnet is not setup.
    */
-  nns?: NnsSubnetConfig;
+  nns?: SubnetConfig;
 
   /**
    * Configuration options for creating an SNS subnet.
    * If no config is provided, the SNS subnet is not setup.
    */
-  sns?: SnsSubnetConfig;
+  sns?: SubnetConfig;
 
   /**
    * Configuration options for creating an II subnet.
    * If no config is provided, the II subnet is not setup.
    */
-  ii?: IiSubnetConfig;
+  ii?: SubnetConfig;
 
   /**
    * Configuration options for creating a Fiduciary subnet.
    * If no config is provided, the Fiduciary subnet is not setup.
    */
-  fiduciary?: FiduciarySubnetConfig;
+  fiduciary?: SubnetConfig;
 
   /**
    * Configuration options for creating a Bitcoin subnet.
    * If no config is provided, the Bitcoin subnet is not setup.
    */
-  bitcoin?: BitcoinSubnetConfig;
+  bitcoin?: SubnetConfig;
 
   /**
    * Configuration options for creating system subnets.
    * A system subnet will be created for each configuration object provided.
    * If no config objects are provided, no system subnets are setup.
    */
-  system?: SystemSubnetConfig[];
+  system?: SubnetConfig[];
 
   /**
    * Configuration options for creating application subnets.
    * An application subnet will be created for each configuration object provided.
    * If no config objects are provided, no application subnets are setup.
    */
-  application?: ApplicationSubnetConfig[];
+  application?: SubnetConfig[];
 
   /**
    * Configuration options for creating verified application subnets.
    * A verified application subnet will be created for each configuration object provided.
    * If no config objects are provided, no verified application subnets are setup.
    */
-  verifiedApplication?: VerifiedApplicationSubnetConfig[];
+  verifiedApplication?: SubnetConfig[];
 
   /**
    * How long the PocketIC client should wait for a response from the server.
@@ -74,11 +74,7 @@ export interface CreateInstanceOptions {
 /**
  * Common options for creating a subnet.
  */
-export interface SubnetConfig<
-  T extends NewSubnetStateConfig | FromPathSubnetStateConfig =
-    | NewSubnetStateConfig
-    | FromPathSubnetStateConfig,
-> {
+export interface SubnetConfig {
   /**
    * Whether to enable deterministic time slicing.
    * Defaults to `true`.
@@ -94,92 +90,8 @@ export interface SubnetConfig<
   /**
    * The state configuration for the subnet.
    */
-  state: T;
+  state: NewSubnetStateConfig | FromPathSubnetStateConfig;
 }
-
-/**
- * Options for creating an NNS subnet.
- */
-export type NnsSubnetConfig = SubnetConfig<NnsSubnetStateConfig>;
-
-/**
- * Options for an NNS subnet's state.
- */
-export type NnsSubnetStateConfig =
-  | NewSubnetStateConfig
-  | FromPathSubnetStateConfig;
-
-/**
- * Options for creating an SNS subnet.
- */
-export type SnsSubnetConfig = SubnetConfig<SnsSubnetStateConfig>;
-
-/**
- * Options for an SNS subnet's state.
- */
-export type SnsSubnetStateConfig = NewSubnetStateConfig;
-
-/**
- * Options for creating an II subnet.
- */
-export type IiSubnetConfig = SubnetConfig<IiSubnetStateConfig>;
-
-/**
- * Options for an II subnet's state.
- */
-export type IiSubnetStateConfig = NewSubnetStateConfig;
-
-/**
- * Options for creating a Fiduciary subnet.
- */
-export type FiduciarySubnetConfig = SubnetConfig<FiduciarySubnetStateConfig>;
-
-/**
- * Options for a Fiduciary subnet's state.
- */
-export type FiduciarySubnetStateConfig = NewSubnetStateConfig;
-
-/**
- * Options for creating a Bitcoin subnet.
- */
-export type BitcoinSubnetConfig = SubnetConfig<BitcoinSubnetStateConfig>;
-
-/**
- * Options for a Bitcoin subnet's state.
- */
-export type BitcoinSubnetStateConfig = NewSubnetStateConfig;
-
-/**
- * Options for creating a system subnet.
- */
-export type SystemSubnetConfig = SubnetConfig<SystemSubnetStateConfig>;
-
-/**
- * Options for a system subnet's state.
- */
-export type SystemSubnetStateConfig = NewSubnetStateConfig;
-
-/**
- * Options for creating an application subnet.
- */
-export type ApplicationSubnetConfig =
-  SubnetConfig<ApplicationSubnetStateConfig>;
-
-/**
- * Options for an application subnet's state.
- */
-export type ApplicationSubnetStateConfig = NewSubnetStateConfig;
-
-/**
- * Options for creating a verified application subnet.
- */
-export type VerifiedApplicationSubnetConfig =
-  SubnetConfig<VerifiedApplicationSubnetStateConfig>;
-
-/**
- * Options for a verified application subnet's state.
- */
-export type VerifiedApplicationSubnetStateConfig = NewSubnetStateConfig;
 
 /**
  * Options for creating a new subnet an empty state.

@@ -71,6 +71,7 @@ export class Http2Client {
   }
 
   public async jsonGet<R extends {}>(init: JsonGetRequest): Promise<R> {
+    console.log('GET init', init);
     // poll the request until it is successful or times out
     return await poll(
       async () => {
@@ -79,8 +80,10 @@ export class Http2Client {
           path: init.path,
           headers: { ...init.headers, ...JSON_HEADER },
         });
+        console.log('GET res text', await res.clone().text());
 
         const resBody = (await res.json()) as ApiResponse<R>;
+        console.log('GET res body', resBody);
         if (!resBody) {
           return resBody;
         }
@@ -120,6 +123,7 @@ export class Http2Client {
   }
 
   public async jsonPost<B, R extends {}>(init: JsonPostRequest<B>): Promise<R> {
+    console.log('POST init', init);
     const reqBody = init.body
       ? new TextEncoder().encode(JSON.stringify(init.body))
       : undefined;
@@ -127,71 +131,78 @@ export class Http2Client {
     // poll the request until it is successful or times out
     return await poll(
       async () => {
-        const res = await this.request({
-          method: 'POST',
-          path: init.path,
-          headers: { ...init.headers, ...JSON_HEADER },
-          body: reqBody,
-        });
+        try {
+          const res = await this.request({
+            method: 'POST',
+            path: init.path,
+            headers: { ...init.headers, ...JSON_HEADER },
+            body: reqBody,
+          });
+          console.log('POST res text', await res.clone().text());
 
-        const resBody = (await res.json()) as ApiResponse<R>;
-        if (isNil(resBody)) {
-          return resBody;
-        }
-
-        // server encountered an error, throw and try again
-        if ('message' in resBody) {
-          console.error(
-            'PocketIC server encountered an error',
-            resBody.message,
-          );
-
-          throw new Error(resBody.message);
-        }
-
-        // the server has started processing or is busy
-        if ('state_label' in resBody) {
-          // the server is too busy to process the request, throw and try again
-          if (res.status === 409) {
-            throw new Error('Server busy');
+          const resBody = (await res.json()) as ApiResponse<R>;
+          console.log('POST res body', resBody);
+          if (isNil(resBody)) {
+            return resBody;
           }
 
-          // the server has started processing the request, poll until it is done
-          if (res.status === 202) {
-            return await poll(
-              async () => {
-                const stateRes = await this.request({
-                  method: 'GET',
-                  path: `/read_graph/${resBody.state_label}/${resBody.op_id}`,
-                });
-
-                const stateBody = (await stateRes.json()) as ApiResponse<R>;
-
-                // the server encountered an error, throw and try again
-                if (
-                  isNil(stateBody) ||
-                  'message' in stateBody ||
-                  'state_label' in stateBody
-                ) {
-                  throw new Error('Polling has not succeeded yet');
-                }
-
-                // the request was successful, exit the loop
-                return stateBody;
-              },
-              {
-                intervalMs: POLLING_INTERVAL_MS,
-                timeoutMs: this.processingTimeoutMs,
-              },
+          // server encountered an error, throw and try again
+          if ('message' in resBody) {
+            console.error(
+              'PocketIC server encountered an error',
+              resBody.message,
             );
+
+            throw new Error(resBody.message);
           }
 
-          // something weird happened, throw and try again
-          throw new Error('Unknown state');
-        }
+          // the server has started processing or is busy
+          if ('state_label' in resBody) {
+            // the server is too busy to process the request, throw and try again
+            if (res.status === 409) {
+              throw new Error('Server busy');
+            }
 
-        // the request was successful, exit the loop
-        return resBody;
+            // the server has started processing the request, poll until it is done
+            if (res.status === 202) {
+              return await poll(
+                async () => {
+                  const stateRes = await this.request({
+                    method: 'GET',
+                    path: `/read_graph/${resBody.state_label}/${resBody.op_id}`,
+                  });
+
+                  const stateBody = (await stateRes.json()) as ApiResponse<R>;
+
+                  // the server encountered an error, throw and try again
+                  if (
+                    isNil(stateBody) ||
+                    'message' in stateBody ||
+                    'state_label' in stateBody
+                  ) {
+                    throw new Error('Polling has not succeeded yet');
+                  }
+
+                  // the request was successful, exit the loop
+                  return stateBody;
+                },
+                {
+                  intervalMs: POLLING_INTERVAL_MS,
+                  timeoutMs: this.processingTimeoutMs,
+                },
+              );
+            }
+
+            // something weird happened, throw and try again
+            throw new Error('Unknown state');
+          }
+
+          // the request was successful, exit the loop
+          return resBody;
+        } catch (e) {
+          console.error('POST error', e);
+          throw e;
+        }
       },
       { intervalMs: POLLING_INTERVAL_MS, timeoutMs: this.processingTimeoutMs },
     );

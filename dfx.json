@@ -13,7 +13,7 @@
       "type": "motoko",
       "main": "examples/clock/src/main.mo",
       "declarations": {
-        "bindings": ["js", "ts"],
+        "bindings": ["js", "ts", "did", "mo"],
         "output": "examples/clock/declarations"
       },
       "gzip": true,
@@ -23,7 +23,7 @@
     "counter": {
       "type": "motoko",
       "main": "examples/counter/src/main.mo",
-      "init_arg": "'(42)'",
+      "init_arg": "(42)",
       "declarations": {
         "bindings": ["js", "ts"],
         "output": "examples/counter/declarations"

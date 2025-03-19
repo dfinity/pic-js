@@ -28,5 +28,9 @@
 /examples/todo/declarations/
 /examples/todo/tests/node_modules/
 
+/examples/todo_proxy/declarations/
+/examples/todo_proxy/tests/node_modules/
+/examples/todo_proxy/tests/state/todo_state/
+
 .env
 .DS_Store

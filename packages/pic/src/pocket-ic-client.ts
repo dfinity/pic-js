@@ -97,6 +97,7 @@ export class PocketIcClient {
       req?.processingTimeoutMs ?? PROCESSING_TIME_VALUE_MS;
     const serverClient = new Http2Client(url, processingTimeoutMs);
 
+    console.log('Creating instance');
     const res = await serverClient.jsonPost<
       EncodedCreateInstanceRequest,
       CreateInstanceResponse

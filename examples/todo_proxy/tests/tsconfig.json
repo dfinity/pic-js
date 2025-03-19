@@ -1,0 +1,13 @@
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "allowJs": true,
+    "types": ["jest", "node"]
+  },
+  "include": [
+    "./src/**/*.ts",
+    "./global-setup.ts",
+    "./global-teardown.ts",
+    "./types.d.ts"
+  ]
+}
