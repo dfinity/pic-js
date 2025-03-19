@@ -35,18 +35,6 @@ export const JSON_HEADER: RequestHeaders = {
   'Content-Type': 'application/json',
 };
 
-export class JsonGetError extends Error {
-  public readonly name = 'JsonGetError';
-  public readonly message: string;
-  public readonly response?: Response;
-
-  constructor(message: string, response?: Response) {
-    super(message);
-    this.message = message;
-    this.response = response;
-  }
-}
-
 export class Http2Client {
   #baseUrl: string;
   #processingTimeoutMs: number;
