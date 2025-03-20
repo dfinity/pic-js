@@ -18,6 +18,8 @@
     "format:check": "prettier --check .",
     "build": "run-p build:pic",
     "build:pic": "tsc -p ./packages/pic/tsconfig.json",
+    "test:pic": "jest -c ./packages/pic/jest.config.ts",
+    "build:test-canister": "dfx generate test_canister && dfx build test_canister --check && mv .dfx/local/canisters/test_canister/test_canister.wasm.gz packages/pic/tests/test-canister",
     "build:examples": "dfx generate phonebook && dfx generate superheroes && dfx generate && dfx build --all --check",
     "test:examples": "run-p test:clock test:counter test:google-search test:multicanister test:nns-proxy test:todo",
     "build:clock": "dfx generate clock && dfx build clock --check",
