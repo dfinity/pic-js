@@ -180,6 +180,15 @@ export class PocketIcClient {
     );
   }
 
+  public async setCertifiedTime(req: SetTimeRequest): Promise<void> {
+    this.assertInstanceNotDeleted();
+
+    await this.post<EncodedSetTimeRequest, {}>(
+      '/update/set_certified_time',
+      encodeSetTimeRequest(req),
+    );
+  }
+
   public async getSubnetId(
     req: GetSubnetIdRequest,
   ): Promise<GetSubnetIdResponse> {

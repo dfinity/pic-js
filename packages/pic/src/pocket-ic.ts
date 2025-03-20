@@ -843,6 +843,11 @@ export class PocketIc {
 
   /**
    * Reset the time of the IC to the current time.
+   * {@link tick} should be called after calling this method in order for query calls
+   * and read state request to reflect the new time.
+   *
+   * Use {@link resetCertifiedTime} to set time and immediately have query calls and
+   * read state requests reflect the new time.
    *
    * @example
    * ```ts
@@ -852,6 +857,8 @@ export class PocketIc {
    * const pic = await PocketIc.create(picServer.getUrl());
    *
    * await pic.resetTime();
+   * await pic.tick();
+   *
    * const time = await pic.getTime();
    *
    * await pic.tearDown();
@@ -863,7 +870,38 @@ export class PocketIc {
   }
 
   /**
+   * Reset the time of the IC to the current time and immediately have query calls and
+   * read state requests reflect the new time.
+   *
+   * Use {@link resetTime} to reset time without immediately reflecting the new time.
+   *
+   * @example
+   * ```ts
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
+   *
+   * const picServer = await PocketIcServer.create();
+   * const pic = await PocketIc.create(picServer.getUrl());
+   *
+   * await pic.resetTime();
+   * await pic.tick();
+   *
+   * const time = await pic.getTime();
+   *
+   * await pic.tearDown();
+   * await picServer.stop();
+   * ```
+   */
+  public async resetCertifiedTime(): Promise<void> {
+    await this.setCertifiedTime(Date.now());
+  }
+
+  /**
    * Set the current time of the IC.
+   * {@link tick} should be called after calling this method in order for query calls
+   * and read state request to reflect the new time.
+   *
+   * Use {@link setCertifiedTime} to set time and immediately have query calls and
+   * read state requests reflect the new time.
    *
    * @param time The time to set in milliseconds since the Unix epoch.
    *
@@ -882,6 +920,8 @@ export class PocketIc {
    * // or
    * await pic.setTime(date.getTime());
    *
+   * await pic.tick();
+   *
    * const time = await pic.getTime();
    *
    * await pic.tearDown();
@@ -897,7 +937,80 @@ export class PocketIc {
   }
 
   /**
+   * Set the current time of the IC and immediately have query calls and
+   * read state requests reflect the new time.
+   *
+   * Use {@link setTime} to set time without immediately reflecting the new time.
+   *
+   * @param time The time to set in milliseconds since the Unix epoch.
+   *
+   * @example
+   * ```ts
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
+   *
+   * const pic = await PocketIc.create();
+   *
+   * const date = new Date();
+   *
+   * const picServer = await PocketIcServer.create();
+   * const pic = await PocketIc.create(picServer.getUrl());
+   *
+   * await pic.setCertifiedTime(date);
+   * // or
+   * await pic.setCertifiedTime(date.getTime());
+   *
+   * const time = await pic.getTime();
+   *
+   * await pic.tearDown();
+   * await picServer.stop();
+   * ```
+   */
+  public async setCertifiedTime(time: Date | number): Promise<void> {
+    if (time instanceof Date) {
+      time = time.getTime();
+    }
+
+    await this.client.setCertifiedTime({ millisSinceEpoch: time });
+  }
+
+  /**
    * Advance the time of the IC by the given duration in milliseconds.
+   * {@link tick} should be called after calling this method in order for query calls
+   * and read state requests to reflect the new time.
+   *
+   * Use {@link advanceCertifiedTime} to advance time and immediately have query calls and
+   * read state requests reflect the new time.
+   *
+   * @param duration The duration to advance the time by.
+   *
+   * @example
+   * ```ts
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
+   *
+   * const picServer = await PocketIcServer.create();
+   * const pic = await PocketIc.create(picServer.getUrl());
+   *
+   * const initialTime = await pic.getTime();
+   * await pic.advanceTime(1_000);
+   * await pic.tick();
+   *
+   * const newTime = await pic.getTime();
+   *
+   * await pic.tearDown();
+   * await picServer.stop();
+   * ```
+   */
+  public async advanceTime(duration: number): Promise<void> {
+    const currentTime = await this.getTime();
+    const newTime = currentTime + duration;
+    await this.setTime(newTime);
+  }
+
+  /**
+   * Advance the time of the IC by the given duration in milliseconds and
+   * immediately have query calls and read state requests reflect the new time.
+   *
+   * Use {@link advanceTime} to advance time without immediately reflecting the new time.
    *
    * @param duration The duration to advance the time by.
    *
@@ -917,10 +1030,10 @@ export class PocketIc {
    * await picServer.stop();
    * ```
    */
-  public async advanceTime(duration: number): Promise<void> {
+  public async advanceCertifiedTime(duration: number): Promise<void> {
     const currentTime = await this.getTime();
     const newTime = currentTime + duration;
-    await this.setTime(newTime);
+    await this.setCertifiedTime(newTime);
   }
 
   /**

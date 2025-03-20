@@ -5,6 +5,7 @@
 
 /packages/pic/dist/
 /packages/pic/node_modules/
+/packages/pic/tests/test-canister/declarations/
 
 /packages/pic-server/dist/
 /packages/pic-server/node_modules/
