@@ -1,0 +1,79 @@
+name: test
+
+on:
+  merge_group:
+  pull_request:
+
+jobs:
+  unit_test:
+    name: unit_test:required
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup PNPM
+        uses: dfinity/ci-tools/actions/setup-pnpm@main
+
+      - name: Test
+        run: pnpm test:pic
+
+  e2e_test_nodejs:
+    name: e2e_test_nodejs:required
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup PNPM
+        uses: dfinity/ci-tools/actions/setup-pnpm@main
+
+      - name: Setup DFX
+        uses: dfinity/setup-dfx@main
+        with:
+          dfx-version: 'auto'
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Build Examples
+        run: pnpm build:examples
+
+      - name: Test Examples
+        run: pnpm test:examples
+
+  e2e_test_bun:
+    name: e2e_test_bun:required
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: '.bun-version'
+
+      - name: Install Dependencies
+        shell: bash
+        run: bun i --frozen-lockfile
+
+      - name: Setup DFX
+        uses: dfinity/setup-dfx@main
+        with:
+          dfx-version: 'auto'
+
+      - name: Build
+        run: bun run build
+
+      - name: Build Examples
+        run: bun build:examples
+
+      - name: Test Examples
+        run: bun test:examples

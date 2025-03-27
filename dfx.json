@@ -9,6 +9,17 @@
     }
   },
   "canisters": {
+    "test_canister": {
+      "type": "motoko",
+      "main": "packages/pic/tests/test-canister/main.mo",
+      "declarations": {
+        "bindings": ["js", "ts"],
+        "output": "packages/pic/tests/test-canister/declarations"
+      },
+      "gzip": true,
+      "shrink": true,
+      "optimize": "cycles"
+    },
     "clock": {
       "type": "motoko",
       "main": "examples/clock/src/main.mo",
