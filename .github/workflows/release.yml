@@ -12,10 +12,13 @@ env:
 
 jobs:
   release:
-    name: Release
+    name: release
     runs-on: ubuntu-latest
     outputs:
       is_beta: ${{ steps.is_beta.outputs.is_beta }}
+    environment:
+      name: npm
+      url: https://www.npmjs.com/package/@dfinity/pic
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -28,6 +31,12 @@ jobs:
         run: |
           IS_BETA=$([[ '${{ github.ref_name }}' == *b* ]] && echo true || echo false)
           echo "is_beta=$IS_BETA" >> $GITHUB_OUTPUT
+
+      - name: Build NPM packages
+        run: pnpm build
+
+      - name: Generate release notes
+        uses: dfinity/ci-tools/actions/generate-release-notes@main
 
       - name: Publish to npm
         env:

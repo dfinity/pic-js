@@ -11,13 +11,10 @@ on:
 
 jobs:
   create_release_pr:
-    name: Create Release PR
+    name: create_release_pr
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    environment:
-      name: npm
-      url: https://www.npmjs.com/package/@dfinity/pic
     steps:
       - name: Create GitHub App Token
         uses: actions/create-github-app-token@v1
