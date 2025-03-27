@@ -1,4 +1,4 @@
-import { PocketIcServer } from '@dfinity/pic';
+import { PocketIcServer } from '../src';
 
 declare global {
   declare var __PIC__: PocketIcServer;

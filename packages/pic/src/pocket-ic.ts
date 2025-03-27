@@ -882,8 +882,7 @@ export class PocketIc {
    * const picServer = await PocketIcServer.create();
    * const pic = await PocketIc.create(picServer.getUrl());
    *
-   * await pic.resetTime();
-   * await pic.tick();
+   * await pic.resetCertifiedTime();
    *
    * const time = await pic.getTime();
    *
@@ -1022,7 +1021,7 @@ export class PocketIc {
    * const pic = await PocketIc.create(picServer.getUrl());
    *
    * const initialTime = await pic.getTime();
-   * await pic.advanceTime(1_000);
+   * await pic.advanceCertifiedTime(1_000);
    *
    * const newTime = await pic.getTime();
    *

@@ -1,9 +1,7 @@
-import { PocketIcServer } from '@dfinity/pic';
+import { PocketIcServer } from '../src';
 
 module.exports = async function (): Promise<void> {
-  const pic = await PocketIcServer.start({
-    showRuntimeLogs: false,
-  });
+  const pic = await PocketIcServer.start();
   const url = pic.getUrl();
 
   process.env.PIC_URL = url;

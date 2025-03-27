@@ -1,17 +1,12 @@
 import path from 'node:path';
+import { Identity } from '@dfinity/agent';
+import { Principal } from '@dfinity/principal';
 
-import {
-  Actor,
-  CanisterFixture,
-  generateRandomIdentity,
-  PocketIc,
-} from '../../src';
+import { Actor, generateRandomIdentity, PocketIc } from '../../src';
 import {
   _SERVICE as TestCanister,
   idlFactory,
 } from '../test-canister/declarations/test_canister.did';
-import { Identity } from '@dfinity/agent';
-import { Principal } from '@dfinity/principal';
 
 const WASM_PATH = path.resolve(
   __dirname,
@@ -23,21 +18,6 @@ const WASM_PATH = path.resolve(
 export const CONTROLLER = generateRandomIdentity();
 
 export type TestActor = Actor<TestCanister>;
-
-export async function createFixture(): Promise<
-  [PocketIc, CanisterFixture<TestCanister>]
-> {
-  const pic = await PocketIc.create(process.env.PIC_URL);
-
-  const fixture = await pic.setupCanister<TestCanister>({
-    idlFactory,
-    wasm: WASM_PATH,
-    sender: CONTROLLER.getPrincipal(),
-    controllers: [CONTROLLER.getPrincipal()],
-  });
-
-  return [pic, fixture];
-}
 
 export class TestFixture {
   readonly #pic: PocketIc;
