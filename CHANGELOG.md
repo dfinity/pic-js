@@ -2,6 +2,7 @@
 
 ### Feat
 
+- add support for certified time endpoint (#109)
 - update dependencies (#106)
 - upgrade to pocketic version 8.0.0 (#96)
 - add support get controllers and get topology endpoints
