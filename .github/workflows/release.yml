@@ -23,6 +23,12 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Setup Python
+        uses: dfinity/ci-tools/actions/setup-python@main
+
+      - name: Setup Commitizen
+        uses: dfinity/ci-tools/actions/setup-commitizen@main
+
       - name: Setup PNPM
         uses: dfinity/ci-tools/actions/setup-pnpm@main
 
