@@ -1,3 +1,112 @@
+## Unreleased
+
+### Feat
+
+- add support for certified time endpoint (#109)
+- update dependencies (#106)
+- upgrade to pocketic version 8.0.0 (#96)
+- add support get controllers and get topology endpoints
+- update dependencies
+
+### Fix
+
+- **pocket-ic-server.ts**: switch from --pid to --port-file for pic server
+
+## 0.10.0 (2024-11-27)
+
+### Feat
+
+- add support for mocking https outcalls
+- upgrade to server v6
+- upgrade pic server to v5
+
+## 0.9.0 (2024-07-01)
+
+### Feat
+
+- upgrade to pic server v4
+
+## 0.8.1 (2024-04-27)
+
+### Fix
+
+- pipe unwanted logs to /dev/null
+
+## 0.8.0 (2024-04-27)
+
+### Feat
+
+- add http2 support
+- add logging support
+- separate pic server management from instance management
+
+## 0.7.0 (2024-03-17)
+
+### Feat
+
+- enable direct canister calls
+
+## 0.6.1 (2024-03-15)
+
+### Fix
+
+- get pub key endpoint params encoded incorrectly
+- unable to start picjs server on macos
+- build docs only when release_latest is successful
+- move docs build and deployment to release workflow
+- removed fetchRootKey in favor of getPubKey, which accepts a subnet Id
+
+## 0.6.0 (2024-03-03)
+
+### Feat
+
+- add support for nns subnet init
+
+## 0.5.0 (2024-02-24)
+
+### Feat
+
+- update agent-js and pocket-ic dependencies
+
+## 0.4.0 (2024-02-19)
+
+### Feat
+
+- add canister stop and start methods
+
+## 0.3.0 (2024-02-12)
+
+### Feat
+
+- add update canister settings method
+- upgrade to pocket-ic v3
+- upgrade to pic server 2.0.1
+- accept ArrayBufferLike instead of Uint8Array to be more compatible with agent-js & co libraries
+- throw a more helpful error is devs interact with a pic instance after tearing it down
+- add ability to tick multiple times
+
+### Fix
+
+- canister settings encoding
+- propogate sender principal correctly when setting up canister
+- updated dependencies on dfinity packages
+- updated dependencies on dfinity packages
+
+### Refactor
+
+- use auto-generated idl for management canister
+
+## 0.2.1 (2024-01-21)
+
+### Feat
+
+- update versions of @dfinity dependencies
+
+### Fix
+
+- update file permission for pocket-ic executable in case package manager has moved it
+- client refuses to start on MacOS ARM chips that are also running NodeJS on ARM architecture
+
 ## 0.12.0 (2025-04-07)
 
 ## 0.12.0b0 (2025-04-01)
