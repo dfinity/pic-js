@@ -22,9 +22,6 @@ const WASM_PATH = resolve(
   'nns_proxy.wasm.gz',
 );
 
-const NNS_SUBNET_ID =
-  'bo3so-pitgn-bwr2p-bcndr-4cai7-kljts-k5m4m-7nxgt-dgxjv-4nygr-5ae';
-
 const NNS_STATE_PATH = resolve(
   __dirname,
   '..',
@@ -48,7 +45,6 @@ describe('NNS Proxy', () => {
         state: {
           type: SubnetStateType.FromPath,
           path: NNS_STATE_PATH,
-          subnetId: Principal.fromText(NNS_SUBNET_ID),
         },
       },
     });
