@@ -1,5 +1,14 @@
 ## Unreleased
 
+### BREAKING CHANGE
+
+- `FromPathSubnetStateConfig` and the `FromPath` variant
+  of `state_config` in `EncodedSubnetConfig` no longer take a `subnet_id`.
+
+### Feat
+
+- update to PocketIC server v9.0.0 (#120)
+
 ## 0.12.0 (2025-04-07)
 
 ## 0.12.0b0 (2025-04-01)
