@@ -1,5 +1,4 @@
 import { resolve } from 'path';
-import { Principal } from '@dfinity/principal';
 import {
   Actor,
   PocketIc,
@@ -22,17 +21,7 @@ const WASM_PATH = resolve(
   'nns_proxy.wasm.gz',
 );
 
-const NNS_SUBNET_ID =
-  'bo3so-pitgn-bwr2p-bcndr-4cai7-kljts-k5m4m-7nxgt-dgxjv-4nygr-5ae';
-
-const NNS_STATE_PATH = resolve(
-  __dirname,
-  '..',
-  'state',
-  'nns_state',
-  'node-100',
-  'state',
-);
+const NNS_STATE_PATH = resolve(__dirname, '..', 'state', 'nns_state');
 
 describe('NNS Proxy', () => {
   let pic: PocketIc;
@@ -48,11 +37,10 @@ describe('NNS Proxy', () => {
         state: {
           type: SubnetStateType.FromPath,
           path: NNS_STATE_PATH,
-          subnetId: Principal.fromText(NNS_SUBNET_ID),
         },
       },
     });
-    await pic.setTime(new Date(2024, 10, 7).getTime());
+    await pic.setTime(new Date(2025, 4, 29).getTime());
     await pic.tick();
 
     const fixture = await pic.setupCanister<_SERVICE>({

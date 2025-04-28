@@ -70,7 +70,6 @@ export interface NewSubnetStateConfig {
 export interface FromPathSubnetStateConfig {
   type: SubnetStateType.FromPath;
   path: string;
-  subnetId: Principal;
 }
 
 export enum SubnetStateType {
@@ -97,7 +96,7 @@ export interface EncodedCreateInstanceSubnetConfig {
 export interface EncodedSubnetConfig {
   dts_flag: 'Enabled' | 'Disabled';
   instruction_config: 'Production' | 'Benchmarking';
-  state_config: 'New' | { FromPath: [string, { subnet_id: string }] };
+  state_config: 'New' | { FromPath: string };
 }
 
 function encodeManySubnetConfigs<T extends SubnetConfig>(
@@ -135,10 +134,7 @@ function encodeSubnetConfig<T extends SubnetConfig>(
           config.enableBenchmarkingInstructionLimits,
         ),
         state_config: {
-          FromPath: [
-            config.state.path,
-            { subnet_id: base64EncodePrincipal(config.state.subnetId) },
-          ],
+          FromPath: config.state.path,
         },
       };
     }

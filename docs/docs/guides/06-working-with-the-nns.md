@@ -4,6 +4,8 @@ If your canister interacts with the NNS, you'll need to setup the NNS state in y
 
 Fortunately, when writing tests with PocketIC you can restore the subnet state from a directory, which is much faster. This guide will walk through the process of creating this state directory for use in your tests.
 
+Note: this guide has been tested with dfx v0.26.0. It is not guaranteed to work with other dfx versions.
+
 ## Project setup
 
 To not impact any other projects running on DFX, let's create a new project:
@@ -60,79 +62,31 @@ Now, use this extension to setup the NNS. This can take up to a few minutes to c
 dfx extension run nns install
 ```
 
-The subnet state is now stored in the `.dfx/network/local/state/replicated_state` directory. Save the absolute path to this directory into a global variable for use later:
+Once you see
 
 ```shell
-export NNS_STATE_PATH=$(pwd)/.dfx/network/local/state/replicated_state
+######################################
+# NNS CANISTER INSTALLATION COMPLETE #
+######################################
 ```
 
-Wait a few seconds to make sure there are no more logs from DFX coming in, and there is at least checkpoint in the `.dfx/network/local/state/replicated_state/node-100/state/checkpoints` folder, then stop DFX:
+run
 
 ```shell
 dfx stop
 ```
 
-## Getting the subnet Id
-
-### Install Rust
-
-Install Rust according to the instructions on [the official website](https://www.rust-lang.org/tools/install).
-
-### Install `protoc`
-
-On macOS, you can use Homebrew:
+The subnet state is now stored in the `.dfx/network/local/state/replicated_state` directory. First find a subfolder of that directory containing many canister states:
 
 ```shell
-brew install protobuf
+ls $(pwd)/.dfx/network/local/state/replicated_state/**/**/canister_states
 ```
 
-On Ubuntu, you can use `apt`:
+Then save the absolute path to that subfolder into a global variable for use later:
 
 ```shell
-sudo apt install protobuf-compiler
+export NNS_STATE_PATH=$(pwd)/.dfx/network/local/state/replicated_state/46bab453650b3f22d11f0ffe4d3057b855dd752f95eeccc69da5531e94598e2b
 ```
-
-### Install `jq`
-
-On macOS, you can use Homebrew:
-
-```shell
-brew install jq
-```
-
-On Ubuntu, you can use `apt`:
-
-```shell
-sudo apt install jq
-```
-
-### Using `ic-regedit`
-
-Now clone the `ic` repository:
-
-```shell
-git clone git@github.com:dfinity/ic.git
-```
-
-Change into the `ic` directory:
-
-```shell
-cd ic
-```
-
-Get the subnet Id from your NNS state:
-
-```shell
-cargo run -p ic-regedit snapshot $NNS_STATE_PATH/ic_registry_local_store | jq -r ".nns_subnet_id.principal_id.raw"
-```
-
-This should output something similar to the following:
-
-```shell
-(principal-id)jnebg-dq662-hfu2t-2momi-md5lw-7qmvl-htn5r-52soa-6xbqp-6p5sd-aae
-```
-
-Save everything after the `(principal-id)` part for use later in your tests.
 
 ## Copying the NNS state
 
@@ -159,13 +113,13 @@ cd $TARGET_PATH
 Then compress the state directory:
 
 ```shell
-tar -zcvf nns_state.tar.gz nns_state
+tar -Jcvf nns_state.tar.xz nns_state
 ```
 
 Then when you need to use the state, you can decompress it from the root of your repository with:
 
 ```shell
-tar -xvf path/to/tests/state/nns_state.tar.gz -C path/to/tests/state
+tar -xvf path/to/tests/state/nns_state.tar.xz -C path/to/tests/state
 ```
 
 This could be done with an `npm` `postinstall` script, by adding the following to your `package.json`:
@@ -174,7 +128,7 @@ This could be done with an `npm` `postinstall` script, by adding the following t
 {
   // redacted...
   "scripts": {
-    "postinstall": "tar -xvf path/to/tests/state/nns_state.tar.gz -C path/to/tests/state"
+    "postinstall": "tar -xvf path/to/tests/state/nns_state.tar.xz -C path/to/tests/state"
     // redacted...
   }
   // redacted...
@@ -183,24 +137,10 @@ This could be done with an `npm` `postinstall` script, by adding the following t
 
 ## Using the NNS state in your tests
 
-You'll need the subnet Id that you recored earlier:
+You'll need to reference the path to the NNS state:
 
 ```ts
-const NNS_SUBNET_ID =
-  'nt6ha-vabpm-j6nog-bkr62-vbgbt-swwzc-u54zn-odtoy-igwlu-ab7uj-4qe';
-```
-
-And you'll need to reference the path to the NNS state:
-
-```ts
-const NNS_STATE_PATH = resolve(
-  __dirname,
-  '..',
-  'state',
-  'nns_state',
-  'node-100',
-  'state',
-);
+const NNS_STATE_PATH = resolve(__dirname, '..', 'state', 'nns_state');
 ```
 
 Now you can setup your PocketIC instance to use the NNS state:
@@ -211,7 +151,6 @@ const pic = await PocketIc.create({
     state: {
       type: SubnetStateType.FromPath,
       path: NNS_STATE_PATH,
-      subnetId: Principal.fromText(NNS_SUBNET_ID),
     },
   },
 });
@@ -220,7 +159,7 @@ const pic = await PocketIc.create({
 After creating the instance, make sure to set the PocketIc time to be the same or greater than the time that you created the NNS state:
 
 ```ts
-await pic.setTime(new Date(2024, 1, 30).getTime());
+await pic.setTime(new Date(2025, 4, 29).getTime());
 await pic.tick();
 ```
 
