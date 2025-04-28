@@ -9,13 +9,13 @@ The state folder is gitignored, but it is compressed and the archive is committe
 The state folder is compressed with:
 
 ```bash
-tar -zcvf examples/nns_proxy/tests/state/nns_state.tar.gz examples/nns_proxy/tests/state/nns_state/
+tar -Jcvf examples/nns_proxy/tests/state/nns_state.tar.xz examples/nns_proxy/tests/state/nns_state/
 ```
 
 The archive is decompressed with:
 
 ```bash
-tar -xvf examples/nns_proxy/tests/state/nns_state.tar.gz
+tar -xvf examples/nns_proxy/tests/state/nns_state.tar.xz
 ```
 
 ## Bindings

@@ -1,5 +1,4 @@
 import { resolve } from 'path';
-import { Principal } from '@dfinity/principal';
 import {
   Actor,
   PocketIc,
@@ -27,8 +26,6 @@ const NNS_STATE_PATH = resolve(
   '..',
   'state',
   'nns_state',
-  'node-100',
-  'state',
 );
 
 describe('NNS Proxy', () => {
@@ -48,7 +45,7 @@ describe('NNS Proxy', () => {
         },
       },
     });
-    await pic.setTime(new Date(2024, 10, 7).getTime());
+    await pic.setTime(new Date(2025, 4, 29).getTime());
     await pic.tick();
 
     const fixture = await pic.setupCanister<_SERVICE>({

@@ -96,7 +96,7 @@ export interface EncodedCreateInstanceSubnetConfig {
 export interface EncodedSubnetConfig {
   dts_flag: 'Enabled' | 'Disabled';
   instruction_config: 'Production' | 'Benchmarking';
-  state_config: 'New' | { FromPath: [string] };
+  state_config: 'New' | { FromPath: string };
 }
 
 function encodeManySubnetConfigs<T extends SubnetConfig>(
@@ -134,7 +134,7 @@ function encodeSubnetConfig<T extends SubnetConfig>(
           config.enableBenchmarkingInstructionLimits,
         ),
         state_config: {
-          FromPath: [config.state.path],
+          FromPath: config.state.path,
         },
       };
     }
