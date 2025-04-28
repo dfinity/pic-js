@@ -134,9 +134,7 @@ function encodeSubnetConfig<T extends SubnetConfig>(
           config.enableBenchmarkingInstructionLimits,
         ),
         state_config: {
-          FromPath: [
-            config.state.path,
-          ],
+          FromPath: [config.state.path],
         },
       };
     }
