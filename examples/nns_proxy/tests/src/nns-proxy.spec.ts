@@ -21,12 +21,7 @@ const WASM_PATH = resolve(
   'nns_proxy.wasm.gz',
 );
 
-const NNS_STATE_PATH = resolve(
-  __dirname,
-  '..',
-  'state',
-  'nns_state',
-);
+const NNS_STATE_PATH = resolve(__dirname, '..', 'state', 'nns_state');
 
 describe('NNS Proxy', () => {
   let pic: PocketIc;

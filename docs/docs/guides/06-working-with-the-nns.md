@@ -88,7 +88,6 @@ Then save the absolute path to that subfolder into a global variable for use lat
 export NNS_STATE_PATH=$(pwd)/.dfx/network/local/state/replicated_state/46bab453650b3f22d11f0ffe4d3057b855dd752f95eeccc69da5531e94598e2b
 ```
 
-
 ## Copying the NNS state
 
 Set the root path where you want to copy the NNS state to:
@@ -141,12 +140,7 @@ This could be done with an `npm` `postinstall` script, by adding the following t
 You'll need to reference the path to the NNS state:
 
 ```ts
-const NNS_STATE_PATH = resolve(
-  __dirname,
-  '..',
-  'state',
-  'nns_state',
-);
+const NNS_STATE_PATH = resolve(__dirname, '..', 'state', 'nns_state');
 ```
 
 Now you can setup your PocketIC instance to use the NNS state:
