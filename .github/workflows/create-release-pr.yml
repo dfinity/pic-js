@@ -45,6 +45,7 @@ jobs:
         uses: dfinity/ci-tools/actions/bump-version@main
         with:
           prerelease: ${{ inputs.beta_release == true && 'beta' || '' }}
+          major_version_zero: true
 
       - name: Print Version
         run: echo "Bumping to version ${{ steps.bump_version.outputs.version }}"
