@@ -38,3 +38,5 @@
 .DS_Store
 pnpm-lock.yaml
 .cz.yaml
+
+CHANGELOG.md
