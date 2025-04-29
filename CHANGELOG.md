@@ -1,3 +1,90 @@
+## Unreleased
+
+### BREAKING CHANGE
+
+- `FromPathSubnetStateConfig` and the `FromPath` variant
+of `state_config` in `EncodedSubnetConfig` no longer take a `subnet_id`.
+
+### Feat
+
+- update to PocketIC server v9.0.0 (#120)
+
+## 0.12.0 (2025-04-07)
+
+### Feat
+
+- add support for certified time endpoint (#109)
+- update dependencies (#106)
+- upgrade to pocketic version 8.0.0 (#96)
+- add support get controllers and get topology endpoints
+- update dependencies
+
+### Fix
+
+- **pocket-ic-server.ts**: switch from --pid to --port-file for pic server
+
+## 0.10.0 (2024-11-27)
+
+### Feat
+
+- add support for mocking https outcalls
+- upgrade to server v6
+- upgrade pic server to v5
+
+## 0.9.0 (2024-07-01)
+
+### Feat
+
+- upgrade to pic server v4
+
+## 0.8.1 (2024-04-27)
+
+### Fix
+
+- pipe unwanted logs to /dev/null
+
+## 0.8.0 (2024-04-27)
+
+### Feat
+
+- add http2 support
+- add logging support
+- separate pic server management from instance management
+
+## 0.7.0 (2024-03-17)
+
+### Feat
+
+- enable direct canister calls
+
+## 0.6.1 (2024-03-15)
+
+### Fix
+
+- get pub key endpoint params encoded incorrectly
+- unable to start picjs server on macos
+- build docs only when release_latest is successful
+- move docs build and deployment to release workflow
+- removed fetchRootKey in favor of getPubKey, which accepts a subnet Id
+
+## 0.6.0 (2024-03-03)
+
+### Feat
+
+- add support for nns subnet init
+
+## 0.5.0 (2024-02-24)
+
+### Feat
+
+- update agent-js and pocket-ic dependencies
+
+## 0.4.0 (2024-02-19)
+
+### Feat
+
+- add canister stop and start methods
+
 ## 0.13.0 (2025-04-29)
 
 ### BREAKING CHANGE
