@@ -3,7 +3,7 @@
 ### BREAKING CHANGE
 
 - `FromPathSubnetStateConfig` and the `FromPath` variant
-of `state_config` in `EncodedSubnetConfig` no longer take a `subnet_id`.
+  of `state_config` in `EncodedSubnetConfig` no longer take a `subnet_id`.
 
 ### Feat
 
