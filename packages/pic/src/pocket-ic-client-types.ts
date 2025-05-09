@@ -971,6 +971,47 @@ export function decodeSubmitCanisterCallResponse(
 
 //#endregion SubmitCanisterCall
 
+//#region IngressStatus
+
+export interface IngressStatusRequest {
+  message_id: EncodedCanisterCallId;
+  caller?: Principal;
+}
+
+export interface EncodedIngressStatusRequest {
+  raw_message_id: EncodedCanisterCallId;
+  raw_caller?: string;
+}
+
+export function encodeIngressStatusRequest(
+  req: IngressStatusRequest,
+): EncodedIngressStatusRequest {
+  return {
+    raw_message_id: req.message_id,
+    raw_caller: req.caller ? base64EncodePrincipal(req.caller) : undefined,
+  };
+}
+
+export type IngressStatusResponse = CanisterCallResponse | undefined;
+
+export type EncodedIngressStatusResponse = EncodedCanisterCallResponse | {};
+
+export function decodeIngressStatusResponse(
+  res: EncodedIngressStatusResponse,
+): IngressStatusResponse {
+  if (isNil(res)) {
+    return undefined;
+  }
+
+  if ('Ok' in res || 'Err' in res) {
+    return decodeCanisterCallResponse(res);
+  }
+
+  throw new Error('Unexpected ingress status response {res}');
+}
+
+//#endregion IngressStatus
+
 //#region AwaitCanisterCall
 
 export type AwaitCanisterCallRequest = SubmitCanisterCallResponse;
@@ -987,13 +1028,5 @@ export function encodeAwaitCanisterCallRequest(
 }
 
 export type AwaitCanisterCallResponse = CanisterCallResponse;
-
-export type EncodedAwaitCanisterCallResponse = EncodedCanisterCallResponse;
-
-export function decodeAwaitCanisterCallResponse(
-  res: EncodedAwaitCanisterCallResponse,
-): AwaitCanisterCallResponse {
-  return decodeCanisterCallResponse(res);
-}
 
 //#endregion AwaitCanisterCall
