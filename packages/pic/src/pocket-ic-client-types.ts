@@ -980,23 +980,23 @@ export interface IngressStatusRequest {
 
 export interface EncodedIngressStatusRequest {
   raw_message_id: EncodedCanisterCallId;
-  raw_caller: string | null;
+  raw_caller?: string;
 }
 
 export function encodeIngressStatusRequest(req: IngressStatusRequest): EncodedIngressStatusRequest {
   return {
     raw_message_id: req.message_id,
-    raw_caller: req.caller ? base64EncodePrincipal(req.caller) : null,
+    raw_caller: req.caller ? base64EncodePrincipal(req.caller) : undefined,
   };
 }
 
-export type IngressStatusResponse = CanisterCallResponse | null;
+export type IngressStatusResponse = CanisterCallResponse | undefined;
 
 export type EncodedIngressStatusResponse = EncodedCanisterCallResponse | {};
 
 export function decodeIngressStatusResponse(res: EncodedIngressStatusResponse): IngressStatusResponse {
   if (isNil(res)) {
-    return null;
+    return undefined;
   }
 
   if ('Ok' in res || 'Err' in res) {
