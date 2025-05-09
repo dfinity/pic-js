@@ -64,12 +64,15 @@ import {
   SubmitCanisterCallRequest,
   encodeSubmitCanisterCallRequest,
   EncodedSubmitCanisterCallRequest,
+  encodeIngressStatusRequest,
+  IngressStatusRequest,
+  EncodedIngressStatusRequest,
+  IngressStatusResponse,
+  EncodedIngressStatusResponse,
+  decodeIngressStatusResponse,
   encodeAwaitCanisterCallRequest,
   AwaitCanisterCallRequest,
-  EncodedAwaitCanisterCallRequest,
   AwaitCanisterCallResponse,
-  EncodedAwaitCanisterCallResponse,
-  decodeAwaitCanisterCallResponse,
   EncodedGetTopologyResponse,
   EncodedGetControllersRequest,
   EncodedGetControllersResponse,
@@ -319,17 +322,34 @@ export class PocketIcClient {
     return decodeSubmitCanisterCallResponse(res);
   }
 
+  public async ingressStatus(req: IngressStatusRequest): Promise<IngressStatusResponse> {
+    this.assertInstanceNotDeleted();
+
+    const res = await this.post<
+      EncodedIngressStatusRequest,
+      EncodedIngressStatusResponse
+    >('/read/ingress_status', encodeIngressStatusRequest(req));
+
+    return decodeIngressStatusResponse(res);
+  }
+
   public async awaitCall(
     req: AwaitCanisterCallRequest,
   ): Promise<AwaitCanisterCallResponse> {
     this.assertInstanceNotDeleted();
 
-    const res = await this.post<
-      EncodedAwaitCanisterCallRequest,
-      EncodedAwaitCanisterCallResponse
-    >('/update/await_ingress_message', encodeAwaitCanisterCallRequest(req));
-
-    return decodeAwaitCanisterCallResponse(res);
+    for (let i = 0; i < 100; i++) {
+      await this.tick();
+      let status_req = {
+        message_id: encodeAwaitCanisterCallRequest(req),
+        caller: undefined,
+      };
+      const result = await this.ingressStatus(status_req);
+      if (result != null) {
+        return result;
+      }
+    }
+    throw new Error('PocketIC did not complete the update call within 100 rounds')
   }
 
   private async post<B, R extends {}>(endpoint: string, body?: B): Promise<R> {
