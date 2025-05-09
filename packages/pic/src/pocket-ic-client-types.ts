@@ -983,7 +983,9 @@ export interface EncodedIngressStatusRequest {
   raw_caller?: string;
 }
 
-export function encodeIngressStatusRequest(req: IngressStatusRequest): EncodedIngressStatusRequest {
+export function encodeIngressStatusRequest(
+  req: IngressStatusRequest,
+): EncodedIngressStatusRequest {
   return {
     raw_message_id: req.message_id,
     raw_caller: req.caller ? base64EncodePrincipal(req.caller) : undefined,
@@ -994,7 +996,9 @@ export type IngressStatusResponse = CanisterCallResponse | undefined;
 
 export type EncodedIngressStatusResponse = EncodedCanisterCallResponse | {};
 
-export function decodeIngressStatusResponse(res: EncodedIngressStatusResponse): IngressStatusResponse {
+export function decodeIngressStatusResponse(
+  res: EncodedIngressStatusResponse,
+): IngressStatusResponse {
   if (isNil(res)) {
     return undefined;
   }

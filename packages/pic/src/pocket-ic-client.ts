@@ -322,7 +322,9 @@ export class PocketIcClient {
     return decodeSubmitCanisterCallResponse(res);
   }
 
-  public async ingressStatus(req: IngressStatusRequest): Promise<IngressStatusResponse> {
+  public async ingressStatus(
+    req: IngressStatusRequest,
+  ): Promise<IngressStatusResponse> {
     this.assertInstanceNotDeleted();
 
     const res = await this.post<
@@ -349,7 +351,9 @@ export class PocketIcClient {
         return result;
       }
     }
-    throw new Error('PocketIC did not complete the update call within 100 rounds')
+    throw new Error(
+      'PocketIC did not complete the update call within 100 rounds',
+    );
   }
 
   private async post<B, R extends {}>(endpoint: string, body?: B): Promise<R> {
