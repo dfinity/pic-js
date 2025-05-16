@@ -99,7 +99,7 @@ export TARGET_PATH=/path/to/tests
 Copy the NNS state into your project:
 
 ```shell
-mkdir -p $TARGET_PATH && cp -r $NNS_STATE_PATH $TARGET_PATH/nns_state/
+mkdir -p $TARGET_PATH && cp -r $NNS_STATE_PATH/ $TARGET_PATH/nns_state/
 ```
 
 The state directory includes a lot of files, so if you don't want to commit all of them to your repository, you can compress the state directory and commit the archive instead.
