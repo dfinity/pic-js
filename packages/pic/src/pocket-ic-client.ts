@@ -343,6 +343,8 @@ export class PocketIcClient {
     this.assertInstanceNotDeleted();
     const encodedReq = {
       messageId: encodeAwaitCanisterCallRequest(req),
+      // since this is always called immediately after making a call, there is no need to check the caller
+      // the `ingressStatus` method is not exposed publicly, so it is safe to assume that the caller is the same as the one who made the call
       caller: undefined,
     };
 
