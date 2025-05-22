@@ -32,7 +32,7 @@ import { Writable } from 'node:stream';
  *
  * const wasmPath = resolve('..', '..', 'canister.wasm');
  *
- * const picServer = await PocketIcServer.create();
+ * const picServer = await PocketIcServer.start();
  * const pic = await PocketIc.create(picServer.getUrl());
  *
  * const fixture = await pic.setupCanister<_SERVICE>({ idlFactory, wasmPath });

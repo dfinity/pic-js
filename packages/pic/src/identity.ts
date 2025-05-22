@@ -28,7 +28,7 @@ import { Ed25519KeyIdentity } from '@dfinity/identity';
  *
  * const wasmPath = resolve('..', '..', 'canister.wasm');
  *
- * const picServer = await PocketIcServer.create();
+ * const picServer = await PocketIcServer.start();
  * const pic = await PocketIc.create(picServer.getUrl());
  * const fixture = await pic.setupCanister<_SERVICE>(idlFactory, wasmPath);
  * const { actor } = fixture;
@@ -77,7 +77,7 @@ function generateMnemonic(): string {
  *
  * const wasmPath = resolve('..', '..', 'canister.wasm');
  *
- * const picServer = await PocketIcServer.create();
+ * const picServer = await PocketIcServer.start();
  * const pic = await PocketIc.create(picServer.getUrl());
  * const fixture = await pic.setupCanister<_SERVICE>(idlFactory, wasmPath);
  * const { actor } = fixture;
