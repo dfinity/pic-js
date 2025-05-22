@@ -49,7 +49,7 @@ import {
  *
  * const wasmPath = resolve('..', '..', 'canister.wasm');
  *
- * const picServer = await PocketIcServer.create();
+ * const picServer = await PocketIcServer.start();
  * const pic = await PocketIc.create(picServer.getUrl());
  *
  * const fixture = await pic.setupCanister<_SERVICE>({ idlFactory, wasmPath });
@@ -69,7 +69,7 @@ import {
  *
  * const wasm = resolve('..', '..', 'canister.wasm');
  *
- * const picServer = await PocketIcServer.create();
+ * const picServer = await PocketIcServer.start();
  * const pic = await PocketIc.create(picServer.getUrl());
  *
  * const canisterId = await pic.createCanister();
@@ -96,7 +96,7 @@ export class PocketIc {
    * ```ts
    * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
-   * const picServer = await PocketIcServer.create();
+   * const picServer = await PocketIcServer.start();
    * const pic = await PocketIc.create(picServer.getUrl());
    *
    * const fixture = await pic.setupCanister<_SERVICE>({ idlFactory, wasmPath });
@@ -136,7 +136,7 @@ export class PocketIc {
    *
    * const wasmPath = resolve('..', '..', 'canister.wasm');
    *
-   * const picServer = await PocketIcServer.create();
+   * const picServer = await PocketIcServer.start();
    * const pic = await PocketIc.create(picServer.getUrl());
    *
    * const fixture = await pic.setupCanister<_SERVICE>({ idlFactory, wasmPath });
@@ -193,7 +193,7 @@ export class PocketIc {
    * ```ts
    * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
-   * const picServer = await PocketIcServer.create();
+   * const picServer = await PocketIcServer.start();
    * const pic = await PocketIc.create(picServer.getUrl());
    *
    * const canisterId = await pic.createCanister();
@@ -256,7 +256,7 @@ export class PocketIc {
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    *
-   * const picServer = await PocketIcServer.create();
+   * const picServer = await PocketIcServer.start();
    * const pic = await PocketIc.create(picServer.getUrl());
    *
    * await pic.startCanister({ canisterId });
@@ -301,7 +301,7 @@ export class PocketIc {
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    *
-   * const picServer = await PocketIcServer.create();
+   * const picServer = await PocketIcServer.start();
    * const pic = await PocketIc.create(picServer.getUrl());
    *
    * await pic.stopCanister({ canisterId });
@@ -351,7 +351,7 @@ export class PocketIc {
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    * const wasm = resolve('..', '..', 'canister.wasm');
    *
-   * const picServer = await PocketIcServer.create();
+   * const picServer = await PocketIcServer.start();
    * const pic = await PocketIc.create(picServer.getUrl());
    *
    * await pic.installCode({ canisterId, wasm });
@@ -412,7 +412,7 @@ export class PocketIc {
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    * const wasm = resolve('..', '..', 'canister.wasm');
    *
-   * const picServer = await PocketIcServer.create();
+   * const picServer = await PocketIcServer.start();
    * const pic = await PocketIc.create(picServer.getUrl());
    *
    * await pic.reinstallCode({ canisterId, wasm });
@@ -467,7 +467,7 @@ export class PocketIc {
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    * const wasm = resolve('..', '..', 'canister.wasm');
    *
-   * const picServer = await PocketIcServer.create();
+   * const picServer = await PocketIcServer.start();
    * const pic = await PocketIc.create(picServer.getUrl());
    *
    * await pic.upgradeCanister({ canisterId, wasm });
@@ -517,7 +517,7 @@ export class PocketIc {
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    *
-   * const picServer = await PocketIcServer.create();
+   * const picServer = await PocketIcServer.start();
    * const pic = await PocketIc.create(picServer.getUrl());
    *
    * await pic.updateCanisterSettings({
@@ -581,7 +581,7 @@ export class PocketIc {
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    * const wasm = resolve('..', '..', 'canister.wasm');
    *
-   * const picServer = await PocketIcServer.create();
+   * const picServer = await PocketIcServer.start();
    * const pic = await PocketIc.create(picServer.getUrl());
    *
    * const canisterId = await pic.createCanister();
@@ -654,7 +654,7 @@ export class PocketIc {
    *
    * const wasm = resolve('..', '..', 'canister.wasm');
    *
-   * const picServer = await PocketIcServer.create();
+   * const picServer = await PocketIcServer.start();
    * const pic = await PocketIc.create(picServer.getUrl());
    *
    * canisterId = await pic.createCanister({
@@ -707,7 +707,7 @@ export class PocketIc {
    *
    * const wasm = resolve('..', '..', 'canister.wasm');
    *
-   * const picServer = await PocketIcServer.create();
+   * const picServer = await PocketIcServer.start();
    * const pic = await PocketIc.create(picServer.getUrl());
    *
    * canisterId = await pic.createCanister({
@@ -753,7 +753,7 @@ export class PocketIc {
    * ```ts
    * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
-   * const picServer = await PocketIcServer.create();
+   * const picServer = await PocketIcServer.start();
    * const pic = await PocketIc.create(picServer.getUrl());
    *
    * await pic.tearDown();
@@ -773,7 +773,7 @@ export class PocketIc {
    * ```ts
    * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
-   * const picServer = await PocketIcServer.create();
+   * const picServer = await PocketIcServer.start();
    * const pic = await PocketIc.create(picServer.getUrl());
    *
    * await pic.tick();
@@ -805,7 +805,7 @@ export class PocketIc {
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    *
-   * const picServer = await PocketIcServer.create();
+   * const picServer = await PocketIcServer.start();
    * const pic = await PocketIc.create(picServer.getUrl());
    *
    * const controllers = await pic.getControllers(canisterId);
@@ -826,7 +826,7 @@ export class PocketIc {
    * ```ts
    * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
-   * const picServer = await PocketIcServer.create();
+   * const picServer = await PocketIcServer.start();
    * const pic = await PocketIc.create(picServer.getUrl());
    *
    * const time = await pic.getTime();
@@ -853,7 +853,7 @@ export class PocketIc {
    * ```ts
    * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
-   * const picServer = await PocketIcServer.create();
+   * const picServer = await PocketIcServer.start();
    * const pic = await PocketIc.create(picServer.getUrl());
    *
    * await pic.resetTime();
@@ -879,7 +879,7 @@ export class PocketIc {
    * ```ts
    * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
-   * const picServer = await PocketIcServer.create();
+   * const picServer = await PocketIcServer.start();
    * const pic = await PocketIc.create(picServer.getUrl());
    *
    * await pic.resetCertifiedTime();
@@ -912,7 +912,7 @@ export class PocketIc {
    *
    * const date = new Date();
    *
-   * const picServer = await PocketIcServer.create();
+   * const picServer = await PocketIcServer.start();
    * const pic = await PocketIc.create(picServer.getUrl());
    *
    * await pic.setTime(date);
@@ -951,7 +951,7 @@ export class PocketIc {
    *
    * const date = new Date();
    *
-   * const picServer = await PocketIcServer.create();
+   * const picServer = await PocketIcServer.start();
    * const pic = await PocketIc.create(picServer.getUrl());
    *
    * await pic.setCertifiedTime(date);
@@ -986,7 +986,7 @@ export class PocketIc {
    * ```ts
    * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
-   * const picServer = await PocketIcServer.create();
+   * const picServer = await PocketIcServer.start();
    * const pic = await PocketIc.create(picServer.getUrl());
    *
    * const initialTime = await pic.getTime();
@@ -1017,7 +1017,7 @@ export class PocketIc {
    * ```ts
    * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
-   * const picServer = await PocketIcServer.create();
+   * const picServer = await PocketIcServer.start();
    * const pic = await PocketIc.create(picServer.getUrl());
    *
    * const initialTime = await pic.getTime();
@@ -1045,7 +1045,7 @@ export class PocketIc {
    * ```ts
    * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
-   * const picServer = await PocketIcServer.create();
+   * const picServer = await PocketIcServer.start();
    * const pic = await PocketIc.create(picServer.getUrl());
    *
    * const subnets = pic.getApplicationSubnets();
@@ -1073,7 +1073,7 @@ export class PocketIc {
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    *
-   * const picServer = await PocketIcServer.create();
+   * const picServer = await PocketIcServer.start();
    * const pic = await PocketIc.create(picServer.getUrl());
    *
    * const subnetId = await pic.getCanisterSubnetId(canisterId);
@@ -1212,7 +1212,7 @@ export class PocketIc {
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    *
-   * const picServer = await PocketIcServer.create();
+   * const picServer = await PocketIcServer.start();
    * const pic = await PocketIc.create(picServer.getUrl());
    *
    * const cyclesBalance = await pic.getCyclesBalance(canisterId);
@@ -1243,7 +1243,7 @@ export class PocketIc {
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    *
-   * const picServer = await PocketIcServer.create();
+   * const picServer = await PocketIcServer.start();
    * const pic = await PocketIc.create(picServer.getUrl());
    *
    * const newCyclesBalance = await pic.addCycles(canisterId, 10_000_000);
@@ -1277,7 +1277,7 @@ export class PocketIc {
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    * const stableMemory = new Uint8Array([0, 1, 2, 3, 4]);
    *
-   * const picServer = await PocketIcServer.create();
+   * const picServer = await PocketIcServer.start();
    * const pic = await PocketIc.create(picServer.getUrl());
    *
    * await pic.setStableMemory(canisterId, stableMemory);
@@ -1312,7 +1312,7 @@ export class PocketIc {
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    *
-   * const picServer = await PocketIcServer.create();
+   * const picServer = await PocketIcServer.start();
    * const pic = await PocketIc.create(picServer.getUrl());
    *
    * const stableMemory = await pic.getStableMemory(canisterId);
@@ -1342,7 +1342,7 @@ export class PocketIc {
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    *
-   * const picServer = await PocketIcServer.create();
+   * const picServer = await PocketIcServer.start();
    * const pic = await PocketIc.create(picServer.getUrl());
    *
    * // queue the canister message that will send the HTTPS Outcall
@@ -1393,7 +1393,7 @@ export class PocketIc {
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    *
-   * const picServer = await PocketIcServer.create();
+   * const picServer = await PocketIcServer.start();
    * const pic = await PocketIc.create(picServer.getUrl());
    *
    * // queue the canister message that will send the HTTPS Outcall
