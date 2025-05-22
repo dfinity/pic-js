@@ -80,8 +80,8 @@ export class Http2Client {
           headers: { ...init.headers, ...JSON_HEADER },
         });
 
-        const resBody = (await res.json()) as ApiResponse<R>;
-        if (!resBody) {
+        const resBody = await getResBody<R>(res);
+        if (isNil(resBody)) {
           return resBody;
         }
 
@@ -134,7 +134,7 @@ export class Http2Client {
           body: reqBody,
         });
 
-        const resBody = (await res.json()) as ApiResponse<R>;
+        const resBody = await getResBody<R>(res);
         if (isNil(resBody)) {
           return resBody;
         }
@@ -195,6 +195,21 @@ export class Http2Client {
       },
       { intervalMs: POLLING_INTERVAL_MS, timeoutMs: this.processingTimeoutMs },
     );
+  }
+}
+
+async function getResBody<R extends {}>(
+  res: Response,
+): Promise<ApiResponse<R>> {
+  try {
+    return (await res.clone().json()) as ApiResponse<R>;
+  } catch (error) {
+    const message = await res.text();
+
+    console.error('Error parsing PocketIC server response body:', error);
+    console.error('Original body:', message);
+
+    throw new Error(message);
   }
 }
 
