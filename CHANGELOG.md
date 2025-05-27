@@ -1,5 +1,13 @@
 ## Unreleased
 
+### Fix
+
+- state copy to not include parent folder (#134)
+
+### Refactor
+
+- poll ingress messages instead of awaiting them (#137)
+
 ## 0.13.1 (2025-05-07)
 
 ## 0.13.0 (2025-04-29)
