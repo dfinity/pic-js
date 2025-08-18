@@ -20,6 +20,17 @@
       "shrink": true,
       "optimize": "cycles"
     },
+    "timers": {
+      "type": "motoko",
+      "main": "examples/timers/src/main.mo",
+      "declarations": {
+        "bindings": ["js", "ts"],
+        "output": "examples/timers/declarations"
+      },
+      "gzip": true,
+      "shrink": true,
+      "optimize": "cycles"
+    },
     "clock": {
       "type": "motoko",
       "main": "examples/clock/src/main.mo",

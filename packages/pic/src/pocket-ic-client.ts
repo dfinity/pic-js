@@ -1,4 +1,5 @@
 import { Http2Client } from './http2-client';
+import { Principal } from '@dfinity/principal';
 import {
   EncodedAddCyclesRequest,
   EncodedAddCyclesResponse,
@@ -74,6 +75,10 @@ import {
   AwaitCanisterCallRequest,
   AwaitCanisterCallResponse,
   EncodedGetTopologyResponse,
+  EncodedFetchCanisterLogsRequest,
+  EncodedFetchCanisterLogsResponse,
+  encodeFetchCanisterLogsRequest,
+  decodeFetchCanisterLogsResponse,
   EncodedGetControllersRequest,
   EncodedGetControllersResponse,
   GetControllersRequest,
@@ -174,6 +179,26 @@ export class PocketIcClient {
     const res = await this.get<EncodedGetTimeResponse>('/read/get_time');
 
     return decodeGetTimeResponse(res);
+  }
+
+  public async fetchCanisterLogs(req: {
+    canisterId: Principal;
+  }): Promise<{
+    idx: bigint;
+    timestampNanos: bigint;
+    content: Uint8Array;
+  }[]> {
+    this.assertInstanceNotDeleted();
+
+    const res = await this.post<
+      EncodedFetchCanisterLogsRequest,
+      EncodedFetchCanisterLogsResponse
+    >(
+      '/read/fetch_canister_logs',
+      encodeFetchCanisterLogsRequest({ canisterId: req.canisterId }),
+    );
+
+    return decodeFetchCanisterLogsResponse(res);
   }
 
   public async setTime(req: SetTimeRequest): Promise<void> {

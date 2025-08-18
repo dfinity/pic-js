@@ -17,6 +17,8 @@ but `@dfinity/pic` can be used with JavaScript and any other testing runner, suc
   This example demonstrates how to work with a simple canister as well as init arguments, canister upgrades and WASM reinstallation.
 - [Clock](./clock/README.md)
   This example demonstrates how to work with the replica's system time, canister timers as well as checking for canister existence and cycle management.
+- [Timers](./timers/README.md)
+  This example demonstrates a minimal one-shot timer with a single public function.
 - [Todo](./todo/README.md)
   This example demonstrates how to work with more complex canisters, identities, canister upgrades, and stable memory management.
 - [Multicanister](./multicanister/README.md)

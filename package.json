@@ -11,7 +11,8 @@
     "packages/pic",
     "examples/counter/tests",
     "examples/clock/tests",
-    "examples/todo/tests"
+    "examples/todo/tests",
+    "examples/timers/tests"
   ],
   "scripts": {
     "format": "prettier --write .",
@@ -21,7 +22,7 @@
     "test:pic": "jest -c ./packages/pic/jest.config.ts",
     "build:test-canister": "dfx generate test_canister && dfx build test_canister --check && mv .dfx/local/canisters/test_canister/test_canister.wasm.gz packages/pic/tests/test-canister",
     "build:examples": "dfx generate phonebook && dfx generate superheroes && dfx generate && dfx build --all --check",
-    "test:examples": "run-p test:clock test:counter test:google-search test:multicanister test:nns-proxy test:todo",
+    "test:examples": "run-p test:clock test:counter test:google-search test:multicanister test:nns-proxy test:todo test:timers",
     "build:clock": "dfx generate clock && dfx build clock --check",
     "test:clock": "jest -c ./examples/clock/tests/jest.config.ts",
     "build:counter": "dfx generate counter && dfx build counter --check",
@@ -34,6 +35,8 @@
     "test:nns-proxy": "jest -c ./examples/nns_proxy/tests/jest.config.ts",
     "build:todo": "dfx generate todo && dfx build todo --check",
     "test:todo": "jest -c ./examples/todo/tests/jest.config.ts",
+    "build:timers": "dfx generate timers && dfx build timers --check",
+    "test:timers": "jest -c ./examples/timers/tests/jest.config.ts",
     "postinstall": "tar -xvf examples/nns_proxy/tests/state/nns_state.tar.xz -C examples/nns_proxy/tests/state"
   },
   "devDependencies": {
