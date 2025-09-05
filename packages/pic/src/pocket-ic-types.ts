@@ -238,26 +238,24 @@ export enum SubnetStateType {
 /**
  * Forward-compatible configuration type.
  */
-export interface EmptyConfig {}
-
 export interface NonmainnetFeatures {
   /**
    * Enables (beta) features (disabled on the ICP mainnet).
    */
-  enableBetaFeatures?: EmptyConfig;
+  enableBetaFeatures: boolean;
   /**
    * Disables canister backtraces (enabled on the ICP mainnet).
    */
-  disableCanisterBacktrace?: EmptyConfig;
+  disableCanisterBacktrace: boolean;
   /**
    * Disables limits on function name length in canister WASM (enabled on the ICP mainnet).
    */
-  disableFunctionNameLengthLimits?: EmptyConfig;
+  disableFunctionNameLengthLimits: boolean;
   /**
    * Disables rate-limiting of canister execution (enabled on the ICP mainnet).
    * Canister execution refers to instructions and memory writes here.
    */
-  disableCanisterExecutionRateLimiting?: EmptyConfig;
+  disableCanisterExecutionRateLimiting: boolean;
 }
 
 /**

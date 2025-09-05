@@ -77,13 +77,11 @@ export enum SubnetStateType {
   FromPath = 'fromPath',
 }
 
-export interface EmptyConfig {}
-
 export interface NonmainnetFeatures {
-  enableBetaFeatures?: EmptyConfig;
-  disableCanisterBacktrace?: EmptyConfig;
-  disableFunctionNameLengthLimits?: EmptyConfig;
-  disableCanisterExecutionRateLimiting?: EmptyConfig;
+  enableBetaFeatures: boolean;
+  disableCanisterBacktrace: boolean;
+  disableFunctionNameLengthLimits: boolean;
+  disableCanisterExecutionRateLimiting: boolean;
 }
 
 export interface EncodedCreateInstanceRequest {
@@ -173,29 +171,23 @@ function encodeInstructionConfig(
     : 'Production';
 }
 
-function encodeEmptyConfig(_emptyConfig: EmptyConfig): EncodedEmptyConfig {
-  return {};
-}
-
 function encodeNonmainnetFeatures(
   nonmainnetFeatures: NonmainnetFeatures,
 ): EncodedNonmainnetFeatures {
   return {
     enable_beta_features: nonmainnetFeatures.enableBetaFeatures
-      ? encodeEmptyConfig(nonmainnetFeatures.enableBetaFeatures)
+      ? {}
       : undefined,
     disable_canister_backtrace: nonmainnetFeatures.disableCanisterBacktrace
-      ? encodeEmptyConfig(nonmainnetFeatures.disableCanisterBacktrace)
+      ? {}
       : undefined,
     disable_function_name_length_limits:
       nonmainnetFeatures.disableFunctionNameLengthLimits
-        ? encodeEmptyConfig(nonmainnetFeatures.disableFunctionNameLengthLimits)
+        ? {}
         : undefined,
     disable_canister_execution_rate_limiting:
       nonmainnetFeatures.disableCanisterExecutionRateLimiting
-        ? encodeEmptyConfig(
-            nonmainnetFeatures.disableCanisterExecutionRateLimiting,
-          )
+        ? {}
         : undefined,
   };
 }
