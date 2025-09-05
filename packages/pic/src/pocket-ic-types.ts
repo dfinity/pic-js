@@ -241,23 +241,23 @@ export enum SubnetStateType {
 export interface EmptyConfig {}
 
 export interface NonmainnetFeatures {
-    /**
-     * Enables (beta) features (disabled on the ICP mainnet).
-     */
-    enableBetaFeatures?: EmptyConfig;
-    /**
-     * Disables canister backtraces (enabled on the ICP mainnet).
-     */
-    disableCanisterBacktrace?: EmptyConfig;
-    /**
-     * Disables limits on function name length in canister WASM (enabled on the ICP mainnet).
-     */
-    disableFunctionNameLengthLimits?: EmptyConfig;
-    /**
-     * Disables rate-limiting of canister execution (enabled on the ICP mainnet).
-     * Canister execution refers to instructions and memory writes here.
-     */
-    disableCanisterExecutionRateLimiting?: EmptyConfig;
+  /**
+   * Enables (beta) features (disabled on the ICP mainnet).
+   */
+  enableBetaFeatures?: EmptyConfig;
+  /**
+   * Disables canister backtraces (enabled on the ICP mainnet).
+   */
+  disableCanisterBacktrace?: EmptyConfig;
+  /**
+   * Disables limits on function name length in canister WASM (enabled on the ICP mainnet).
+   */
+  disableFunctionNameLengthLimits?: EmptyConfig;
+  /**
+   * Disables rate-limiting of canister execution (enabled on the ICP mainnet).
+   * Canister execution refers to instructions and memory writes here.
+   */
+  disableCanisterExecutionRateLimiting?: EmptyConfig;
 }
 
 /**

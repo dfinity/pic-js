@@ -80,10 +80,10 @@ export enum SubnetStateType {
 export interface EmptyConfig {}
 
 export interface NonmainnetFeatures {
-    enableBetaFeatures?: EmptyConfig;
-    disableCanisterBacktrace?: EmptyConfig;
-    disableFunctionNameLengthLimits?: EmptyConfig;
-    disableCanisterExecutionRateLimiting?: EmptyConfig;
+  enableBetaFeatures?: EmptyConfig;
+  disableCanisterBacktrace?: EmptyConfig;
+  disableFunctionNameLengthLimits?: EmptyConfig;
+  disableCanisterExecutionRateLimiting?: EmptyConfig;
 }
 
 export interface EncodedCreateInstanceRequest {
@@ -177,7 +177,9 @@ function encodeEmptyConfig(_emptyConfig: EmptyConfig): EncodedEmptyConfig {
   return {};
 }
 
-function encodeNonmainnetFeatures(nonmainnetFeatures: NonmainnetFeatures): EncodedNonmainnetFeatures {
+function encodeNonmainnetFeatures(
+  nonmainnetFeatures: NonmainnetFeatures,
+): EncodedNonmainnetFeatures {
   return {
     enable_beta_features: nonmainnetFeatures.enableBetaFeatures
       ? encodeEmptyConfig(nonmainnetFeatures.enableBetaFeatures)
@@ -185,12 +187,16 @@ function encodeNonmainnetFeatures(nonmainnetFeatures: NonmainnetFeatures): Encod
     disable_canister_backtrace: nonmainnetFeatures.disableCanisterBacktrace
       ? encodeEmptyConfig(nonmainnetFeatures.disableCanisterBacktrace)
       : undefined,
-    disable_function_name_length_limits: nonmainnetFeatures.disableFunctionNameLengthLimits
-      ? encodeEmptyConfig(nonmainnetFeatures.disableFunctionNameLengthLimits)
-      : undefined,
-    disable_canister_execution_rate_limiting: nonmainnetFeatures.disableCanisterExecutionRateLimiting
-      ? encodeEmptyConfig(nonmainnetFeatures.disableCanisterExecutionRateLimiting)
-      : undefined,
+    disable_function_name_length_limits:
+      nonmainnetFeatures.disableFunctionNameLengthLimits
+        ? encodeEmptyConfig(nonmainnetFeatures.disableFunctionNameLengthLimits)
+        : undefined,
+    disable_canister_execution_rate_limiting:
+      nonmainnetFeatures.disableCanisterExecutionRateLimiting
+        ? encodeEmptyConfig(
+            nonmainnetFeatures.disableCanisterExecutionRateLimiting,
+          )
+        : undefined,
   };
 }
 
