@@ -22,7 +22,7 @@ export interface CreateInstanceRequest {
   application?: ApplicationSubnetConfig[];
   verifiedApplication?: VerifiedApplicationSubnetConfig[];
   processingTimeoutMs?: number;
-  nonmainnetFeatures?: boolean;
+  nonmainnetFeatures?: NonmainnetFeatures;
 }
 
 export interface SubnetConfig<
@@ -77,9 +77,18 @@ export enum SubnetStateType {
   FromPath = 'fromPath',
 }
 
+export interface EmptyConfig {}
+
+export interface NonmainnetFeatures {
+    enableBetaFeatures?: EmptyConfig;
+    disableCanisterBacktrace?: EmptyConfig;
+    disableFunctionNameLengthLimits?: EmptyConfig;
+    disableCanisterExecutionRateLimiting?: EmptyConfig;
+}
+
 export interface EncodedCreateInstanceRequest {
   subnet_config_set: EncodedCreateInstanceSubnetConfig;
-  nonmainnet_features: boolean;
+  nonmainnet_features?: EncodedNonmainnetFeatures;
 }
 
 export interface EncodedCreateInstanceSubnetConfig {
@@ -91,6 +100,15 @@ export interface EncodedCreateInstanceSubnetConfig {
   system: EncodedSubnetConfig[];
   application: EncodedSubnetConfig[];
   verified_application: EncodedSubnetConfig[];
+}
+
+export interface EncodedEmptyConfig {}
+
+export interface EncodedNonmainnetFeatures {
+  enable_beta_features?: EncodedEmptyConfig;
+  disable_canister_backtrace?: EncodedEmptyConfig;
+  disable_function_name_length_limits?: EncodedEmptyConfig;
+  disable_canister_execution_rate_limiting?: EncodedEmptyConfig;
 }
 
 export interface EncodedSubnetConfig {
@@ -155,6 +173,27 @@ function encodeInstructionConfig(
     : 'Production';
 }
 
+function encodeEmptyConfig(_emptyConfig: EmptyConfig): EncodedEmptyConfig {
+  return {};
+}
+
+function encodeNonmainnetFeatures(nonmainnetFeatures: NonmainnetFeatures): EncodedNonmainnetFeatures {
+  return {
+    enable_beta_features: nonmainnetFeatures.enableBetaFeatures
+      ? encodeEmptyConfig(nonmainnetFeatures.enableBetaFeatures)
+      : undefined,
+    disable_canister_backtrace: nonmainnetFeatures.disableCanisterBacktrace
+      ? encodeEmptyConfig(nonmainnetFeatures.disableCanisterBacktrace)
+      : undefined,
+    disable_function_name_length_limits: nonmainnetFeatures.disableFunctionNameLengthLimits
+      ? encodeEmptyConfig(nonmainnetFeatures.disableFunctionNameLengthLimits)
+      : undefined,
+    disable_canister_execution_rate_limiting: nonmainnetFeatures.disableCanisterExecutionRateLimiting
+      ? encodeEmptyConfig(nonmainnetFeatures.disableCanisterExecutionRateLimiting)
+      : undefined,
+  };
+}
+
 export function encodeCreateInstanceRequest(
   req?: CreateInstanceRequest,
 ): EncodedCreateInstanceRequest {
@@ -180,7 +219,9 @@ export function encodeCreateInstanceRequest(
         defaultOptions.verifiedApplication,
       ),
     },
-    nonmainnet_features: defaultOptions.nonmainnetFeatures ?? false,
+    nonmainnet_features: defaultOptions.nonmainnetFeatures
+      ? encodeNonmainnetFeatures(defaultOptions.nonmainnetFeatures)
+      : undefined,
   };
 
   if (
