@@ -182,13 +182,9 @@ function encodeNonmainnetFeatures(
       ? {}
       : undefined,
     disable_function_name_length_limits:
-      nonmainnetFeatures.disableFunctionNameLengthLimits
-        ? {}
-        : undefined,
+      nonmainnetFeatures.disableFunctionNameLengthLimits ? {} : undefined,
     disable_canister_execution_rate_limiting:
-      nonmainnetFeatures.disableCanisterExecutionRateLimiting
-        ? {}
-        : undefined,
+      nonmainnetFeatures.disableCanisterExecutionRateLimiting ? {} : undefined,
   };
 }
 
