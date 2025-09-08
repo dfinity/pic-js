@@ -18,7 +18,7 @@ import { Ed25519KeyIdentity } from '@dfinity/identity';
  * @param seedPhrase The seed phrase to create the identity from. Can be any arbitrary string.
  * @returns An identity created from the seed phrase.
  *
- * @see [Identity](https://agent-js.icp.xyz/agent/interfaces/Identity.html)
+ * @see [Identity](https://js.icp.build/core/latest/libs/agent/api/interfaces/identity/)
  *
  * @example
  * ```ts
@@ -67,7 +67,7 @@ function generateMnemonic(): string {
  * @category API
  * @returns An identity created from a random seed phrase.
  *
- * @see [Identity](https://agent-js.icp.xyz/agent/interfaces/Identity.html)
+ * @see [Identity](https://js.icp.build/core/latest/libs/agent/api/interfaces/identity/)
  *
  * @example
  * ```ts

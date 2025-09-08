@@ -1,3 +1,7 @@
+/**
+ * @module api
+ */
+
 export * from './identity';
 export * from './pocket-ic-actor';
 export * from './pocket-ic-deferred-actor';

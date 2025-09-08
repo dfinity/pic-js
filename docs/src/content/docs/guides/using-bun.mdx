@@ -1,7 +1,10 @@
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
+---
+title: Using Bun
+sidebar:
+  order: 4
+---
 
-# Using Bun
+import { Code, Tabs, TabItem } from '@astrojs/starlight/components';
 
 [Bun](https://bun.sh) can be used as a test runner and/or package manager. It can be used as a package manager in combination with any other test runner, or as a test runner in combination with any other package manager.
 
@@ -22,28 +25,20 @@ You can also check out the official [Bun installation documentation](https://bun
 To get started with [Bun](https://bun.sh) as a test runner, install the `@types/bun` package using your preferred package manager:
 
 <Tabs>
-  <TabItem value="npm" label="npm" default>
-    ```shell
-    npm i -D @types/bun
-    ```
+  <TabItem label="npm" icon="npm">
+    <Code lang="shell" code="npm i -D @types/bun" />
   </TabItem>
 
-  <TabItem value="pnpm" label="pnpm">
-    ```shell
-    pnpm i -D @types/bun
-    ```
+  <TabItem label="pnpm" icon="pnpm">
+    <Code lang="shell" code="pnpm i -D @types/bun" />
   </TabItem>
 
-  <TabItem value="yarn" label="yarn">
-    ```shell
-    yarn add -D @types/bun
-    ```
+  <TabItem label="bun" icon="bun">
+    <Code lang="shell" code="bun add -d @types/bun" />
   </TabItem>
 
-  <TabItem value="bun" label="bun">
-    ```shell
-    bun add -d @types/bun
-    ```
+  <TabItem label="yarn" icon="seti:yarn">
+    <Code lang="shell" code="yarn add -D @types/bun" />
   </TabItem>
 </Tabs>
 

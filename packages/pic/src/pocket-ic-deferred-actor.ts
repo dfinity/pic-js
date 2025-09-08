@@ -30,7 +30,7 @@ export type DeferredActor<T extends ActorInterface<T> = ActorInterface> =
      *
      * @param principal The Principal to set.
      *
-     * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+     * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
      *
      * @example
      * ```ts
@@ -56,8 +56,8 @@ export type DeferredActor<T extends ActorInterface<T> = ActorInterface> =
      *
      * @param identity The identity to set.
      *
-     * @see [Identity](https://agent-js.icp.xyz/agent/interfaces/Identity.html)
-     * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+     * @see [Identity](https://js.icp.build/core/latest/libs/agent/api/interfaces/identity/)
+     * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
      *
      * @example
      * ```ts

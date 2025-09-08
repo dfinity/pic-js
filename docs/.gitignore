@@ -1,6 +1,4 @@
-
-/build
-.docusaurus
-.cache-loader
-/docs/pic-js
-/node_modules/
+dist/
+src/content/tmp/
+src/content/docs/api/
+src/content/docs/changelog.md
