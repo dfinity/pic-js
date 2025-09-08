@@ -1,6 +1,0 @@
-{
-  "name": "nns-proxy-tests",
-  "devDependencies": {
-    "@dfinity/pic": "workspace:*"
-  }
-}

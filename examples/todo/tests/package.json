@@ -1,6 +1,0 @@
-{
-  "name": "todo-tests",
-  "devDependencies": {
-    "@dfinity/pic": "workspace:*"
-  }
-}

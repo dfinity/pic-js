@@ -1,9 +1,0 @@
-{
-  "extends": "../../tsconfig.json",
-  "include": ["./src/**/*.ts", "./tests/**/*.ts"],
-  "compilerOptions": {
-    "composite": true,
-    "allowJs": true,
-    "types": ["jest", "node"]
-  }
-}

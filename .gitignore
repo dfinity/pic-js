@@ -1,16 +1,1 @@
-/.dfx/
-/node_modules/
-/target/
-
-**/dist/
-**/declarations/
-**/node_modules/
-
-/packages/pic/pocket-ic
-/examples/nns_proxy/tests/state/nns_state/
-
-.env
 .DS_Store
-
-.idea/
-.vscode/

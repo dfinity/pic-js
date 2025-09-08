@@ -1,6 +1,0 @@
-{
-  "name": "clock-tests",
-  "devDependencies": {
-    "@dfinity/pic": "workspace:*"
-  }
-}

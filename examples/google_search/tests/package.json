@@ -1,6 +1,0 @@
-{
-  "name": "google-search-tests",
-  "devDependencies": {
-    "@dfinity/pic": "workspace:*"
-  }
-}

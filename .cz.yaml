@@ -1,7 +1,0 @@
----
-commitizen:
-  name: cz_conventional_commits
-  tag_format: $version
-  version: 0.13.1
-  version_files:
-  - packages/pic/package.json:version

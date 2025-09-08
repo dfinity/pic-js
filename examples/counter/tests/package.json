@@ -1,7 +1,0 @@
-{
-  "name": "counter-tests",
-  "type": "module",
-  "devDependencies": {
-    "@dfinity/pic": "workspace:*"
-  }
-}

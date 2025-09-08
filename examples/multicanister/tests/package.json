@@ -1,6 +1,0 @@
-{
-  "name": "multicanister-tests",
-  "devDependencies": {
-    "@dfinity/pic": "workspace:*"
-  }
-}
