@@ -87,8 +87,6 @@ jobs:
 
       - uses: dfinity/ci-tools/actions/extract-version@main
         id: extract-version
-        with:
-          file: 'packages/pic/package.json'
 
       - name: Prepare version
         id: ver
