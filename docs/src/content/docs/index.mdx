@@ -1,0 +1,45 @@
+---
+title: Pic JS
+next: false
+prev: false
+tableOfContents: false
+hero:
+  title: <span class="dfn-text-gradient">Pic JS</span>
+  tagline: An Internet Computer canister testing library for TypeScript and JavaScript.
+  image:
+    file: ../../../../assets/icp.svg
+    alt: Internet Computer Logo
+head:
+  - tag: style
+    content: |
+      .sl-container {
+        max-width: 70rem;
+      }
+---
+
+import { Card, CardGrid, LinkButton } from '@astrojs/starlight/components';
+
+<CardGrid>
+    <Card title="Getting Started">
+        <LinkButton
+            href="/pic-js/latest/guides/getting-started"
+            variant="minimal"
+            icon="right-caret"
+            iconPlacement="start"
+        >
+            Get started with <code class="dfn-text-highlight">@dfinity/pic</code>
+        </LinkButton>
+    </Card>
+
+    <Card title="API Reference">
+        <LinkButton
+            href="/pic-js/latest/api/"
+            variant="minimal"
+            icon="right-caret"
+            iconPlacement="start"
+        >
+            View the API reference
+        </LinkButton>
+    </Card>
+
+</CardGrid>

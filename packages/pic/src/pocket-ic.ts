@@ -127,7 +127,7 @@ export class PocketIc {
    * @returns The {@link Actor} instance.
    *
    * @see [Candid](https://internetcomputer.org/docs/current/references/candid-ref)
-   * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+   * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
    *
    * @example
    * ```ts
@@ -187,7 +187,7 @@ export class PocketIc {
    * @param options Options for creating the canister, see {@link CreateCanisterOptions}.
    * @returns The Principal of the newly created canister.
    *
-   * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+   * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
    *
    * @example
    * ```ts
@@ -247,7 +247,7 @@ export class PocketIc {
    *
    * @param options Options for starting the canister, see {@link StartCanisterOptions}.
    *
-   * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+   * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
    *
    * @example
    * ```ts
@@ -292,7 +292,7 @@ export class PocketIc {
    *
    * @param options Options for stopping the canister, see {@link StopCanisterOptions}.
    *
-   * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+   * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
    *
    * @example
    * ```ts
@@ -340,7 +340,7 @@ export class PocketIc {
    *
    * @param options Options for installing the code, see {@link InstallCodeOptions}.
    *
-   * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+   * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
    *
    * @example
    * ```ts
@@ -401,7 +401,7 @@ export class PocketIc {
    *
    * @param options Options for reinstalling the code, see {@link ReinstallCodeOptions}.
    *
-   * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+   * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
    *
    * @example
    * ```ts
@@ -456,7 +456,7 @@ export class PocketIc {
    *
    * @param options Options for upgrading the canister, see {@link UpgradeCanisterOptions}.
    *
-   * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+   * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
    *
    * @example
    * ```ts
@@ -508,7 +508,7 @@ export class PocketIc {
    *
    * @param options Options for updating the canister settings, see {@link UpdateCanisterSettingsOptions}.
    *
-   * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+   * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
    *
    * @example
    * ```ts
@@ -569,8 +569,8 @@ export class PocketIc {
    * @typeparam T The type of the {@link Actor}. Must implement {@link ActorInterface}.
    * @returns The {@link Actor} instance.
    *
-   * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
-   * @see [InterfaceFactory](https://agent-js.icp.xyz/candid/modules/IDL.html#InterfaceFactory)
+   * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+   * @see [InterfaceFactory](https://js.icp.build/core/latest/libs/candid/api/namespaces/idl/type-aliases/interfacefactory/)
    *
    * @example
    * ```ts
@@ -622,8 +622,8 @@ export class PocketIc {
    * @typeparam T The type of the {@link DeferredActor}. Must implement {@link ActorInterface}.
    * @returns The {@link DeferredActor} instance.
    *
-   * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
-   * @see [InterfaceFactory](https://agent-js.icp.xyz/candid/modules/IDL.html#InterfaceFactory)
+   * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+   * @see [InterfaceFactory](https://js.icp.build/core/latest/libs/candid/api/namespaces/idl/type-aliases/interfacefactory/)
    *
    * @example
    */
@@ -797,7 +797,7 @@ export class PocketIc {
    * @param canisterId The Principal of the canister to get the controllers of.
    * @returns The controllers of the specified canister.
    *
-   * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+   * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
    *
    * @example
    * ```ts
@@ -1065,7 +1065,7 @@ export class PocketIc {
    * @param canisterId The Principal of the canister to get the subnet Id of.
    * @returns The canister's subnet Id if the canister exists, `null` otherwise.
    *
-   * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+   * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
    *
    * @example
    * ```ts
@@ -1203,7 +1203,7 @@ export class PocketIc {
    * @param canisterId The Principal of the canister to check.
    * @returns The current cycles balance of the canister.
    *
-   * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+   * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
    *
    * @example
    * ```ts
@@ -1234,7 +1234,7 @@ export class PocketIc {
    * @param amount The amount of cycles to add.
    * @returns The new cycle balance of the canister.
    *
-   * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+   * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
    *
    * @example
    * ```ts
@@ -1267,7 +1267,7 @@ export class PocketIc {
    * @param canisterId The Principal of the canister to set the stable memory of.
    * @param stableMemory A blob containing the stable memory to set.
    *
-   * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+   * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
    *
    * @example
    * ```ts
@@ -1303,7 +1303,7 @@ export class PocketIc {
    * @param canisterId The Principal of the canister to get the stable memory of.
    * @returns A blob containing the canister's stable memory.
    *
-   * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+   * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
    *
    * @example
    * ```ts

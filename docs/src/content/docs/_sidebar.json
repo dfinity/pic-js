@@ -1,0 +1,26 @@
+[
+  {
+    "label": "Overview",
+    "link": "/"
+  },
+  {
+    "label": "Guides",
+    "collapsed": false,
+    "autogenerate": {
+      "collapsed": true,
+      "directory": "guides"
+    }
+  },
+  {
+    "label": "API Reference",
+    "collapsed": true,
+    "autogenerate": {
+      "collapsed": true,
+      "directory": "api"
+    }
+  },
+  {
+    "label": "Changelog",
+    "link": "/changelog"
+  }
+]

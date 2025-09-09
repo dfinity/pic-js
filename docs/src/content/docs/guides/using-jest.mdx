@@ -1,7 +1,10 @@
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
+---
+title: Using Jest
+sidebar:
+  order: 2
+---
 
-# Using Jest
+import { Code, Tabs, TabItem } from '@astrojs/starlight/components';
 
 [Jest](https://jestjs.io) is a JavaScript testing framework that is widely used in the JavaScript community. It is recommended for beginners because it has the largest community and is the most widely used. Jest is also the officially supported test runner for PicJS.
 
@@ -10,28 +13,20 @@ import TabItem from '@theme/TabItem';
 To get started with [Jest](https://jestjs.io), install the relevant packages using your preferred package manager:
 
 <Tabs>
-  <TabItem value="npm" label="npm" default>
-    ```shell
-    npm i -D jest @types/jest @types/node ts-jest
-    ```
+  <TabItem label="npm" icon="npm">
+    <Code lang="shell" code="npm i -D jest @types/jest @types/node ts-jest" />
   </TabItem>
-
-  <TabItem value="pnpm" label="pnpm">
-    ```shell
-    pnpm i -D jest @types/jest @types/node ts-jest
-    ```
+  <TabItem label="pnpm" icon="pnpm">
+    <Code lang="shell" code="pnpm i -D jest @types/jest @types/node ts-jest" />
   </TabItem>
-
-  <TabItem value="yarn" label="yarn">
-    ```shell
-    yarn add -D jest @types/jest @types/node ts-jest
-    ```
+  <TabItem label="bun" icon="bun">
+    <Code lang="shell" code="bun add -d jest @types/jest @types/node ts-jest" />
   </TabItem>
-
-  <TabItem value="bun" label="bun">
-    ```shell
-    bun add -d jest @types/jest @types/node ts-jest
-    ```
+  <TabItem label="yarn" icon="seti:yarn">
+    <Code
+      lang="shell"
+      code="yarn add -D jest @types/jest @types/node ts-jest"
+    />
   </TabItem>
 </Tabs>
 

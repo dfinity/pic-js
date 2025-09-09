@@ -341,7 +341,7 @@ export interface SetupCanisterOptions extends CreateCanisterOptions {
  * such as an {@link Actor} and CanisterId.
  *
  * @category Types
- * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
  */
 export interface CanisterFixture<T extends ActorInterface<T> = ActorInterface> {
   /**
@@ -359,7 +359,7 @@ export interface CanisterFixture<T extends ActorInterface<T> = ActorInterface> {
  * Canister settings.
  *
  * @category Types
- * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
  */
 export interface CanisterSettings {
   /**
@@ -393,7 +393,7 @@ export interface CanisterSettings {
  * Options for creating a canister.
  *
  * @category Types
- * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
  */
 export interface CreateCanisterOptions extends CanisterSettings {
   /**
@@ -428,7 +428,7 @@ export interface CreateCanisterOptions extends CanisterSettings {
  * Options for starting a given canister.
  *
  * @category Types
- * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
  */
 export interface StartCanisterOptions {
   /**
@@ -452,7 +452,7 @@ export interface StartCanisterOptions {
  * Options for stopping a given canister.
  *
  * @category Types
- * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
  */
 export interface StopCanisterOptions {
   /**
@@ -476,7 +476,7 @@ export interface StopCanisterOptions {
  * Options for installing a WASM module to a given canister.
  *
  * @category Types
- * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
  */
 export interface InstallCodeOptions {
   /**
@@ -514,7 +514,7 @@ export interface InstallCodeOptions {
  * This will reset both the canister's heap and its stable memory.
  *
  * @category Types
- * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
  */
 export interface ReinstallCodeOptions {
   /**
@@ -546,7 +546,7 @@ export interface ReinstallCodeOptions {
  * This will reset the canister's heap, but preserve stable memory.
  *
  * @category Types
- * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
  */
 export interface UpgradeCanisterOptions {
   /**
@@ -577,7 +577,7 @@ export interface UpgradeCanisterOptions {
  * Options for updating the settings of a given canister.
  *
  * @category Types
- * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
  */
 export interface UpdateCanisterSettingsOptions
   extends Partial<CanisterSettings> {
@@ -601,7 +601,7 @@ export interface UpdateCanisterSettingsOptions
  * Options for making a query call to a given canister.
  *
  * @category Types
- * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
  */
 export interface QueryCallOptions {
   /**
@@ -636,7 +636,7 @@ export interface QueryCallOptions {
  * Options for making an update call to a given canister.
  *
  * @category Types
- * @see [Principal](https://agent-js.icp.xyz/principal/classes/Principal.html)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
  */
 
 export interface UpdateCallOptions {
