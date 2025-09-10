@@ -69,6 +69,7 @@ jobs:
     name: Publish Docs
     runs-on: ubuntu-latest
     needs: release
+    environment: release
     if: ${{ needs.release.outputs.is_beta == 'false' }}
     steps:
       - name: Create GitHub App Token

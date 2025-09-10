@@ -10,7 +10,7 @@ jobs:
     uses: dfinity/ci-tools/.github/workflows/generate-changelog.yaml@main
     with:
       token_app_id: ${{ vars.PR_AUTOMATION_BOT_PUBLIC_APP_ID }}
-      environment: create-prs
+      environment: release
       owner: ${{ github.repository_owner }}
       repository: ${{ github.event.repository.name }}
     secrets:
