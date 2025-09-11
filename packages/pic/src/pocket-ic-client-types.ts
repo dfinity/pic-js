@@ -22,7 +22,7 @@ export interface CreateInstanceRequest {
   application?: ApplicationSubnetConfig[];
   verifiedApplication?: VerifiedApplicationSubnetConfig[];
   processingTimeoutMs?: number;
-  nonmainnetFeatures?: NonmainnetFeatures;
+  icpConfig?: IcpConfig;
 }
 
 export interface SubnetConfig<
@@ -77,16 +77,21 @@ export enum SubnetStateType {
   FromPath = 'fromPath',
 }
 
-export interface NonmainnetFeatures {
-  enableBetaFeatures: boolean;
-  disableCanisterBacktrace: boolean;
-  disableFunctionNameLengthLimits: boolean;
-  disableCanisterExecutionRateLimiting: boolean;
+export enum IcpConfigFlag {
+  Disabled,
+  Enabled,
+}
+
+export interface IcpConfig {
+  betaFeatures?: IcpConfigFlag;
+  canisterBacktrace?: IcpConfigFlag;
+  functionNameLengthLimits?: IcpConfigFlag;
+  canisterExecutionRateLimiting?: IcpConfigFlag;
 }
 
 export interface EncodedCreateInstanceRequest {
   subnet_config_set: EncodedCreateInstanceSubnetConfig;
-  nonmainnet_features?: EncodedNonmainnetFeatures;
+  icp_config?: EncodedIcpConfig;
 }
 
 export interface EncodedCreateInstanceSubnetConfig {
@@ -100,13 +105,16 @@ export interface EncodedCreateInstanceSubnetConfig {
   verified_application: EncodedSubnetConfig[];
 }
 
-export interface EncodedEmptyConfig {}
+export enum EncodedIcpConfigFlag {
+  Disabled = 'Disabled',
+  Enabled = 'Enabled',
+}
 
-export interface EncodedNonmainnetFeatures {
-  enable_beta_features?: EncodedEmptyConfig;
-  disable_canister_backtrace?: EncodedEmptyConfig;
-  disable_function_name_length_limits?: EncodedEmptyConfig;
-  disable_canister_execution_rate_limiting?: EncodedEmptyConfig;
+export interface EncodedIcpConfig {
+  beta_features?: EncodedIcpConfigFlag;
+  canister_backtrace?: EncodedIcpConfigFlag;
+  function_name_length_limits?: EncodedIcpConfigFlag;
+  canister_execution_rate_limiting?: EncodedIcpConfigFlag;
 }
 
 export interface EncodedSubnetConfig {
@@ -171,20 +179,31 @@ function encodeInstructionConfig(
     : 'Production';
 }
 
-function encodeNonmainnetFeatures(
-  nonmainnetFeatures: NonmainnetFeatures,
-): EncodedNonmainnetFeatures {
+function encodeIcpConfigFlag(
+  icpConfigFlag: IcpConfigFlag,
+): EncodedIcpConfigFlag {
+  switch (icpConfigFlag) {
+    case IcpConfigFlag.Disabled:
+      return EncodedIcpConfigFlag.Disabled;
+    case IcpConfigFlag.Enabled:
+      return EncodedIcpConfigFlag.Enabled;
+  }
+}
+
+function encodeIcpConfig(icpConfig: IcpConfig): EncodedIcpConfig {
   return {
-    enable_beta_features: nonmainnetFeatures.enableBetaFeatures
-      ? {}
+    beta_features: icpConfig.betaFeatures
+      ? encodeIcpConfigFlag(icpConfig.betaFeatures)
       : undefined,
-    disable_canister_backtrace: nonmainnetFeatures.disableCanisterBacktrace
-      ? {}
+    canister_backtrace: icpConfig.canisterBacktrace
+      ? encodeIcpConfigFlag(icpConfig.canisterBacktrace)
       : undefined,
-    disable_function_name_length_limits:
-      nonmainnetFeatures.disableFunctionNameLengthLimits ? {} : undefined,
-    disable_canister_execution_rate_limiting:
-      nonmainnetFeatures.disableCanisterExecutionRateLimiting ? {} : undefined,
+    function_name_length_limits: icpConfig.functionNameLengthLimits
+      ? encodeIcpConfigFlag(icpConfig.functionNameLengthLimits)
+      : undefined,
+    canister_execution_rate_limiting: icpConfig.canisterExecutionRateLimiting
+      ? encodeIcpConfigFlag(icpConfig.canisterExecutionRateLimiting)
+      : undefined,
   };
 }
 
@@ -213,8 +232,8 @@ export function encodeCreateInstanceRequest(
         defaultOptions.verifiedApplication,
       ),
     },
-    nonmainnet_features: defaultOptions.nonmainnetFeatures
-      ? encodeNonmainnetFeatures(defaultOptions.nonmainnetFeatures)
+    icp_config: defaultOptions.icpConfig
+      ? encodeIcpConfig(defaultOptions.icpConfig)
       : undefined,
   };
 
