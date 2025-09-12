@@ -9,9 +9,8 @@ const __dirname = dirname(__filename);
 
 const IS_LINUX = process.platform === 'linux';
 const PLATFORM = IS_LINUX ? 'x86_64-linux' : 'x86_64-darwin';
-const VERSION = '9.0.1';
-const DOWNLOAD_PATH = `https://download.dfinity.systems/ic/a299620cd5e73ed21b415f2ebe3da0bb43a3649d/binaries/${PLATFORM}/pocket-ic.gz`;
-//const DOWNLOAD_PATH = `https://github.com/dfinity/pocketic/releases/download/${VERSION}/pocket-ic-${PLATFORM}.gz`;
+const VERSION = '10.0.0';
+const DOWNLOAD_PATH = `https://github.com/dfinity/pocketic/releases/download/${VERSION}/pocket-ic-${PLATFORM}.gz`;
 
 const TARGET_PATH = resolve(__dirname, 'pocket-ic');
 
