@@ -28,6 +28,8 @@ import {
   encodeInstallCodeRequest,
   encodeStartCanisterRequest,
   encodeUpdateCanisterSettingsRequest,
+  encodeFetchCanisterLogsRequest,
+  decodeFetchCanisterLogsResponse,
 } from './management-canister';
 import {
   createDeferredActorClass,
@@ -83,6 +85,10 @@ import {
  * ```
  */
 export class PocketIc {
+  private lastLogIdx: Map<string, bigint> = new Map();
+  private lastLogTsMs: Map<string, number> = new Map();
+  private backtraceOpen: Map<string, boolean> = new Map();
+
   private constructor(private readonly client: PocketIcClient) {}
 
   /**
@@ -176,6 +182,9 @@ export class PocketIc {
 
     const actor = this.createActor<T>(idlFactory, canisterId);
 
+    // Initialize log tracking for this canister
+    this.initLogTracking(canisterId);
+
     return { actor, canisterId };
   }
 
@@ -239,7 +248,12 @@ export class PocketIc {
         : undefined,
     });
 
-    return decodeCreateCanisterResponse(res.body).canister_id;
+    const canisterId = decodeCreateCanisterResponse(res.body).canister_id;
+
+    // Initialize log tracking for this canister
+    this.initLogTracking(canisterId);
+
+    return canisterId;
   }
 
   /**
@@ -788,6 +802,7 @@ export class PocketIc {
   public async tick(times: number = 1): Promise<void> {
     for (let i = 0; i < times; i++) {
       await this.client.tick();
+      await this.flushCanisterLogs();
     }
   }
 
@@ -867,6 +882,141 @@ export class PocketIc {
    */
   public async resetTime(): Promise<void> {
     await this.setTime(Date.now());
+  }
+
+  private initLogTracking(canisterId: Principal): void {
+    const key = canisterId.toText();
+    if (!this.lastLogIdx.has(key)) {
+      this.lastLogIdx.set(key, -1n);
+      this.lastLogTsMs.set(key, 0);
+    }
+  }
+
+  private async flushCanisterLogs(): Promise<void> {
+    try {
+      const allCanisters: Principal[] = Array.from(this.lastLogIdx.keys()).map(
+        key => Principal.fromText(key),
+      );
+      for (const canisterId of allCanisters) {
+        this.initLogTracking(canisterId);
+        const key = canisterId.toText();
+        const res = await this.client.queryCall({
+          canisterId: MANAGEMENT_CANISTER_ID,
+          method: 'fetch_canister_logs',
+          payload: encodeFetchCanisterLogsRequest({ canister_id: canisterId }),
+          sender: Principal.anonymous(),
+        });
+        const logs = decodeFetchCanisterLogsResponse(new Uint8Array(res.body));
+        logs.sort((a, b) => (a.idx < b.idx ? -1 : a.idx > b.idx ? 1 : 0));
+        let lastIdx = this.lastLogIdx.get(key) ?? -1n;
+        let lastTs = this.lastLogTsMs.get(key) ?? 0;
+        let inBacktrace = this.backtraceOpen.get(key) ?? false;
+        for (const log of logs) {
+          if (log.idx <= lastIdx) continue;
+          const tsMs = Number(log.timestamp_nanos / 1_000_000n);
+          lastIdx = log.idx;
+          lastTs = tsMs;
+          const content = new TextDecoder().decode(log.content);
+
+          // Only show trap messages + their backtraces from fetched canister logs.
+          if (content.includes('[TRAP]:')) {
+            const short = canisterId
+              .toText()
+              .split('-')
+              .slice(0, 2)
+              .join('-');
+            const redStart = '\u001b[38;2;239;68;68m';
+            const reset = '\u001b[0m';
+            const square = PocketIc.coloredSquare(short);
+
+            const lines = content.replace(/\r?\n/g, '\n').split('\n').filter(l => l.length > 0);
+            const first = lines[0] ?? '';
+            const msg = first.split('[TRAP]:')[1]?.trim() ?? first.trim();
+            const head = `☠️ ${redStart}[${square}${redStart}${short}] [TIMER TRAP]: ${msg}${reset}`;
+            process.stdout.write(head.endsWith('\n') ? head : head + '\n');
+
+            // Print any backtrace lines that are part of the same message
+            const grayBar = "\u001b[38;2;107;114;128m|\u001b[0m ";
+            for (let i = 1; i < lines.length; i++) {
+              process.stdout.write(grayBar + PocketIc.colorLightRed(lines[i]) + '\n');
+            }
+          } else if (content.includes('Canister Backtrace:')) {
+            const grayBar = "\u001b[38;2;107;114;128m|\u001b[0m ";
+            const lines = content.replace(/\r?\n/g, '\n').split('\n').filter(l => l.length > 0);
+            for (const l of lines) {
+              process.stdout.write(grayBar + PocketIc.colorLightRed(l) + '\n');
+            }
+            const lastLine = lines[lines.length - 1]?.trim();
+            inBacktrace = lastLine === '.' ? false : true;
+          } else if (inBacktrace) {
+            const grayBar = "\u001b[38;2;107;114;128m|\u001b[0m ";
+            const line = content.trimEnd();
+            if (line.length > 0) {
+              process.stdout.write(grayBar + PocketIc.colorLightRed(line) + '\n');
+            }
+            if (line.trim() === '.' || line.length === 0) {
+              inBacktrace = false;
+            }
+          }
+        }
+        this.lastLogIdx.set(key, lastIdx);
+        this.lastLogTsMs.set(key, lastTs);
+        this.backtraceOpen.set(key, inBacktrace);
+      }
+    } catch (e) {
+      // Swallow errors to avoid noisy output
+    }
+  }
+
+  // No generic printLogLine needed; fetched canister logs are formatted per kind.
+
+  // Simple color helpers for trap printing
+  // (no other color helpers needed here)
+
+  // (colorRed helper unused; inline codes are used where needed)
+
+  private static colorLightRed(s: string): string {
+    const start = '\u001b[38;2;252;165;165m';
+    const reset = '\u001b[0m';
+    return `${start}${s}${reset}`;
+  }
+
+  private static coloredSquare(seed: string): string {
+    const [r, g, b] = PocketIc.pickColor(seed);
+    const start = `\u001b[38;2;${r};${g};${b}m`;
+    const reset = '\u001b[0m';
+    return `${start}■${reset}`;
+  }
+
+  private static __COLOR_CACHE = new Map<string, [number, number, number]>();
+
+  private static pickColor(seed: string): [number, number, number] {
+    const cached = PocketIc.__COLOR_CACHE.get(seed);
+    if (cached) return cached;
+    let h = 0;
+    for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
+    const hue = h % 360;
+    const sat = 70;
+    const light = 55;
+    const rgb = PocketIc.hslToRgb(hue, sat, light);
+    PocketIc.__COLOR_CACHE.set(seed, rgb);
+    return rgb;
+  }
+
+  private static hslToRgb(h: number, s: number, l: number): [number, number, number] {
+    const ss = s / 100;
+    const ll = l / 100;
+    const c = (1 - Math.abs(2 * ll - 1)) * ss;
+    const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+    const m = ll - c / 2;
+    let r = 0, g = 0, b = 0;
+    if (0 <= h && h < 60) [r, g, b] = [c, x, 0];
+    else if (60 <= h && h < 120) [r, g, b] = [x, c, 0];
+    else if (120 <= h && h < 180) [r, g, b] = [0, c, x];
+    else if (180 <= h && h < 240) [r, g, b] = [0, x, c];
+    else if (240 <= h && h < 300) [r, g, b] = [x, 0, c];
+    else [r, g, b] = [c, 0, x];
+    return [Math.round((r + m) * 255), Math.round((g + m) * 255), Math.round((b + m) * 255)];
   }
 
   /**

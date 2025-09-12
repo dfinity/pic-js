@@ -391,6 +391,60 @@ export function decodeGetTimeResponse(
 
 //#endregion GetTime
 
+//#region FetchCanisterLogs
+
+export interface FetchCanisterLogsRequest {
+  canisterId: Principal;
+}
+
+export interface EncodedFetchCanisterLogsRequest {
+  canister_id: string;
+}
+
+export type CanisterLog = {
+  idx: bigint;
+  timestampNanos: bigint;
+  content: Uint8Array;
+};
+
+export interface EncodedCanisterLog {
+  idx: string | number; // nat64 may be decimal string or number
+  timestamp_nanos: string | number; // nat64 may be decimal string or number
+  content: string; // base64
+}
+
+export type EncodedFetchCanisterLogsResponse =
+  | { canister_log_records: EncodedCanisterLog[] }
+  | EncodedCanisterLog[];
+
+export function encodeFetchCanisterLogsRequest(
+  req: FetchCanisterLogsRequest,
+): EncodedFetchCanisterLogsRequest {
+  return {
+    canister_id: base64EncodePrincipal(req.canisterId),
+  };
+}
+
+export function decodeFetchCanisterLogsResponse(
+  res: EncodedFetchCanisterLogsResponse,
+): CanisterLog[] {
+  const arr = Array.isArray(res)
+    ? res
+    : (res as { canister_log_records: EncodedCanisterLog[] }).canister_log_records ?? [];
+  return arr.map(l => ({
+    idx: typeof l.idx === 'number' ? BigInt(l.idx) : BigInt(l.idx),
+    timestampNanos:
+      typeof l.timestamp_nanos === 'number'
+        ? BigInt(l.timestamp_nanos)
+        : BigInt(l.timestamp_nanos),
+    content: base64Decode(l.content),
+  }));
+}
+
+//#endregion FetchCanisterLogs
+
+//#endregion GetTime
+
 //#region SetTime
 
 export interface SetTimeRequest {
@@ -923,12 +977,116 @@ export function decodeCanisterCallResponse(
 
 function decodeResultResponse<T>(res: EncodedCanisterCallResult<T>): T {
   if ('Err' in res) {
-    throw new Error(
-      `Canister call failed: ${res.Err.reject_message}. Reject code: ${res.Err.reject_code}. Error code: ${res.Err.error_code}. Certified: ${res.Err.certified}`,
-    );
+    const baseMessage = `Canister call failed: ${res.Err.reject_message}. Reject code: ${res.Err.reject_code}. Error code: ${res.Err.error_code}. Certified: ${res.Err.certified}`;
+    const pretty = formatTrapMessageIfAny(baseMessage);
+    throw new Error(pretty ?? baseMessage);
   }
 
   return res.Ok;
+}
+
+// Detects trap messages of the form:
+// "Canister call failed: Error from Canister <principal>: Canister called `ic0.trap` with message: '<msg>' ..."
+// and replaces the first line with a compact, colored version like:
+// "💀 \x1b[38;2;239;68;68m[lxzze-o7777] call trap: <msg>\x1b[0m"
+function formatTrapMessageIfAny(message: string): string | null {
+  const lines = message.split(/\r?\n/);
+  if (lines.length === 0) return null;
+
+  const first = lines[0];
+  const m = /^Canister call failed: Error from Canister\s+([^:]+):\s+Canister called `ic0\.trap` with message: '([^']*)'/.exec(first);
+  if (!m) return null;
+
+  const fullId = m[1];
+  const trapMsg = m[2];
+  const shortId = shortenPrincipal(fullId);
+  const bug = '🐞';
+  const redStart = '\u001b[38;2;239;68;68m';
+  const reset = '\u001b[0m';
+  const sq = coloredSquare(shortId);
+  const replaced = `${bug} ${redStart}[${sq}${redStart}${shortId}] [CALL TRAP]: ${trapMsg}${reset}`;
+  lines[0] = replaced;
+
+  // Remove guidance/footer line(s)
+  const filtered: string[] = [];
+  for (const line of lines) {
+    if (/^Consider gracefully handling failures/i.test(line)) {
+      continue; // drop guidance block
+    }
+    filtered.push(line);
+  }
+
+  // Colorize backtrace section in light red and prefix each line with a gray bar
+  let inBacktrace = false;
+  for (let i = 0; i < filtered.length; i++) {
+    const line = filtered[i];
+    if (line.trim() === 'Canister Backtrace:') {
+      inBacktrace = true;
+      const grayBar = "\u001b[38;2;107;114;128m|\u001b[0m ";
+      filtered[i] = grayBar + colorLightRed(line);
+      continue;
+    }
+    if (inBacktrace) {
+      // Stop at empty line or if another header-like guidance appears
+      if (line.trim() === '' || /^Consider /i.test(line)) {
+        inBacktrace = false;
+      } else {
+        const grayBar = "\u001b[38;2;107;114;128m|\u001b[0m ";
+        filtered[i] = grayBar + colorLightRed(line);
+      }
+    }
+  }
+
+  return filtered.join('\n');
+}
+
+function shortenPrincipal(p: string): string {
+  return p.split('-').slice(0, 2).join('-');
+}
+
+// (colorRed unused; inline codes are used where needed)
+
+function coloredSquare(seed: string): string {
+  const [r, g, b] = pickColor(seed);
+  const start = `\u001b[38;2;${r};${g};${b}m`;
+  const reset = '\u001b[0m';
+  return `${start}■${reset}`;
+}
+
+function pickColor(seed: string): [number, number, number] {
+  const cached = __PIC_COLOR_CACHE__.get(seed);
+  if (cached) return cached;
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
+  const hue = h % 360;
+  const sat = 70;
+  const light = 55;
+  const rgb = hslToRgb(hue, sat, light);
+  __PIC_COLOR_CACHE__.set(seed, rgb);
+  return rgb;
+}
+
+function hslToRgb(h: number, s: number, l: number): [number, number, number] {
+  const ss = s / 100;
+  const ll = l / 100;
+  const c = (1 - Math.abs(2 * ll - 1)) * ss;
+  const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+  const m = ll - c / 2;
+  let r = 0, g = 0, b = 0;
+  if (0 <= h && h < 60) [r, g, b] = [c, x, 0];
+  else if (60 <= h && h < 120) [r, g, b] = [x, c, 0];
+  else if (120 <= h && h < 180) [r, g, b] = [0, c, x];
+  else if (180 <= h && h < 240) [r, g, b] = [0, x, c];
+  else if (240 <= h && h < 300) [r, g, b] = [x, 0, c];
+  else [r, g, b] = [c, 0, x];
+  return [Math.round((r + m) * 255), Math.round((g + m) * 255), Math.round((b + m) * 255)];
+}
+
+function colorLightRed(s: string): string {
+  // Tailwind red-300 approx: rgb(252,165,165)
+  const start = '\u001b[38;2;252;165;165m';
+  const reset = '\u001b[0m';
+  return `${start}${s}${reset}`;
 }
 
 //#endregion CanisterCall
@@ -1026,6 +1184,7 @@ export function encodeAwaitCanisterCallRequest(
     message_id: req.messageId,
   };
 }
+const __PIC_COLOR_CACHE__: Map<string, [number, number, number]> = new Map();
 
 export type AwaitCanisterCallResponse = CanisterCallResponse;
 

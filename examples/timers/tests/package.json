@@ -1,0 +1,7 @@
+{
+  "name": "timers-tests",
+  "devDependencies": {
+    "@dfinity/pic": "workspace:*"
+  }
+}
+
