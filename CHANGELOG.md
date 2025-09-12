@@ -1,5 +1,9 @@
 ## Unreleased
 
+### Fix
+
+- readme links and install instructions (#164)
+
 ## 0.14.0 (2025-09-12)
 
 ### BREAKING CHANGE
