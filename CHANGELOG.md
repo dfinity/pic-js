@@ -7,10 +7,11 @@
 
 ### Feat
 
-- update to PocketIC server v10.0.0
+- make pic-js compatible with server v10.0.0 (#147)
 
 ### Fix
 
+- set the release environment (#149)
 - state copy to not include parent folder (#134)
 
 ### Refactor
