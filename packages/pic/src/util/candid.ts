@@ -5,10 +5,7 @@ export function optional<T>(value: T | undefined | null): [] | [T] {
   return isNil(value) ? [] : [value];
 }
 
-export function decodeCandid<T>(
-  types: IDL.Type[],
-  data: ArrayBufferLike,
-): T | null {
+export function decodeCandid<T>(types: IDL.Type[], data: Uint8Array): T | null {
   const returnValues = IDL.decode(types, data);
 
   switch (returnValues.length) {

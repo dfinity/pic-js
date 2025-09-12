@@ -11,7 +11,8 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "types": ["node"]
+    "types": ["node"],
+    "module": "NodeNext"
   },
   "references": [{ "path": "./packages/pic/tsconfig.test.json" }]
 }
