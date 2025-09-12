@@ -150,7 +150,7 @@ export class PocketIcServer {
 }
 
 const POLL_INTERVAL_MS = 20;
-const POLL_TIMEOUT_MS = 300_000;
+const POLL_TIMEOUT_MS = 200_000;
 
 class NullStream extends Writable {
   _write(
