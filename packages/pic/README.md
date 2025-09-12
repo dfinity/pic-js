@@ -18,7 +18,7 @@ The easiest way to use PocketIC is to use `setupCanister` convenience method:
 
 ```ts
 import { PocketIc } from '@dfinity/pic';
-import { _SERVICE, idlFactory } from '../declarations';
+import { type _SERVICE, idlFactory } from '../declarations';
 
 const wasmPath = resolve('..', '..', 'canister.wasm');
 
@@ -35,7 +35,7 @@ If more control is needed, then the `createCanister`, `installCode` and `createA
 
 ```ts
 import { PocketIc } from '@dfinity/pic';
-import { _SERVICE, idlFactory } from '../declarations';
+import { type _SERVICE, idlFactory } from '../declarations';
 
 const wasmPath = resolve('..', '..', 'canister.wasm');
 
