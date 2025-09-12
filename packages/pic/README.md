@@ -58,7 +58,7 @@ await pic.tearDown();
 
 ## Documentation
 
-More detailed documentation is available over at [dfinity.github.io/pic-js](https://dfinity.github.io/pic-js/).
+More detailed documentation is available over at [js.icp.build/pic-js](https://js.icp.build/pic-js/).
 
 ## Examples
 

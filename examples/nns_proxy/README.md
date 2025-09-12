@@ -2,7 +2,7 @@
 
 ## NNS State Directory
 
-This example project leverages an NNS state directory to provide the initial state for the NNS subnet. To learn more about how this state directory was created, check out the guide on [working with the NNS](https://dfinity.github.io/pic-js/docs/guides/working-with-the-nns).
+This example project leverages an NNS state directory to provide the initial state for the NNS subnet. To learn more about how this state directory was created, check out the guide on [working with the NNS](https://js.icp.build/pic-js/latest/guides/working-with-the-nns).
 
 The state folder is gitignored, but it is compressed and the archive is committed to the repository.
 

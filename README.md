@@ -15,7 +15,7 @@ Other languages available include [Python](https://github.com/dfinity/pocketic-p
 
 ## API Docs
 
-More detailed documentation is available in the [API docs](https://dfinity.github.io/pic-js/).
+More detailed documentation is available in the [API docs](https://js.icp.build/pic-js/).
 
 ## Examples
 
