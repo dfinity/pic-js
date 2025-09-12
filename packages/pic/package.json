@@ -6,7 +6,7 @@
   "license": "Apache-2.0",
   "repository": "github:dfinity/pic-js",
   "bugs": "https://github.com/dfinity/pic-js/issues",
-  "homepage": "https://dfinity.github.io/pic-js",
+  "homepage": "https://js.icp.build/pic-js/",
   "keywords": [
     "internet-computer",
     "internet-computer-protocol",
