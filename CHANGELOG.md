@@ -11,7 +11,7 @@
 
 ### Fix
 
-- set the create-prs environment (#149)
+- set the release environment (#149)
 - state copy to not include parent folder (#134)
 
 ### Refactor
