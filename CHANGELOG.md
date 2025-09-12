@@ -1,7 +1,17 @@
 ## Unreleased
 
+### BREAKING CHANGE
+
+- Moves `@dfinity/agent`, `@dfinity/candid`,
+`@dfinity/identity` and `@dfinity/principal` from `peerDependencies` to
+`dependencies`
+- `nonmainnetFeatures` in `CreateInstanceRequest` is
+renamed to `icpConfig` and is now a record with multiple configuration
+options to override
+
 ### Feat
 
+- bump agent-js deps to v3 (#158)
 - make pic-js compatible with server v10.0.0 (#147)
 
 ### Fix
