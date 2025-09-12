@@ -1,6 +1,7 @@
 import { resolve } from 'path';
 import {
   Actor,
+  IcpConfigFlag,
   PocketIc,
   SubnetStateType,
   generateRandomIdentity,
@@ -32,12 +33,16 @@ describe('NNS Proxy', () => {
   const proposerIdentity = generateRandomIdentity();
 
   beforeEach(async () => {
+    // Enabling beta features to have a smoke test for that config.
     pic = await PocketIc.create(process.env.PIC_URL, {
       nns: {
         state: {
           type: SubnetStateType.FromPath,
           path: NNS_STATE_PATH,
         },
+      },
+      icpConfig: {
+        betaFeatures: IcpConfigFlag.Enabled,
       },
     });
     await pic.setTime(new Date(2025, 4, 29).getTime());

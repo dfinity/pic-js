@@ -68,7 +68,7 @@ export interface CreateInstanceOptions {
    * Determines if non-mainnet features (e.g., best-effort responses) should be
    * enabled for the PocketIC instance. Defaults to `false`.
    */
-  nonmainnetFeatures?: boolean;
+  icpConfig?: IcpConfig;
 }
 
 /**
@@ -233,6 +233,37 @@ export enum SubnetStateType {
    * The path must be on a filesystem accessible by the PocketIC server.
    */
   FromPath = 'fromPath',
+}
+
+/**
+ * Flag for configuration options in `IcpConfig`.
+ */
+export enum IcpConfigFlag {
+  Disabled,
+  Enabled,
+}
+
+/**
+ * Configures IC protocol properties.
+ */
+export interface IcpConfig {
+  /**
+   * Beta features (disabled on the ICP mainnet).
+   */
+  betaFeatures?: IcpConfigFlag;
+  /**
+   * Canister backtraces (enabled on the ICP mainnet).
+   */
+  canisterBacktrace?: IcpConfigFlag;
+  /**
+   * Limits on function name length in canister WASM (enabled on the ICP mainnet).
+   */
+  functionNameLengthLimits?: IcpConfigFlag;
+  /**
+   * Rate-limiting of canister execution (enabled on the ICP mainnet).
+   * Canister execution refers to instructions and memory writes here.
+   */
+  canisterExecutionRateLimiting?: IcpConfigFlag;
 }
 
 /**
