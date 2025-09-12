@@ -13,6 +13,7 @@ jobs:
   create_release_pr:
     name: create_release_pr
     runs-on: ubuntu-latest
+    environment: release
     permissions:
       contents: write
     steps:

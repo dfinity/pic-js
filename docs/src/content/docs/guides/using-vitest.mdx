@@ -1,7 +1,10 @@
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
+---
+title: Using Vitest
+sidebar:
+  order: 3
+---
 
-# Using Vitest
+import { Code, Tabs, TabItem } from '@astrojs/starlight/components';
 
 [Vitest](https://vitest.dev/) is a modern JavaScript testing framework that integrates with the [Vite](https://vitejs.dev/) bundler. It is recommended for developers that are already using [Vite](https://vitejs.dev/) or [Vitest](https://vitest.dev/) on their project.
 
@@ -10,28 +13,17 @@ import TabItem from '@theme/TabItem';
 To get started with [Vitest](https://vitest.dev/), install the relevant packages using your preferred package manager:
 
 <Tabs>
-  <TabItem value="npm" label="npm" default>
-    ```shell
-    npm i -D vitest @types/node
-    ```
+  <TabItem label="npm" icon="npm">
+    <Code lang="shell" code="npm i -D vitest @types/node" />
   </TabItem>
-
-  <TabItem value="pnpm" label="pnpm">
-    ```shell
-    pnpm i -D vitest @types/node
-    ```
+  <TabItem label="pnpm" icon="pnpm">
+    <Code lang="shell" code="pnpm i -D vitest @types/node" />
   </TabItem>
-
-  <TabItem value="yarn" label="yarn">
-    ```shell
-    yarn add -D vitest @types/node
-    ```
+  <TabItem label="bun" icon="bun">
+    <Code lang="shell" code="bun add -d vitest @types/node" />
   </TabItem>
-
-  <TabItem value="bun" label="bun">
-    ```shell
-    bun add -d vitest @types/node
-    ```
+  <TabItem label="yarn" icon="seti:yarn">
+    <Code lang="shell" code="yarn add -D vitest @types/node" />
   </TabItem>
 </Tabs>
 
