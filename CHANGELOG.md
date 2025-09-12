@@ -1,5 +1,10 @@
 ## Unreleased
 
+### BREAKING CHANGE
+
+- `nonmainnetFeatures` in `CreateInstanceRequest` is renamed to `icpConfig`
+  and is now a record with multiple configuration options to override
+
 ### Feat
 
 - make pic-js compatible with server v10.0.0 (#147)
