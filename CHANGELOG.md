@@ -5,6 +5,10 @@
 - `nonmainnetFeatures` in `CreateInstanceRequest` is renamed to `icpConfig`
   and is now a record with multiple configuration options to override
 
+### Feat
+
+- update to PocketIC server v10.0.0
+
 ### Fix
 
 - state copy to not include parent folder (#134)
