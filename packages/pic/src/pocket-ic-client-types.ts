@@ -23,6 +23,7 @@ export interface CreateInstanceRequest {
   verifiedApplication?: VerifiedApplicationSubnetConfig[];
   processingTimeoutMs?: number;
   icpConfig?: IcpConfig;
+  icpFeatures?: IcpFeatures;
 }
 
 export interface SubnetConfig<
@@ -89,9 +90,25 @@ export interface IcpConfig {
   canisterExecutionRateLimiting?: IcpConfigFlag;
 }
 
+export enum IcpFeaturesConfig {
+  DefaultConfig,
+}
+
+export interface IcpFeatures {
+  registry?: IcpFeaturesConfig;
+  cyclesMinting?: IcpFeaturesConfig;
+  icpToken?: IcpFeaturesConfig;
+  cyclesToken?: IcpFeaturesConfig;
+  nnsGovernance?: IcpFeaturesConfig;
+  sns?: IcpFeaturesConfig;
+  ii?: IcpFeaturesConfig;
+  nnsUi?: IcpFeaturesConfig;
+}
+
 export interface EncodedCreateInstanceRequest {
   subnet_config_set: EncodedCreateInstanceSubnetConfig;
   icp_config?: EncodedIcpConfig;
+  icp_features?: EncodedIcpFeatures;
 }
 
 export interface EncodedCreateInstanceSubnetConfig {
@@ -115,6 +132,21 @@ export interface EncodedIcpConfig {
   canister_backtrace?: EncodedIcpConfigFlag;
   function_name_length_limits?: EncodedIcpConfigFlag;
   canister_execution_rate_limiting?: EncodedIcpConfigFlag;
+}
+
+export enum EncodedIcpFeaturesConfig {
+  DefaultConfig = 'DefaultConfig',
+}
+
+export interface EncodedIcpFeatures {
+  registry?: EncodedIcpFeaturesConfig;
+  cyclesMinting?: EncodedIcpFeaturesConfig;
+  icpToken?: EncodedIcpFeaturesConfig;
+  cyclesToken?: EncodedIcpFeaturesConfig;
+  nnsGovernance?: EncodedIcpFeaturesConfig;
+  sns?: EncodedIcpFeaturesConfig;
+  ii?: EncodedIcpFeaturesConfig;
+  nnsUi?: EncodedIcpFeaturesConfig;
 }
 
 export interface EncodedSubnetConfig {
@@ -207,6 +239,40 @@ function encodeIcpConfig(icpConfig: IcpConfig): EncodedIcpConfig {
   };
 }
 
+function encodeIcpFeaturesConfig(
+  icpFeaturesConfig: IcpFeaturesConfig,
+): EncodedIcpFeaturesConfig {
+  switch (icpFeaturesConfig) {
+    case IcpFeaturesConfig.DefaultConfig:
+      return EncodedIcpFeaturesConfig.DefaultConfig;
+  }
+}
+
+function encodeIcpFeatures(icpFeatures: IcpFeatures): EncodedIcpFeatures {
+  return {
+    registry: icpFeatures.registry
+      ? encodeIcpFeaturesConfig(icpFeatures.registry)
+      : undefined,
+    cyclesMinting: icpFeatures.cyclesMinting
+      ? encodeIcpFeaturesConfig(icpFeatures.cyclesMinting)
+      : undefined,
+    icpToken: icpFeatures.icpToken
+      ? encodeIcpFeaturesConfig(icpFeatures.icpToken)
+      : undefined,
+    cyclesToken: icpFeatures.cyclesToken
+      ? encodeIcpFeaturesConfig(icpFeatures.cyclesToken)
+      : undefined,
+    nnsGovernance: icpFeatures.nnsGovernance
+      ? encodeIcpFeaturesConfig(icpFeatures.nnsGovernance)
+      : undefined,
+    sns: icpFeatures.sns ? encodeIcpFeaturesConfig(icpFeatures.sns) : undefined,
+    ii: icpFeatures.ii ? encodeIcpFeaturesConfig(icpFeatures.ii) : undefined,
+    nnsUi: icpFeatures.nnsUi
+      ? encodeIcpFeaturesConfig(icpFeatures.nnsUi)
+      : undefined,
+  };
+}
+
 export function encodeCreateInstanceRequest(
   req?: CreateInstanceRequest,
 ): EncodedCreateInstanceRequest {
@@ -234,6 +300,9 @@ export function encodeCreateInstanceRequest(
     },
     icp_config: defaultOptions.icpConfig
       ? encodeIcpConfig(defaultOptions.icpConfig)
+      : undefined,
+    icp_features: defaultOptions.icpFeatures
+      ? encodeIcpFeatures(defaultOptions.icpFeatures)
       : undefined,
   };
 
