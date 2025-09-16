@@ -1,0 +1,6 @@
+{
+  "name": "icp-features-tests",
+  "devDependencies": {
+    "@dfinity/pic": "workspace:*"
+  }
+}

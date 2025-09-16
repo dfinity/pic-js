@@ -92,6 +92,12 @@ importers:
         specifier: workspace:*
         version: link:../../../packages/pic
 
+  examples/icp_features/tests:
+    devDependencies:
+      '@dfinity/pic':
+        specifier: workspace:*
+        version: link:../../../packages/pic
+
   examples/multicanister/tests:
     devDependencies:
       '@dfinity/pic':
