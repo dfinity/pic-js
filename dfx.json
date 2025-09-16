@@ -17,7 +17,6 @@
         "output": "packages/pic/tests/test-canister/declarations"
       },
       "gzip": true,
-      "shrink": true,
       "optimize": "cycles"
     },
     "clock": {
@@ -28,7 +27,6 @@
         "output": "examples/clock/declarations"
       },
       "gzip": true,
-      "shrink": true,
       "optimize": "cycles"
     },
     "counter": {
@@ -40,7 +38,6 @@
         "output": "examples/counter/declarations"
       },
       "gzip": true,
-      "shrink": true,
       "optimize": "cycles"
     },
     "google_search": {
@@ -51,7 +48,6 @@
         "output": "examples/google_search/declarations"
       },
       "gzip": true,
-      "shrink": true,
       "optimize": "cycles"
     },
     "multicanister": {
@@ -63,7 +59,6 @@
         "output": "examples/multicanister/declarations/multicanister"
       },
       "gzip": true,
-      "shrink": true,
       "optimize": "cycles"
     },
     "nns_proxy": {
@@ -75,7 +70,6 @@
         "output": "examples/nns_proxy/declarations"
       },
       "gzip": true,
-      "shrink": true,
       "optimize": "cycles"
     },
     "todo": {
@@ -87,7 +81,6 @@
         "output": "examples/todo/declarations"
       },
       "gzip": true,
-      "shrink": true,
       "optimize": "cycles"
     },
     "phonebook": {
@@ -98,7 +91,6 @@
         "output": "examples/multicanister/declarations/phonebook"
       },
       "gzip": true,
-      "shrink": true,
       "optimize": "cycles"
     },
     "superheroes": {
@@ -109,7 +101,6 @@
         "output": "examples/multicanister/declarations/superheroes"
       },
       "gzip": true,
-      "shrink": true,
       "optimize": "cycles"
     }
   }
