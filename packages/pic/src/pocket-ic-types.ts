@@ -65,7 +65,7 @@ export interface CreateInstanceOptions {
   processingTimeoutMs?: number;
 
   /**
-   * Determines what non-mainnet features (e.g., best-effort responses) should be
+   * Determines what non-mainnet features should be
    * enabled for the PocketIC instance.
    */
   icpConfig?: IcpConfig;
