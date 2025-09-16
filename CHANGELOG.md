@@ -1,3 +1,9 @@
+## Unreleased
+
+### Fix
+
+- increase poll timeout (#175)
+
 ## 0.15.0 (2025-09-16)
 
 ### Feat
