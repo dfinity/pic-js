@@ -296,7 +296,7 @@ export interface IcpFeatures {
   registry?: IcpFeaturesConfig;
   /**
    * Deploys the NNS cycles minting canister, sets ICP/XDR conversion rate, and keeps its subnet lists in sync with PocketIC topology.
-   * If the `cycles_minting` feature is enabled, then the default timestamp of a PocketIC instance is set to 10 May 2021 10:00:01 AM CEST
+   * If enabled, the default timestamp of a PocketIC instance is set to 10 May 2021 10:00:01 AM CEST
    * (the smallest value that is strictly larger than the default timestamp hard-coded in the CMC state).
    */
   cyclesMinting?: IcpFeaturesConfig;
@@ -323,8 +323,7 @@ export interface IcpFeatures {
    */
   ii?: IcpFeaturesConfig;
   /**
-   * Deploys the NNS frontend dapp. The HTTP gateway must be specified via `http_gateway_config` in `InstanceConfig`
-   * and the ICP features `cycles_minting`, `icp_token`, `nns_governance`, `sns`, `ii` must all be enabled.
+   * Currently not supported.
    */
   nnsUi?: IcpFeaturesConfig;
 }

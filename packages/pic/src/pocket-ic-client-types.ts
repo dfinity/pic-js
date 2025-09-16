@@ -267,9 +267,7 @@ function encodeIcpFeatures(icpFeatures: IcpFeatures): EncodedIcpFeatures {
       : undefined,
     sns: icpFeatures.sns ? encodeIcpFeaturesConfig(icpFeatures.sns) : undefined,
     ii: icpFeatures.ii ? encodeIcpFeaturesConfig(icpFeatures.ii) : undefined,
-    nns_ui: icpFeatures.nnsUi
-      ? encodeIcpFeaturesConfig(icpFeatures.nnsUi)
-      : undefined,
+    nns_ui: undefined, // Currently not supported.
   };
 }
 
