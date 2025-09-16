@@ -272,7 +272,7 @@ export interface IcpConfig {
 }
 
 /**
- * Flag for configuration options in `IcpFeatures`.
+ * Configuration options in `IcpFeatures`.
  */
 export enum IcpFeaturesConfig {
   /**
