@@ -1,3 +1,9 @@
+## Unreleased
+
+### Feat
+
+- add `icpFeatures` field (#167)
+
 ## 0.14.1 (2025-09-12)
 
 ### Fix
