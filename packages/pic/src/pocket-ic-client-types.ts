@@ -79,8 +79,8 @@ export enum SubnetStateType {
 }
 
 export enum IcpConfigFlag {
-  Disabled,
-  Enabled,
+  Disabled = 'Disabled',
+  Enabled = 'Enabled',
 }
 
 export interface IcpConfig {
@@ -91,7 +91,7 @@ export interface IcpConfig {
 }
 
 export enum IcpFeaturesConfig {
-  DefaultConfig,
+  DefaultConfig = 'DefaultConfig',
 }
 
 export interface IcpFeatures {

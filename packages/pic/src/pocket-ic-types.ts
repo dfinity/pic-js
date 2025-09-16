@@ -244,8 +244,8 @@ export enum SubnetStateType {
  * Flag for configuration options in `IcpConfig`.
  */
 export enum IcpConfigFlag {
-  Disabled,
-  Enabled,
+  Disabled = 'Disabled',
+  Enabled = 'Enabled',
 }
 
 /**
@@ -278,7 +278,7 @@ export enum IcpFeaturesConfig {
   /**
    * Default configuration of an ICP feature resembling mainnet configuration as closely as possible.
    */
-  DefaultConfig,
+  DefaultConfig = 'DefaultConfig',
 }
 
 /**
