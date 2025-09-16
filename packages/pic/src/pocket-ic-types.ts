@@ -325,7 +325,7 @@ export interface IcpFeatures {
   /**
    * Currently not supported.
    */
-  nnsUi?: IcpFeaturesConfig;
+  nnsUi?: never;
 }
 
 /**
