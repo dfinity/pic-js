@@ -59,7 +59,6 @@
         "output": "examples/icp_features/declarations"
       },
       "gzip": true,
-      "shrink": true,
       "optimize": "cycles"
     },
     "multicanister": {
