@@ -54,6 +54,18 @@
       "shrink": true,
       "optimize": "cycles"
     },
+    "icp_features": {
+      "type": "rust",
+      "candid": "examples/icp_features/icp_features.did",
+      "package": "icp_features",
+      "declarations": {
+        "bindings": ["js", "ts"],
+        "output": "examples/icp_features/declarations"
+      },
+      "gzip": true,
+      "shrink": true,
+      "optimize": "cycles"
+    },
     "multicanister": {
       "type": "motoko",
       "main": "examples/multicanister/src/main.mo",
