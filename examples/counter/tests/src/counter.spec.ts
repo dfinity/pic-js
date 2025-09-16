@@ -114,6 +114,14 @@ describe('Counter', () => {
       canisterId,
       wasm: WASM_PATH,
       arg: IDL.encode(init({ IDL }), [countInitArg]),
+      upgradeModeOptions: {
+        skip_pre_upgrade: [],
+        wasm_memory_persistence: [
+          {
+            keep: null,
+          },
+        ],
+      },
     });
     const postUpgradeCount = await actor.get();
 
