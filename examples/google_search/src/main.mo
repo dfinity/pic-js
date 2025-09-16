@@ -1,5 +1,4 @@
 import Blob "mo:base/Blob";
-import Cycles "mo:base/ExperimentalCycles";
 import Text "mo:base/Text";
 import Types "types";
 
@@ -21,9 +20,7 @@ persistent actor {
       transform = ?transform_context;
     };
 
-    Cycles.add<system>(1_000_000_000_000);
-
-    let http_response : Types.HttpResponsePayload = await ic.http_request(http_request);
+    let http_response : Types.HttpResponsePayload = await (with cycles = 1_000_000_000_000) ic.http_request(http_request);
 
     let response_body : Blob = Blob.fromArray(http_response.body);
     let decoded_text : Text = switch (Text.decodeUtf8(response_body)) {
