@@ -89,21 +89,51 @@ export function encodeStopCanisterRequest(
   return new Uint8Array(IDL.encode([StopCanisterRequest], [arg]));
 }
 
+const CanisterInstallModeUpgradeOptions = IDL.Record({
+  skip_pre_upgrade: IDL.Opt(IDL.Bool),
+  wasm_memory_persistence: IDL.Opt(
+    IDL.Variant({
+      keep: IDL.Null,
+      replace: IDL.Null,
+    }),
+  ),
+});
+
+const CanisterInstallMode = IDL.Variant({
+  install: IDL.Null,
+  reinstall: IDL.Null,
+  upgrade: IDL.Opt(CanisterInstallModeUpgradeOptions),
+});
+
 const InstallCodeRequest = IDL.Record({
   arg: IDL.Vec(IDL.Nat8),
   wasm_module: IDL.Vec(IDL.Nat8),
-  mode: IDL.Variant({
-    reinstall: IDL.Null,
-    upgrade: IDL.Null,
-    install: IDL.Null,
-  }),
+  mode: CanisterInstallMode,
   canister_id: IDL.Principal,
 });
+
+export interface CanisterInstallModeUpgradeOptions {
+  skip_pre_upgrade: [] | [boolean];
+  wasm_memory_persistence:
+    | []
+    | [
+        {
+          keep?: null;
+          replace?: null;
+        },
+      ];
+}
+
+export interface CanisterInstallMode {
+  reinstall?: null;
+  upgrade?: [] | [CanisterInstallModeUpgradeOptions];
+  install?: null;
+}
 
 export interface InstallCodeRequest {
   arg: Uint8Array;
   wasm_module: Uint8Array;
-  mode: { reinstall?: null; upgrade?: null; install?: null };
+  mode: CanisterInstallMode;
   canister_id: Principal;
 }
 
