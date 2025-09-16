@@ -140,13 +140,13 @@ export enum EncodedIcpFeaturesConfig {
 
 export interface EncodedIcpFeatures {
   registry?: EncodedIcpFeaturesConfig;
-  cyclesMinting?: EncodedIcpFeaturesConfig;
-  icpToken?: EncodedIcpFeaturesConfig;
-  cyclesToken?: EncodedIcpFeaturesConfig;
-  nnsGovernance?: EncodedIcpFeaturesConfig;
+  cycles_minting?: EncodedIcpFeaturesConfig;
+  icp_token?: EncodedIcpFeaturesConfig;
+  cycles_token?: EncodedIcpFeaturesConfig;
+  nns_governance?: EncodedIcpFeaturesConfig;
   sns?: EncodedIcpFeaturesConfig;
   ii?: EncodedIcpFeaturesConfig;
-  nnsUi?: EncodedIcpFeaturesConfig;
+  nns_ui?: EncodedIcpFeaturesConfig;
 }
 
 export interface EncodedSubnetConfig {
@@ -253,21 +253,21 @@ function encodeIcpFeatures(icpFeatures: IcpFeatures): EncodedIcpFeatures {
     registry: icpFeatures.registry
       ? encodeIcpFeaturesConfig(icpFeatures.registry)
       : undefined,
-    cyclesMinting: icpFeatures.cyclesMinting
+    cycles_minting: icpFeatures.cyclesMinting
       ? encodeIcpFeaturesConfig(icpFeatures.cyclesMinting)
       : undefined,
-    icpToken: icpFeatures.icpToken
+    icp_token: icpFeatures.icpToken
       ? encodeIcpFeaturesConfig(icpFeatures.icpToken)
       : undefined,
-    cyclesToken: icpFeatures.cyclesToken
+    cycles_token: icpFeatures.cyclesToken
       ? encodeIcpFeaturesConfig(icpFeatures.cyclesToken)
       : undefined,
-    nnsGovernance: icpFeatures.nnsGovernance
+    nns_governance: icpFeatures.nnsGovernance
       ? encodeIcpFeaturesConfig(icpFeatures.nnsGovernance)
       : undefined,
     sns: icpFeatures.sns ? encodeIcpFeaturesConfig(icpFeatures.sns) : undefined,
     ii: icpFeatures.ii ? encodeIcpFeaturesConfig(icpFeatures.ii) : undefined,
-    nnsUi: icpFeatures.nnsUi
+    nns_ui: icpFeatures.nnsUi
       ? encodeIcpFeaturesConfig(icpFeatures.nnsUi)
       : undefined,
   };
