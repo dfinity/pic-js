@@ -1,3 +1,3 @@
 service : {
-  get_balance : (principal) -> (nat64)
+  get_balance : (principal) -> (nat)
 }
