@@ -1,9 +1,9 @@
 import Time "mo:base/Time";
 import { setTimer; recurringTimer } = "mo:base/Timer";
 
-actor Clock {
+persistent actor Clock {
   private type Time = Time.Time;
-  private stable var time : Time = 0;
+  private var time : Time = 0;
 
   public query func get() : async Time {
     return time / 1_000_000;

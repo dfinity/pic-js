@@ -1,7 +1,7 @@
 import PhoneBook "../declarations/phonebook/phonebook";
 import SuperHeroes "../declarations/superheroes/superheroes";
 
-actor class KeyValue(phonebook : PhoneBook.Self, superheroes : SuperHeroes.Self) {
+persistent actor class KeyValue(phonebook : PhoneBook.Self, superheroes : SuperHeroes.Self) {
   public func insert_phone_book_entry(name : Text, entry : PhoneBook.PhoneBookEntry) : async () {
     await phonebook.insert(name, entry);
   };

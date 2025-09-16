@@ -3,7 +3,7 @@ import Cycles "mo:base/ExperimentalCycles";
 import Text "mo:base/Text";
 import Types "types";
 
-actor {
+persistent actor {
   public func google_search() : async Text {
     let ic : Types.IC = actor ("aaaaa-aa");
 

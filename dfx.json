@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "dfx": "0.26.1",
+  "dfx": "0.29.1",
   "output_env_file": ".env",
   "networks": {
     "local": {

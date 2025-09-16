@@ -1,7 +1,7 @@
 import Map "mo:base/HashMap";
 import Text "mo:base/Text";
 
-actor PhoneBook {
+persistent actor PhoneBook {
   public type ContactName = Text;
   public type PhoneNumber = Text;
   public type PhoneBookEntry = {
@@ -9,7 +9,7 @@ actor PhoneBook {
     description : Text;
   };
 
-  let phonebook = Map.HashMap<ContactName, PhoneBookEntry>(0, Text.equal, Text.hash);
+  transient let phonebook = Map.HashMap<ContactName, PhoneBookEntry>(0, Text.equal, Text.hash);
 
   public func insert(name : ContactName, entry : PhoneBookEntry) : async () {
     phonebook.put(name, entry);

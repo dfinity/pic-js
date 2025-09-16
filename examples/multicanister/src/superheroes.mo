@@ -2,15 +2,15 @@ import List "mo:base/List";
 import Trie "mo:base/Trie";
 import Nat32 "mo:base/Nat32";
 
-actor SuperHeroes {
+persistent actor SuperHeroes {
   public type SuperHeroId = Nat32;
   public type SuperHero = {
     name : Text;
     superpowers : List.List<Text>;
   };
 
-  private stable var next : SuperHeroId = 0;
-  private stable var superheroes : Trie.Trie<SuperHeroId, SuperHero> = Trie.empty();
+  private var next : SuperHeroId = 0;
+  private var superheroes : Trie.Trie<SuperHeroId, SuperHero> = Trie.empty();
 
   public func insert(superhero : SuperHero) : async SuperHeroId {
     let superheroId = next;
