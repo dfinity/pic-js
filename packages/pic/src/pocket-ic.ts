@@ -481,6 +481,7 @@ export class PocketIc {
     arg = new Uint8Array(),
     canisterId,
     wasm,
+    upgradeModeOptions,
   }: UpgradeCanisterOptions): Promise<void> {
     if (typeof wasm === 'string') {
       wasm = await readFileAsBytes(wasm);
@@ -490,7 +491,7 @@ export class PocketIc {
       arg: new Uint8Array(arg),
       canister_id: canisterId,
       mode: {
-        upgrade: null,
+        upgrade: optional(upgradeModeOptions),
       },
       wasm_module: new Uint8Array(wasm),
     });

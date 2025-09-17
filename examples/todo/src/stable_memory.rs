@@ -1,7 +1,7 @@
 use crate::types::{StorablePrincipal, Todo, TodoId};
 use ic_stable_structures::{
-    memory_manager::{MemoryId, MemoryManager, VirtualMemory},
     DefaultMemoryImpl, StableBTreeMap, StableCell,
+    memory_manager::{MemoryId, MemoryManager, VirtualMemory},
 };
 use std::cell::RefCell;
 
@@ -15,7 +15,7 @@ thread_local! {
         StableCell::init(
             MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(0))),
             0
-        ).expect("Failed to initialize TODO_IDX")
+        )
     );
 
     pub static TODOS: RefCell<StableBTreeMap<TodoId, Todo, Memory>> = RefCell::new(

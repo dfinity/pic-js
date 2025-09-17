@@ -1,6 +1,7 @@
 import { Principal } from '@dfinity/principal';
 import { ActorInterface, Actor } from './pocket-ic-actor';
 import { IDL } from '@dfinity/candid';
+import { CanisterInstallModeUpgradeOptions } from './management-canister';
 
 //#region CreateInstance
 
@@ -664,6 +665,11 @@ export interface UpgradeCanisterOptions {
    * Defaults to the anonymous principal.
    */
   sender?: Principal;
+
+  /**
+   * The options to pass to the management canister's upgrade variant in the install code request.
+   */
+  upgradeModeOptions?: CanisterInstallModeUpgradeOptions;
 }
 
 /**

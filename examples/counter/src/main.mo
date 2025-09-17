@@ -1,7 +1,7 @@
 import Nat "mo:base/Nat";
 
-actor class Counter(initial_count : Nat) {
-  private stable var counter = initial_count;
+persistent actor class Counter(initial_count : Nat) {
+  private var counter = initial_count;
 
   public query func get() : async Nat {
     return counter;

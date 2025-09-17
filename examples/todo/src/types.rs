@@ -1,5 +1,5 @@
 use candid::{CandidType, Decode, Deserialize, Encode, Principal};
-use ic_stable_structures::{storable::Bound, Storable};
+use ic_stable_structures::{Storable, storable::Bound};
 use std::borrow::Cow;
 
 pub type TodoId = u64;
@@ -12,8 +12,12 @@ pub struct Todo {
 }
 
 impl Storable for Todo {
-    fn to_bytes(&self) -> std::borrow::Cow<[u8]> {
+    fn to_bytes(&'_ self) -> std::borrow::Cow<'_, [u8]> {
         Cow::Owned(Encode!(self).unwrap())
+    }
+
+    fn into_bytes(self) -> Vec<u8> {
+        Encode!(&self).unwrap()
     }
 
     fn from_bytes(bytes: std::borrow::Cow<[u8]>) -> Self {
@@ -27,8 +31,12 @@ impl Storable for Todo {
 pub struct StorablePrincipal(pub Principal);
 
 impl Storable for StorablePrincipal {
-    fn to_bytes(&self) -> std::borrow::Cow<[u8]> {
+    fn to_bytes(&'_ self) -> std::borrow::Cow<'_, [u8]> {
         Cow::Owned(self.0.as_slice().to_vec())
+    }
+
+    fn into_bytes(self) -> Vec<u8> {
+        self.0.as_slice().to_vec()
     }
 
     fn from_bytes(bytes: std::borrow::Cow<[u8]>) -> Self {

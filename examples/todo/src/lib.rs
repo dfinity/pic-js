@@ -1,13 +1,13 @@
 use candid::{CandidType, Deserialize, Principal};
-use ic_cdk::{caller, query, update};
-use stable_memory::{TODOS, TODO_ID, TODO_OWNERS_INDEX};
+use ic_cdk::{api::msg_caller, query, update};
+use stable_memory::{TODO_ID, TODO_OWNERS_INDEX, TODOS};
 use types::{StorablePrincipal, Todo, TodoId};
 
 mod stable_memory;
 mod types;
 
 fn assert_caller_is_not_anonymous() -> Principal {
-    let principal = caller();
+    let principal = msg_caller();
 
     assert_ne!(
         principal,
@@ -47,9 +47,7 @@ fn create_todo(payload: CreateTodoRequest) -> CreateTodoResponse {
     assert_caller_is_not_anonymous();
 
     let next_id = TODO_ID.with(|id| id.borrow().get() + 1);
-    TODO_ID
-        .with(|id| id.borrow_mut().set(next_id))
-        .expect("Failed to increment TODO_ID");
+    TODO_ID.with(|id| id.borrow_mut().set(next_id));
 
     let todo = Todo {
         id: next_id,
@@ -60,7 +58,7 @@ fn create_todo(payload: CreateTodoRequest) -> CreateTodoResponse {
     TODO_OWNERS_INDEX.with(|todo_owners| {
         todo_owners
             .borrow_mut()
-            .insert((StorablePrincipal(caller()), next_id), ())
+            .insert((StorablePrincipal(msg_caller()), next_id), ())
     });
     TODOS.with(|todos| todos.borrow_mut().insert(next_id, todo));
 
@@ -83,7 +81,7 @@ fn get_todos() -> GetTodoResponse {
                 (StorablePrincipal(calling_principal), TodoId::MIN)
                     ..(StorablePrincipal(calling_principal), TodoId::MAX),
             )
-            .map(|((_, id), _)| id)
+            .map(|entry| entry.key().1)
             .collect::<Vec<_>>()
     });
 
