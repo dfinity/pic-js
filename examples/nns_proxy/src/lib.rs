@@ -1,10 +1,10 @@
-use candid::{CandidType, Principal};
-use governance::{ListProposalInfo, Service as GovernanceService};
+use candid::CandidType;
 use ic_cdk::*;
 
-mod governance;
-
-const GOVERNANCE_CANISTER_ID: &str = "rrkah-fqaaa-aaaaa-aaaaq-cai";
+#[allow(dead_code, unused_imports)]
+mod governance {
+    include!(concat!(env!("OUT_DIR"), "/governance.rs"));
+}
 
 #[derive(CandidType)]
 struct NeuronId {
@@ -21,21 +21,17 @@ struct ProposalInfo {
 
 #[update]
 async fn get_pending_proposals() -> Vec<ProposalInfo> {
-    let governance_principal = Principal::from_text(GOVERNANCE_CANISTER_ID).unwrap();
-    let governance_service = GovernanceService(governance_principal);
-
-    let (proposals,) = governance_service
-        .list_proposals(ListProposalInfo {
-            before_proposal: None,
-            exclude_topic: vec![],
-            include_reward_status: vec![0, 1, 2, 3, 4, 5],
-            include_status: vec![1],
-            include_all_manage_neuron_proposals: None,
-            omit_large_fields: None,
-            limit: 100,
-        })
-        .await
-        .unwrap();
+    let proposals = governance::list_proposals(&governance::ListProposalInfo {
+        before_proposal: None,
+        exclude_topic: vec![],
+        include_reward_status: vec![0, 1, 2, 3, 4, 5],
+        include_status: vec![1],
+        include_all_manage_neuron_proposals: None,
+        omit_large_fields: None,
+        limit: 100,
+    })
+    .await
+    .unwrap();
 
     proposals
         .proposal_info

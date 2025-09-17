@@ -11,3 +11,7 @@ candid = "0.10"
 ic-cdk = "0.18"
 serde = "1.0"
 serde_bytes = "0.11"
+
+[build-dependencies]
+candid = "0.10"
+ic-cdk-bindgen = "0.2.0-alpha.2"
