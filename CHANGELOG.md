@@ -1,5 +1,9 @@
 ## Unreleased
 
+### Feat
+
+- upgrade options on install canister code (#173)
+
 ### Fix
 
 - increase poll timeout (#175)
