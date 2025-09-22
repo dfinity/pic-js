@@ -1,5 +1,9 @@
 ## Unreleased
 
+### Fix
+
+- docs typos and exports (#183)
+
 ## 0.16.0 (2025-09-17)
 
 ### Feat
