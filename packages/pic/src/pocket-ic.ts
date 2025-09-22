@@ -567,7 +567,7 @@ export class PocketIc {
    *
    * @param interfaceFactory The InterfaceFactory to use for the {@link Actor}.
    * @param canisterId The Principal of the canister to create the {@link Actor} for.
-   * @typeparam T The type of the {@link Actor}. Must implement {@link ActorInterface}.
+   * @typeParam T The type of the {@link Actor}. Must implement {@link ActorInterface}.
    * @returns The {@link Actor} instance.
    *
    * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
@@ -620,7 +620,7 @@ export class PocketIc {
    *
    * @param interfaceFactory The InterfaceFactory to use for the {@link DeferredActor}.
    * @param canisterId The Principal of the canister to create the {@link DeferredActor} for.
-   * @typeparam T The type of the {@link DeferredActor}. Must implement {@link ActorInterface}.
+   * @typeParam T The type of the {@link DeferredActor}. Must implement {@link ActorInterface}.
    * @returns The {@link DeferredActor} instance.
    *
    * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)

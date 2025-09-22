@@ -3,6 +3,9 @@ import { ActorInterface, Actor } from './pocket-ic-actor';
 import { IDL } from '@dfinity/candid';
 import { CanisterInstallModeUpgradeOptions } from './management-canister';
 
+// Needed for the docs
+export { type CanisterInstallModeUpgradeOptions } from './management-canister';
+
 //#region CreateInstance
 
 /**
