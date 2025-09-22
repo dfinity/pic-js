@@ -62,8 +62,8 @@ importers:
   docs:
     devDependencies:
       '@dfinity/typedoc-plugin-icp-docs':
-        specifier: ^0.0.2
-        version: 0.0.2(typedoc-plugin-frontmatter@1.3.0(typedoc-plugin-markdown@4.8.1(typedoc@0.28.12(typescript@5.8.2))))(typedoc-plugin-markdown@4.8.1(typedoc@0.28.12(typescript@5.8.2)))(typedoc@0.28.12(typescript@5.8.2))
+        specifier: ^0.0.3
+        version: 0.0.3(typedoc-plugin-frontmatter@1.3.0(typedoc-plugin-markdown@4.8.1(typedoc@0.28.12(typescript@5.8.2))))(typedoc-plugin-markdown@4.8.1(typedoc@0.28.12(typescript@5.8.2)))(typedoc@0.28.12(typescript@5.8.2))
       typedoc:
         specifier: ^0.28.12
         version: 0.28.12(typescript@5.8.2)
@@ -334,8 +334,8 @@ packages:
   '@dfinity/principal@3.2.4':
     resolution: {integrity: sha512-7qTjDb9k/J/55k0/ZnD8s2+L+IgfG6K1lC7iywhQQL/4Qe0UIljUTasDk85kooY2QeNvWSl7MsLWp69LPBiYjw==}
 
-  '@dfinity/typedoc-plugin-icp-docs@0.0.2':
-    resolution: {integrity: sha512-p9BPiZWd5muhsNIv6E6j0bDTKZ2ETrDGdY0jipyZXlwvsM2zdhcxW0HyGpYleoEFZf3Gizs6CVt3jYzxfH9tqg==}
+  '@dfinity/typedoc-plugin-icp-docs@0.0.3':
+    resolution: {integrity: sha512-BewwIwWgJyqXcwTWBmpzQUh7H7MGPjVgZf1utPiqXv/7gJy2r7bK4AI07tEiKweewGm7vY9UxtE8PbUyMxkoUQ==}
     engines: {node: '>=22'}
     peerDependencies:
       typedoc: ^0.28.x
@@ -2613,7 +2613,7 @@ snapshots:
     dependencies:
       '@noble/hashes': 1.8.0
 
-  '@dfinity/typedoc-plugin-icp-docs@0.0.2(typedoc-plugin-frontmatter@1.3.0(typedoc-plugin-markdown@4.8.1(typedoc@0.28.12(typescript@5.8.2))))(typedoc-plugin-markdown@4.8.1(typedoc@0.28.12(typescript@5.8.2)))(typedoc@0.28.12(typescript@5.8.2))':
+  '@dfinity/typedoc-plugin-icp-docs@0.0.3(typedoc-plugin-frontmatter@1.3.0(typedoc-plugin-markdown@4.8.1(typedoc@0.28.12(typescript@5.8.2))))(typedoc-plugin-markdown@4.8.1(typedoc@0.28.12(typescript@5.8.2)))(typedoc@0.28.12(typescript@5.8.2))':
     dependencies:
       commander: 14.0.1
       typedoc: 0.28.12(typescript@5.8.2)

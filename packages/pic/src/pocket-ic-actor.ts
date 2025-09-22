@@ -21,12 +21,12 @@ export interface ActorMethod<Args extends any[] = any[], Ret = any> {
 export type ActorInterface<T = object> = { [K in keyof T]: ActorMethod };
 
 /**
- * A typesafe class that implements the Candid interface of a canister.
+ * A type-safe class that implements the Candid interface of a canister.
  * This is acquired by calling {@link PocketIc.setupCanister | setupCanister}
  * or {@link PocketIc.createActor | createActor}.
  *
  * @category API
- * @typeparam T The type of the {@link Actor}. Must implement {@link ActorInterface}.
+ * @typeParam T The type of the {@link Actor}. Must implement {@link ActorInterface}.
  * @interface
  */
 export type Actor<T extends ActorInterface<T> = ActorInterface> = T & {
