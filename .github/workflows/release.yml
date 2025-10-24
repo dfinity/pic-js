@@ -34,8 +34,6 @@ jobs:
 
       - name: Setup PNPM
         uses: dfinity/ci-tools/actions/setup-pnpm@main
-        with:
-          node_version: 24
 
       - name: Determine if Beta Release
         id: is_beta
