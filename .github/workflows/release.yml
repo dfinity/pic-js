@@ -46,6 +46,8 @@ jobs:
         uses: dfinity/ci-tools/actions/generate-release-notes@main
 
       - name: Publish to npm
+        env:
+          NPM_CONFIG_PROVENANCE: 'true'
         run: |
           npm pack ./packages/pic/
 
