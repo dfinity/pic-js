@@ -1,11 +1,19 @@
 packages:
-  - 'examples/clock/tests'
-  - 'examples/counter/tests'
-  - 'examples/google_search/tests'
-  - 'examples/icp_features/tests'
-  - 'examples/multicanister/tests'
-  - 'examples/nns_proxy/tests'
-  - 'examples/todo/tests'
-  - 'packages/pic'
-  - 'packages/pic-server'
-  - 'docs'
+  - examples/clock/tests
+  - examples/counter/tests
+  - examples/google_search/tests
+  - examples/icp_features/tests
+  - examples/multicanister/tests
+  - examples/nns_proxy/tests
+  - examples/todo/tests
+  - packages/pic
+  - packages/pic-server
+  - docs
+
+onlyBuiltDependencies:
+  - esbuild
+
+overrides:
+  esbuild@<=0.24.2: '>=0.25.0'
+  path-to-regexp@<0.1.12: '>=0.1.12'
+  path-to-regexp@>=2.0.0 <3.3.0: '>=3.3.0'
