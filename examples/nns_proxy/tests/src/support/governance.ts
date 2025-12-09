@@ -1,6 +1,6 @@
 import { Actor, PocketIc } from '@dfinity/pic';
-import { AnonymousIdentity, Identity } from '@dfinity/agent';
-import { Principal } from '@dfinity/principal';
+import { AnonymousIdentity, Identity } from '@icp-sdk/core/agent';
+import { Principal } from '@icp-sdk/core/principal';
 import { createHash, randomBytes } from 'node:crypto';
 import {
   _SERVICE as GovernanceService,

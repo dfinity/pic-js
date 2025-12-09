@@ -1,4 +1,4 @@
-import { Ed25519KeyIdentity } from '@dfinity/identity';
+import { Ed25519KeyIdentity } from '@icp-sdk/core/identity';
 
 const base64ToUInt8Array = (base64String: string): Uint8Array => {
   return Buffer.from(base64String, 'base64');

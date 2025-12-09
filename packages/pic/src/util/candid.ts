@@ -1,4 +1,4 @@
-import { IDL } from '@dfinity/candid';
+import { IDL } from '@icp-sdk/core/candid';
 import { isNil } from './is-nil';
 
 export function optional<T>(value: T | undefined | null): [] | [T] {

@@ -1,6 +1,6 @@
-import { IDL } from '@dfinity/candid';
-import { Principal } from '@dfinity/principal';
-import { Identity } from '@dfinity/agent';
+import { IDL } from '@icp-sdk/core/candid';
+import { Principal } from '@icp-sdk/core/principal';
+import { Identity } from '@icp-sdk/core/agent';
 import { PocketIcClient } from './pocket-ic-client';
 import { ActorInterface, ActorMethod } from './pocket-ic-actor';
 import { decodeCandid } from './util';
@@ -35,7 +35,7 @@ export type DeferredActor<T extends ActorInterface<T> = ActorInterface> =
      * @example
      * ```ts
      * import { PocketIc } from '@dfinity/pic';
-     * import { Principal } from '@dfinity/principal';
+     * import { Principal } from '@icp-sdk/core/principal';
      * import { _SERVICE, idlFactory } from '../declarations';
      *
      * const wasmPath = resolve('..', '..', 'canister.wasm');
@@ -62,7 +62,7 @@ export type DeferredActor<T extends ActorInterface<T> = ActorInterface> =
      * @example
      * ```ts
      * import { PocketIc } from '@dfinity/pic';
-     * import { AnonymousIdentity } from '@dfinity/agent';
+     * import { AnonymousIdentity } from '@icp-sdk/core/agent';
      * import { _SERVICE, idlFactory } from '../declarations';
      *
      * const wasmPath = resolve('..', '..', 'canister.wasm');

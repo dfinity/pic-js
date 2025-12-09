@@ -1,4 +1,4 @@
-import { Principal } from '@dfinity/principal';
+import { Principal } from '@icp-sdk/core/principal';
 
 export function base64Encode(payload: Uint8Array): string {
   return Buffer.from(payload).toString('base64');
