@@ -49,7 +49,7 @@
     "@dfinity/candid": "^3.2.4",
     "@dfinity/identity": "^3.2.4",
     "@dfinity/principal": "^3.2.4",
-    "@tsconfig/node22": "^22.0.0",
+    "@tsconfig/node24": "^24.0.3",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.13.10",
     "bip39": "^3.1.0",
