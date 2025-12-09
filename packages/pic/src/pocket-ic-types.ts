@@ -416,15 +416,15 @@ export interface SetupCanisterOptions extends CreateCanisterOptions {
   /**
    * The WASM module to install to the canister.
    * If a string is passed, it is treated as a path to a file.
-   * If an `ArrayBufferLike` is passed, it is treated as the WASM module itself.
+   * If an `Uint8Array` is passed, it is treated as the WASM module itself.
    */
-  wasm: ArrayBufferLike | string;
+  wasm: Uint8Array | string;
 
   /**
    * Candid encoded argument to pass to the canister's init function.
-   * Defaults to an empty ArrayBuffer.
+   * Defaults to an empty Uint8Array.
    */
-  arg?: ArrayBufferLike;
+  arg?: Uint8Array;
 
   /**
    * The principal to setup the canister as.
@@ -584,15 +584,15 @@ export interface InstallCodeOptions {
   /**
    * The WASM module to install to the canister.
    * If a string is passed, it is treated as a path to a file.
-   * If an `ArrayBufferLike` is passed, it is treated as the WASM module itself.
+   * If an `Uint8Array` is passed, it is treated as the WASM module itself.
    */
-  wasm: ArrayBufferLike | string;
+  wasm: Uint8Array | string;
 
   /**
    * Candid encoded argument to pass to the canister's init function.
-   * Defaults to an empty ArrayBuffer.
+   * Defaults to an empty Uint8Array.
    */
-  arg?: ArrayBufferLike;
+  arg?: Uint8Array;
 
   /**
    * The principal to install the code as.
@@ -622,14 +622,14 @@ export interface ReinstallCodeOptions {
   /**
    * The WASM module to install to the canister.
    * If a string is passed, it is treated as a path to a file.
-   * If an `ArrayBufferLike` is passed, it is treated as the WASM module itself.
+   * If an `Uint8Array` is passed, it is treated as the WASM module itself.
    */
-  wasm: ArrayBufferLike | string;
+  wasm: Uint8Array | string;
 
   /**
    * Candid encoded argument to pass to the canister's init function.
    */
-  arg?: ArrayBufferLike;
+  arg?: Uint8Array;
 
   /**
    * The Principal to send the request as.
@@ -654,14 +654,14 @@ export interface UpgradeCanisterOptions {
   /**
    * The WASM module to install to the canister.
    * If a string is passed, it is treated as a path to a file.
-   * If an `ArrayBufferLike` is passed, it is treated as the WASM module itself.
+   * If an `Uint8Array` is passed, it is treated as the WASM module itself.
    */
-  wasm: ArrayBufferLike | string;
+  wasm: Uint8Array | string;
 
   /**
    * Candid encoded argument to pass to the canister's init function.
    */
-  arg?: ArrayBufferLike;
+  arg?: Uint8Array;
 
   /**
    * The Principal to send the request as.
@@ -724,9 +724,9 @@ export interface QueryCallOptions {
 
   /**
    * A Candid encoded argument to pass to the canister's method.
-   * Defaults to an empty ArrayBuffer.
+   * Defaults to an empty Uint8Array.
    */
-  arg?: ArrayBufferLike;
+  arg?: Uint8Array;
 
   /**
    * The ID of the subnet that the canister resides on.
@@ -760,9 +760,9 @@ export interface UpdateCallOptions {
 
   /**
    * A Candid encoded argument to pass to the canister's method.
-   * Defaults to an empty ArrayBuffer.
+   * Defaults to an empty Uint8Array.
    */
-  arg?: ArrayBufferLike;
+  arg?: Uint8Array;
 
   /**
    * The ID of the subnet that the canister resides on.

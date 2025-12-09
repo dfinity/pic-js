@@ -18,7 +18,7 @@ export interface UpdateElectedReplicaVersionsPayload {
 
 export function encodeUpdateElectedReplicaVersionsPayload(
   arg: UpdateElectedReplicaVersionsPayload,
-): ArrayBuffer {
+): Uint8Array {
   return IDL.encode([UpdateElectedReplicaVersionsPayload], [arg]);
 }
 
