@@ -1,9 +1,5 @@
 ## Unreleased
 
-### Feat
-
-- bump PocketIC server to v11.0.0
-
 ## 0.16.1 (2025-09-22)
 
 ### Fix
