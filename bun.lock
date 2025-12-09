@@ -9,7 +9,7 @@
         "@dfinity/candid": "^3.2.4",
         "@dfinity/identity": "^3.2.4",
         "@dfinity/principal": "^3.2.4",
-        "@tsconfig/node22": "^22.0.0",
+        "@tsconfig/node24": "^24.0.3",
         "@types/jest": "^29.5.14",
         "@types/node": "^22.13.10",
         "bip39": "^3.1.0",
@@ -351,7 +351,7 @@
 
     "@tsconfig/node16": ["@tsconfig/node16@1.0.4", "", {}, "sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA=="],
 
-    "@tsconfig/node22": ["@tsconfig/node22@22.0.0", "", {}, "sha512-twLQ77zevtxobBOD4ToAtVmuYrpeYUh3qh+TEp+08IWhpsrIflVHqQ1F1CiPxQGL7doCdBIOOCF+1Tm833faNg=="],
+    "@tsconfig/node24": ["@tsconfig/node24@24.0.3", "", {}, "sha512-vcERKtKQKHgzt/vfS3Gjasd8SUI2a0WZXpgJURdJsMySpS5+ctgbPfuLj2z/W+w4lAfTWxoN4upKfu2WzIRYnw=="],
 
     "@types/babel__core": ["@types/babel__core@7.20.5", "", { "dependencies": { "@babel/parser": "7.26.10", "@babel/types": "7.26.10", "@types/babel__generator": "7.6.8", "@types/babel__template": "7.4.4", "@types/babel__traverse": "7.20.6" } }, "sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA=="],
 
