@@ -45,6 +45,11 @@
     "postinstall": "tar -xvf examples/nns_proxy/tests/state/nns_state.tar.xz -C examples/nns_proxy/tests/state"
   },
   "devDependencies": {
+    "@dfinity/agent": "3.4.3",
+    "@dfinity/candid": "3.4.3",
+    "@dfinity/identity": "3.4.3",
+    "@dfinity/identity-secp256k1": "3.4.3",
+    "@dfinity/principal": "3.4.3",
     "@icp-sdk/core": "^4.2.3",
     "@tsconfig/node24": "^24.0.3",
     "@types/jest": "^29.5.14",
