@@ -8,10 +8,16 @@
   },
   "packageManager": "pnpm@10.19.0+sha512.c9fc7236e92adf5c8af42fd5bf1612df99c2ceb62f27047032f4720b33f8eacdde311865e91c411f2774f618d82f320808ecb51718bfa82c060c4ba7c76a32b8",
   "workspaces": [
-    "packages/pic",
-    "examples/counter/tests",
     "examples/clock/tests",
-    "examples/todo/tests"
+    "examples/counter/tests",
+    "examples/google_search/tests",
+    "examples/icp_features/tests",
+    "examples/multicanister/tests",
+    "examples/nns_proxy/tests",
+    "examples/todo/tests",
+    "packages/pic",
+    "packages/pic-server",
+    "docs"
   ],
   "scripts": {
     "format": "prettier --write .",
@@ -52,11 +58,9 @@
     "typescript": "^5.8.2",
     "vitest": "^2.1.9"
   },
-  "pnpm": {
-    "overrides": {
-      "path-to-regexp@<0.1.12": ">=0.1.12",
-      "path-to-regexp@>=2.0.0 <3.3.0": ">=3.3.0",
-      "esbuild@<=0.24.2": ">=0.25.0"
-    }
+  "overrides": {
+    "path-to-regexp@<0.1.12": ">=0.1.12",
+    "path-to-regexp@>=2.0.0 <3.3.0": ">=3.3.0",
+    "esbuild@<=0.24.2": ">=0.25.0"
   }
 }
