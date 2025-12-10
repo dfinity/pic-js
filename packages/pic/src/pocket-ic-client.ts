@@ -82,7 +82,8 @@ import {
   decodeGetControllersResponse,
   encodeGetControllersRequest,
 } from './pocket-ic-client-types';
-import { isNotNil } from './util';
+import { base64DecodePrincipal, isNotNil } from './util';
+import { Principal } from '@dfinity/principal';
 
 const PROCESSING_TIME_VALUE_MS = 30_000;
 const AWAIT_INGRESS_STATUS_ROUNDS = 100;
@@ -167,6 +168,14 @@ export class PocketIcClient {
     const res = await this.get<EncodedGetTopologyResponse>('/_/topology');
 
     return decodeGetTopologyResponse(res);
+  }
+
+  public async getDefaultEffectiveCanisterId(): Promise<Principal> {
+    this.assertInstanceNotDeleted();
+
+    const res = await this.get<EncodedGetTopologyResponse>('/_/topology');
+
+    return base64DecodePrincipal(res.default_effective_canister_id.canister_id);
   }
 
   public async getTime(): Promise<GetTimeResponse> {
