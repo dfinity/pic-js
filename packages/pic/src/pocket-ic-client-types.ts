@@ -10,6 +10,8 @@ import {
 } from './util';
 import { TopologyValidationError } from './error';
 
+const NANOS_PER_MILLISECOND = BigInt(1_000_000);
+
 //#region CreateInstance
 
 export interface CreateInstanceRequest {
@@ -494,19 +496,19 @@ export function decodeGetControllersResponse(
 
 //#region GetTime
 
-export interface GetTimeResponse {
-  millisSinceEpoch: number;
-}
+export type GetTimeResponse = {
+  nanosSinceEpoch: bigint;
+};
 
 export interface EncodedGetTimeResponse {
-  nanos_since_epoch: number;
+  nanos_since_epoch: bigint;
 }
 
 export function decodeGetTimeResponse(
   res: EncodedGetTimeResponse,
 ): GetTimeResponse {
   return {
-    millisSinceEpoch: res.nanos_since_epoch / 1_000_000,
+    nanosSinceEpoch: res.nanos_since_epoch,
   };
 }
 
@@ -514,19 +516,29 @@ export function decodeGetTimeResponse(
 
 //#region SetTime
 
-export interface SetTimeRequest {
-  millisSinceEpoch: number;
-}
+export type SetTimeRequest =
+  | {
+      millisSinceEpoch: number;
+    }
+  | {
+      nanosSinceEpoch: bigint;
+    };
 
 export interface EncodedSetTimeRequest {
-  nanos_since_epoch: number;
+  nanos_since_epoch: bigint;
 }
 
 export function encodeSetTimeRequest(
   req: SetTimeRequest,
 ): EncodedSetTimeRequest {
+  if ('millisSinceEpoch' in req) {
+    return {
+      nanos_since_epoch: BigInt(req.millisSinceEpoch) * NANOS_PER_MILLISECOND,
+    };
+  }
+
   return {
-    nanos_since_epoch: req.millisSinceEpoch * 1_000_000,
+    nanos_since_epoch: req.nanosSinceEpoch,
   };
 }
 

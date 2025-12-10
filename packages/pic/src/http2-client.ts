@@ -1,3 +1,4 @@
+import { JSONParse, JSONStringify } from 'json-with-bigint';
 import { ServerRequestTimeoutError } from './error';
 import { isNil, poll } from './util';
 
@@ -121,7 +122,7 @@ export class Http2Client {
 
   public async jsonPost<B, R extends {}>(init: JsonPostRequest<B>): Promise<R> {
     const reqBody = init.body
-      ? new TextEncoder().encode(JSON.stringify(init.body))
+      ? new TextEncoder().encode(JSONStringify(init.body))
       : undefined;
 
     // poll the request until it is successful or times out
@@ -201,10 +202,11 @@ export class Http2Client {
 async function getResBody<R extends {}>(
   res: Response,
 ): Promise<ApiResponse<R>> {
+  const resBody = await res.text();
   try {
-    return (await res.clone().json()) as ApiResponse<R>;
+    return JSONParse(resBody) as ApiResponse<R>;
   } catch (error) {
-    const message = await res.text();
+    const message = resBody;
 
     console.error('Error parsing PocketIC server response body:', error);
     console.error('Original body:', message);

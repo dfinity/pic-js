@@ -34,6 +34,8 @@ import {
   DeferredActor,
 } from './pocket-ic-deferred-actor';
 
+const NANOS_PER_MILLISECOND = BigInt(1_000_000);
+
 /**
  * This class represents the main PocketIC client.
  * It is responsible for interacting with the PocketIC server via the REST API.
@@ -837,9 +839,9 @@ export class PocketIc {
    * ```
    */
   public async getTime(): Promise<number> {
-    const { millisSinceEpoch } = await this.client.getTime();
+    const { nanosSinceEpoch } = await this.client.getTime();
 
-    return millisSinceEpoch;
+    return Number(nanosSinceEpoch / NANOS_PER_MILLISECOND);
   }
 
   /**
@@ -1001,9 +1003,10 @@ export class PocketIc {
    * ```
    */
   public async advanceTime(duration: number): Promise<void> {
-    const currentTime = await this.getTime();
-    const newTime = currentTime + duration;
-    await this.setTime(newTime);
+    const { nanosSinceEpoch } = await this.client.getTime();
+    const durationNanos = BigInt(duration) * NANOS_PER_MILLISECOND;
+    const newTimeNanos = nanosSinceEpoch + durationNanos;
+    await this.client.setTime({ nanosSinceEpoch: newTimeNanos });
   }
 
   /**
@@ -1031,9 +1034,10 @@ export class PocketIc {
    * ```
    */
   public async advanceCertifiedTime(duration: number): Promise<void> {
-    const currentTime = await this.getTime();
-    const newTime = currentTime + duration;
-    await this.setCertifiedTime(newTime);
+    const { nanosSinceEpoch } = await this.client.getTime();
+    const durationNanos = BigInt(duration) * NANOS_PER_MILLISECOND;
+    const newTimeNanos = nanosSinceEpoch + durationNanos;
+    await this.client.setCertifiedTime({ nanosSinceEpoch: newTimeNanos });
   }
 
   /**
