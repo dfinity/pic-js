@@ -119,4 +119,29 @@ describe('time', () => {
 
     jest.useRealTimers();
   });
+
+  it('should advance time by 0 without setting time into the past', async () => {
+    const initialTime = await fixture.actor.get_time();
+
+    // This should not throw "SettingTimeIntoPast" error
+    await fixture.pic.advanceTime(0);
+    await fixture.pic.tick();
+
+    const finalTime = await fixture.actor.get_time();
+
+    // Time should not go backwards
+    expect(finalTime).toBeGreaterThanOrEqual(initialTime);
+  });
+
+  it('should advance certified time by 0 without setting time into the past', async () => {
+    const initialTime = await fixture.actor.get_time();
+
+    // This should not throw "SettingTimeIntoPast" error
+    await fixture.pic.advanceCertifiedTime(0);
+
+    const finalTime = await fixture.actor.get_time();
+
+    // Time should not go backwards
+    expect(finalTime).toEqual(initialTime);
+  });
 });

@@ -1,3 +1,4 @@
+import { JSONParse } from 'json-with-bigint';
 import { Http2Client } from './http2-client';
 import {
   EncodedAddCyclesRequest,
@@ -171,7 +172,10 @@ export class PocketIcClient {
   public async getTime(): Promise<GetTimeResponse> {
     this.assertInstanceNotDeleted();
 
-    const res = await this.get<EncodedGetTimeResponse>('/read/get_time');
+    const res = await this.get<EncodedGetTimeResponse>(
+      '/read/get_time',
+      JSONParse,
+    );
 
     return decodeGetTimeResponse(res);
   }
@@ -215,7 +219,7 @@ export class PocketIcClient {
     const res = await this.post<
       EncodedGetCyclesBalanceRequest,
       EncodedGetCyclesBalanceResponse
-    >('/read/get_cycles', encodeGetCyclesBalanceRequest(req));
+    >('/read/get_cycles', encodeGetCyclesBalanceRequest(req), JSONParse);
 
     return decodeGetCyclesBalanceResponse(res);
   }
@@ -226,7 +230,7 @@ export class PocketIcClient {
     const res = await this.post<
       EncodedAddCyclesRequest,
       EncodedAddCyclesResponse
-    >('/update/add_cycles', encodeAddCyclesRequest(req));
+    >('/update/add_cycles', encodeAddCyclesRequest(req), JSONParse);
 
     return decodeAddCyclesResponse(res);
   }
@@ -361,16 +365,25 @@ export class PocketIcClient {
     );
   }
 
-  private async post<B, R extends {}>(endpoint: string, body?: B): Promise<R> {
+  private async post<B, R extends {}>(
+    endpoint: string,
+    body?: B,
+    responseJsonParser?: typeof JSON.parse,
+  ): Promise<R> {
     return await this.serverClient.jsonPost<B, R>({
       path: `${this.instancePath}${endpoint}`,
       body,
+      responseJsonParser,
     });
   }
 
-  private async get<R extends {}>(endpoint: string): Promise<R> {
+  private async get<R extends {}>(
+    endpoint: string,
+    responseJsonParser?: typeof JSON.parse,
+  ): Promise<R> {
     return await this.serverClient.jsonGet<R>({
       path: `${this.instancePath}${endpoint}`,
+      responseJsonParser,
     });
   }
 
