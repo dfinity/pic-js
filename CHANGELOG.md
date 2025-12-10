@@ -2,7 +2,12 @@
 
 ### Feat
 
+- switch to `Uint8Array` for all buffers (#202)
 - bump PocketIC server to v11.0.0 (#196)
+
+### Fix
+
+- use bigint for `addCycles` and `getCyclesBalance` (#208)
 
 ## 0.16.1 (2025-09-22)
 
