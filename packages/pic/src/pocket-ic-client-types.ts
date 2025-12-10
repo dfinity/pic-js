@@ -496,9 +496,9 @@ export function decodeGetControllersResponse(
 
 //#region GetTime
 
-export type GetTimeResponse = {
+export interface GetTimeResponse {
   nanosSinceEpoch: bigint;
-};
+}
 
 export interface EncodedGetTimeResponse {
   nanos_since_epoch: bigint;
