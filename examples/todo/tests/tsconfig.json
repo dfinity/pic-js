@@ -2,6 +2,7 @@
   "extends": "../../../tsconfig.json",
   "compilerOptions": {
     "allowJs": true,
+    "isolatedModules": true,
     "types": ["jest", "node"]
   },
   "include": [
