@@ -1,10 +1,9 @@
 import type { Config } from 'jest';
-import { createJsWithTsPreset } from 'ts-jest';
 
 const config: Config = {
-  ...createJsWithTsPreset({
-    tsconfig: '<rootDir>/tsconfig.test.json',
-  }),
+  transform: {
+    '^.+\\.(t|j)sx?$': '@swc/jest',
+  },
   watch: false,
   testEnvironment: 'node',
   globalSetup: '<rootDir>/tests/global-setup.ts',
