@@ -1,5 +1,5 @@
-import { Principal } from '@dfinity/principal';
-import { IDL } from '@dfinity/candid';
+import { Principal } from '@icp-sdk/core/principal';
+import { IDL } from '@icp-sdk/core/candid';
 import { optional, readFileAsBytes } from './util';
 import { PocketIcClient } from './pocket-ic-client';
 import { ActorInterface, Actor, createActorClass } from './pocket-ic-actor';
@@ -253,7 +253,7 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { Principal } from '@dfinity/principal';
+   * import { Principal } from '@icp-sdk/core/principal';
    * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
@@ -298,7 +298,7 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { Principal } from '@dfinity/principal';
+   * import { Principal } from '@icp-sdk/core/principal';
    * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
@@ -346,7 +346,7 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { Principal } from '@dfinity/principal';
+   * import { Principal } from '@icp-sdk/core/principal';
    * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    * import { resolve } from 'node:path';
    *
@@ -407,7 +407,7 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { Principal } from '@dfinity/principal';
+   * import { Principal } from '@icp-sdk/core/principal';
    * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    * import { resolve } from 'node:path';
    *
@@ -462,7 +462,7 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { Principal } from '@dfinity/principal';
+   * import { Principal } from '@icp-sdk/core/principal';
    * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    * import { resolve } from 'node:path';
    *
@@ -515,7 +515,7 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { Principal } from '@dfinity/principal';
+   * import { Principal } from '@icp-sdk/core/principal';
    * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
@@ -577,7 +577,7 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { Principal } from '@dfinity/principal';
+   * import { Principal } from '@icp-sdk/core/principal';
    * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    * import { _SERVICE, idlFactory } from '../declarations';
    *
@@ -651,7 +651,7 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { Principal } from '@dfinity/principal';
+   * import { Principal } from '@icp-sdk/core/principal';
    * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    * import { _SERVICE, idlFactory } from '../declarations';
    *
@@ -704,7 +704,7 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { Principal } from '@dfinity/principal';
+   * import { Principal } from '@icp-sdk/core/principal';
    * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    * import { _SERVICE, idlFactory } from '../declarations';
    *
@@ -804,7 +804,7 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { Principal } from '@dfinity/principal';
+   * import { Principal } from '@icp-sdk/core/principal';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    *
@@ -1244,7 +1244,7 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { Principal } from '@dfinity/principal';
+   * import { Principal } from '@icp-sdk/core/principal';
    * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
@@ -1275,7 +1275,7 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { Principal } from '@dfinity/principal';
+   * import { Principal } from '@icp-sdk/core/principal';
    * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
@@ -1308,7 +1308,7 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { Principal } from '@dfinity/principal';
+   * import { Principal } from '@icp-sdk/core/principal';
    * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
@@ -1344,7 +1344,7 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { Principal } from '@dfinity/principal';
+   * import { Principal } from '@icp-sdk/core/principal';
    * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
@@ -1372,7 +1372,7 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { Principal } from '@dfinity/principal';
+   * import { Principal } from '@icp-sdk/core/principal';
    * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
@@ -1423,7 +1423,7 @@ export class PocketIc {
    *
    * @example
    * ```ts
-   * import { Principal } from '@dfinity/principal';
+   * import { Principal } from '@icp-sdk/core/principal';
    * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    *
    * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));

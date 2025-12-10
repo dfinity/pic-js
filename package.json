@@ -6,6 +6,7 @@
     "pnpm": "^10",
     "npm": "please use pnpm"
   },
+  "type": "module",
   "packageManager": "pnpm@10.19.0+sha512.c9fc7236e92adf5c8af42fd5bf1612df99c2ceb62f27047032f4720b33f8eacdde311865e91c411f2774f618d82f320808ecb51718bfa82c060c4ba7c76a32b8",
   "workspaces": [
     "examples/clock/tests",
@@ -45,10 +46,12 @@
     "postinstall": "tar -xvf examples/nns_proxy/tests/state/nns_state.tar.xz -C examples/nns_proxy/tests/state"
   },
   "devDependencies": {
-    "@dfinity/agent": "^3.2.4",
-    "@dfinity/candid": "^3.2.4",
-    "@dfinity/identity": "^3.2.4",
-    "@dfinity/principal": "^3.2.4",
+    "@dfinity/agent": "3.4.3",
+    "@dfinity/candid": "3.4.3",
+    "@dfinity/identity": "3.4.3",
+    "@dfinity/identity-secp256k1": "3.4.3",
+    "@dfinity/principal": "3.4.3",
+    "@icp-sdk/core": "^4.2.3",
     "@swc/core": "^1.15.3",
     "@swc/jest": "^0.2.39",
     "@tsconfig/node24": "^24.0.3",

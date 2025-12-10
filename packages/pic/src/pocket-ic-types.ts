@@ -1,6 +1,6 @@
-import { Principal } from '@dfinity/principal';
+import { Principal } from '@icp-sdk/core/principal';
 import { ActorInterface, Actor } from './pocket-ic-actor';
-import { IDL } from '@dfinity/candid';
+import { IDL } from '@icp-sdk/core/candid';
 import { CanisterInstallModeUpgradeOptions } from './management-canister';
 
 // Needed for the docs

@@ -1,7 +1,7 @@
 import { randomBytes, createHash } from 'node:crypto';
 import { entropyToMnemonic } from 'bip39';
-import { Identity } from '@dfinity/agent';
-import { Ed25519KeyIdentity } from '@dfinity/identity';
+import { Identity } from '@icp-sdk/core/agent';
+import { Ed25519KeyIdentity } from '@icp-sdk/core/identity';
 
 /**
  * Create an Identity from a seed phrase.
@@ -23,7 +23,7 @@ import { Ed25519KeyIdentity } from '@dfinity/identity';
  * @example
  * ```ts
  * import { PocketIc, PocketIcServer, createIdentity } from '@dfinity/pic';
- * import { AnonymousIdentity } from '@dfinity/agent';
+ * import { AnonymousIdentity } from '@icp-sdk/core/agent';
  * import { _SERVICE, idlFactory } from '../declarations';
  *
  * const wasmPath = resolve('..', '..', 'canister.wasm');
@@ -72,7 +72,7 @@ function generateMnemonic(): string {
  * @example
  * ```ts
  * import { PocketIc, PocketIcServer, generateRandomIdentity } from '@dfinity/pic';
- * import { AnonymousIdentity } from '@dfinity/agent';
+ * import { AnonymousIdentity } from '@icp-sdk/core/agent';
  * import { _SERVICE, idlFactory } from '../declarations';
  *
  * const wasmPath = resolve('..', '..', 'canister.wasm');

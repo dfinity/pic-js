@@ -1,7 +1,7 @@
 import { resolve } from 'node:path';
-import { Principal } from '@dfinity/principal';
+import { Principal } from '@icp-sdk/core/principal';
 import { Actor, generateRandomIdentity, PocketIc } from '@dfinity/pic';
-import { Identity } from '@dfinity/agent';
+import { Identity } from '@icp-sdk/core/agent';
 
 import { _SERVICE, idlFactory } from '../../declarations/clock.did';
 

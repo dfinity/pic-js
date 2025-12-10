@@ -1,6 +1,6 @@
 import path from 'node:path';
-import { Identity } from '@dfinity/agent';
-import { Principal } from '@dfinity/principal';
+import { Identity } from '@icp-sdk/core/agent';
+import { Principal } from '@icp-sdk/core/principal';
 
 import { Actor, generateRandomIdentity, PocketIc } from '../../src';
 import {

@@ -1,7 +1,7 @@
 import { resolve } from 'node:path';
-import { Principal } from '@dfinity/principal';
+import { Principal } from '@icp-sdk/core/principal';
 import { Actor, PocketIc } from '@dfinity/pic';
-import { IDL } from '@dfinity/candid';
+import { IDL } from '@icp-sdk/core/candid';
 import { describe, beforeEach, afterEach, it, expect, inject } from 'vitest';
 
 import { _SERVICE, idlFactory, init } from '../../declarations/counter.did.js';

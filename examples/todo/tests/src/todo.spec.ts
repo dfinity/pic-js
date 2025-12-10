@@ -1,6 +1,6 @@
 import { resolve } from 'node:path';
-import { Principal } from '@dfinity/principal';
-import { AnonymousIdentity } from '@dfinity/agent';
+import { Principal } from '@icp-sdk/core/principal';
+import { AnonymousIdentity } from '@icp-sdk/core/agent';
 import { Actor, PocketIc, createIdentity } from '@dfinity/pic';
 import { _SERVICE, idlFactory } from '../../declarations/todo.did';
 

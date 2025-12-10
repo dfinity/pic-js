@@ -1,4 +1,4 @@
-import { IDL } from '@dfinity/candid';
+import { IDL } from '@icp-sdk/core/candid';
 
 const UpdateElectedReplicaVersionsPayload = IDL.Record({
   release_package_urls: IDL.Vec(IDL.Text),

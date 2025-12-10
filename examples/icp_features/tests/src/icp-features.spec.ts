@@ -1,7 +1,7 @@
 import { resolve } from 'path';
 import { Actor, IcpFeaturesConfig, PocketIc } from '@dfinity/pic';
 import { type _SERVICE, idlFactory } from '../../declarations/icp_features.did';
-import { Principal } from '@dfinity/principal';
+import { Principal } from '@icp-sdk/core/principal';
 
 const WASM_PATH = resolve(
   __dirname,
