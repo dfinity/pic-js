@@ -83,7 +83,7 @@ import {
   encodeGetControllersRequest,
 } from './pocket-ic-client-types';
 import { base64DecodePrincipal, isNotNil } from './util';
-import { Principal } from '@dfinity/principal';
+import { Principal } from '@icp-sdk/core/principal';
 
 const PROCESSING_TIME_VALUE_MS = 30_000;
 const AWAIT_INGRESS_STATUS_ROUNDS = 100;
