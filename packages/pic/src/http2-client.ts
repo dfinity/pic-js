@@ -1,3 +1,4 @@
+import { JSONStringify } from 'json-with-bigint';
 import { ServerRequestTimeoutError } from './error';
 import { isNil, poll } from './util';
 
@@ -13,12 +14,14 @@ export type RequestHeaders = RequestInit['headers'];
 export interface JsonGetRequest {
   path: string;
   headers?: RequestHeaders;
+  responseJsonParser?: typeof JSON.parse;
 }
 
 export interface JsonPostRequest<B> {
   path: string;
   headers?: RequestHeaders;
   body?: B;
+  responseJsonParser?: typeof JSON.parse;
 }
 
 export type ResponseHeaders = ResponseInit['headers'];
@@ -71,6 +74,7 @@ export class Http2Client {
   }
 
   public async jsonGet<R extends {}>(init: JsonGetRequest): Promise<R> {
+    const responseJsonParser = init.responseJsonParser ?? JSON.parse;
     // poll the request until it is successful or times out
     return await poll(
       async () => {
@@ -80,7 +84,7 @@ export class Http2Client {
           headers: { ...init.headers, ...JSON_HEADER },
         });
 
-        const resBody = await getResBody<R>(res);
+        const resBody = await getResBody<R>(res, responseJsonParser);
         if (isNil(resBody)) {
           return resBody;
         }
@@ -120,8 +124,9 @@ export class Http2Client {
   }
 
   public async jsonPost<B, R extends {}>(init: JsonPostRequest<B>): Promise<R> {
+    const responseJsonParser = init.responseJsonParser ?? JSON.parse;
     const reqBody = init.body
-      ? new TextEncoder().encode(JSON.stringify(init.body))
+      ? new TextEncoder().encode(JSONStringify(init.body))
       : undefined;
 
     // poll the request until it is successful or times out
@@ -134,7 +139,7 @@ export class Http2Client {
           body: reqBody,
         });
 
-        const resBody = await getResBody<R>(res);
+        const resBody = await getResBody<R>(res, responseJsonParser);
         if (isNil(resBody)) {
           return resBody;
         }
@@ -200,11 +205,13 @@ export class Http2Client {
 
 async function getResBody<R extends {}>(
   res: Response,
+  jsonParser: typeof JSON.parse,
 ): Promise<ApiResponse<R>> {
+  const resBody = await res.text();
   try {
-    return (await res.clone().json()) as ApiResponse<R>;
+    return jsonParser(resBody) as ApiResponse<R>;
   } catch (error) {
-    const message = await res.text();
+    const message = resBody;
 
     console.error('Error parsing PocketIC server response body:', error);
     console.error('Original body:', message);

@@ -71,7 +71,7 @@ describe('Clock', () => {
   it('should set and get canister cycles', async () => {
     const cycles = await pic.getCyclesBalance(canisterId);
 
-    const cyclesToAdd = 1_000_000_000;
+    const cyclesToAdd = BigInt(1_000_000_000);
     const updatedCyclesBalance = await pic.addCycles(canisterId, cyclesToAdd);
     const fetchUpdatedCyclesBalance = await pic.getCyclesBalance(canisterId);
 
