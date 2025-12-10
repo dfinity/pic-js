@@ -1,8 +1,10 @@
-import type { Config } from 'jest';
+import { createJsWithTsPreset, type JestConfigWithTsJest } from 'ts-jest';
 
-const config: Config = {
+const config: JestConfigWithTsJest = {
+  ...createJsWithTsPreset({
+    tsconfig: '<rootDir>/tsconfig.json',
+  }),
   watch: false,
-  preset: 'ts-jest/presets/js-with-ts',
   testEnvironment: 'node',
   globalSetup: '<rootDir>/global-setup.ts',
   globalTeardown: '<rootDir>/global-teardown.ts',

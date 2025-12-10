@@ -1,7 +1,6 @@
-import type { Config } from 'jest';
-import { createJsWithTsPreset } from 'ts-jest';
+import { createJsWithTsPreset, type JestConfigWithTsJest } from 'ts-jest';
 
-const config: Config = {
+const config: JestConfigWithTsJest = {
   ...createJsWithTsPreset({
     tsconfig: '<rootDir>/tsconfig.test.json',
   }),
