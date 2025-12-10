@@ -1226,7 +1226,7 @@ export class PocketIc {
    * await picServer.stop();
    * ```
    */
-  public async getCyclesBalance(canisterId: Principal): Promise<number> {
+  public async getCyclesBalance(canisterId: Principal): Promise<bigint> {
     const { cycles } = await this.client.getCyclesBalance({ canisterId });
 
     return cycles;
@@ -1259,8 +1259,8 @@ export class PocketIc {
    */
   public async addCycles(
     canisterId: Principal,
-    amount: number,
-  ): Promise<number> {
+    amount: bigint,
+  ): Promise<bigint> {
     const { cycles } = await this.client.addCycles({ canisterId, amount });
 
     return cycles;

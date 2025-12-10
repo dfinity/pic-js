@@ -607,11 +607,11 @@ export function encodeGetCyclesBalanceRequest(
 }
 
 export interface EncodedGetCyclesBalanceResponse {
-  cycles: number;
+  cycles: bigint;
 }
 
 export interface GetCyclesBalanceResponse {
-  cycles: number;
+  cycles: bigint;
 }
 
 export function decodeGetCyclesBalanceResponse(
@@ -628,12 +628,12 @@ export function decodeGetCyclesBalanceResponse(
 
 export interface AddCyclesRequest {
   canisterId: Principal;
-  amount: number;
+  amount: bigint;
 }
 
 export interface EncodedAddCyclesRequest {
   canister_id: string;
-  amount: number;
+  amount: bigint;
 }
 
 export function encodeAddCyclesRequest(
@@ -646,11 +646,11 @@ export function encodeAddCyclesRequest(
 }
 
 export interface AddCyclesResponse {
-  cycles: number;
+  cycles: bigint;
 }
 
 export interface EncodedAddCyclesResponse {
-  cycles: number;
+  cycles: bigint;
 }
 
 export function decodeAddCyclesResponse(
