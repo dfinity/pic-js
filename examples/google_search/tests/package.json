@@ -1,6 +1,5 @@
 {
   "name": "google-search-tests",
-  "type": "module",
   "devDependencies": {
     "@dfinity/pic": "workspace:*"
   }
