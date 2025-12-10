@@ -1110,6 +1110,38 @@ export class PocketIc {
   }
 
   /**
+   * Get the default effective canister id for this PocketIC instance.
+   * This is useful when calling [`IcManagementCanister.provisionalCreateCanisterWithCycles`](https://js.icp.build/canisters/latest/api/ic-management/classes/icmanagementcanister#provisionalcreatecanisterwithcycles)
+   * on the management canister from `@icp-sdk/canisters/ic-management`.
+   *
+   * @returns The default effective canister id.
+   *
+   * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+   *
+   * @example
+   * ```ts
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
+   * import { IcManagementCanister } from '@icp-sdk/canisters/ic-management';
+   *
+   * const picServer = await PocketIcServer.start();
+   * const pic = await PocketIc.create(picServer.getUrl());
+   *
+   * const defaultEffectiveCanisterId = await pic.getDefaultEffectiveCanisterId();
+   *
+   * const managementCanister = IcManagementCanister.create({ agent });
+   * const canisterId = await managementCanister.provisionalCreateCanisterWithCycles({
+   *   canisterId: defaultEffectiveCanisterId,
+   * });
+   *
+   * await pic.tearDown();
+   * await picServer.stop();
+   * ```
+   */
+  public async getDefaultEffectiveCanisterId(): Promise<Principal> {
+    return await this.client.getDefaultEffectiveCanisterId();
+  }
+
+  /**
    * Get the Bitcoin subnet topology for this instance's network.
    * The instance network topology is configured via the {@link create} method.
    *
