@@ -14,18 +14,18 @@ To get started with [Jest](https://jestjs.io), install the relevant packages usi
 
 <Tabs>
   <TabItem label="npm" icon="npm">
-    <Code lang="shell" code="npm i -D jest @types/jest @types/node ts-jest" />
+    <Code lang="shell" code="npm i -D jest @types/jest @types/node @swc/core @swc/jest" />
   </TabItem>
   <TabItem label="pnpm" icon="pnpm">
-    <Code lang="shell" code="pnpm i -D jest @types/jest @types/node ts-jest" />
+    <Code lang="shell" code="pnpm i -D jest @types/jest @types/node @swc/core @swc/jest" />
   </TabItem>
   <TabItem label="bun" icon="bun">
-    <Code lang="shell" code="bun add -d jest @types/jest @types/node ts-jest" />
+    <Code lang="shell" code="bun add -d jest @types/jest @types/node @swc/core @swc/jest" />
   </TabItem>
   <TabItem label="yarn" icon="seti:yarn">
     <Code
       lang="shell"
-      code="yarn add -D jest @types/jest @types/node ts-jest"
+      code="yarn add -D jest @types/jest @types/node @swc/core @swc/jest"
     />
   </TabItem>
 </Tabs>
@@ -76,7 +76,9 @@ import type { Config } from 'jest';
 
 const config: Config = {
   watch: false,
-  preset: 'ts-jest/presets/js-with-ts',
+  transform: {
+    '^.+\\.(t|j)sx?$': '@swc/jest',
+  },
   testEnvironment: 'node',
   globalSetup: '<rootDir>/global-setup.ts',
   globalTeardown: '<rootDir>/global-teardown.ts',
@@ -86,7 +88,7 @@ const config: Config = {
 export default config;
 ```
 
-You can also check out the official the [`ts-jest` documentation](https://kulshekhar.github.io/ts-jest/docs/) for more information on configuring this file.
+You can also check out the official the [`@swc/jest` documentation](https://swc.rs/docs/usage/jest) for more information on configuring this file.
 
 Then, add a `test` script to your `package.json`:
 
