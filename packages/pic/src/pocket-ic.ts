@@ -627,8 +627,6 @@ export class PocketIc {
    *
    * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
    * @see [InterfaceFactory](https://js.icp.build/core/latest/libs/candid/api/namespaces/idl/type-aliases/interfacefactory/)
-   *
-   * @example
    */
   public createDeferredActor<T extends ActorInterface<T> = ActorInterface>(
     interfaceFactory: IDL.InterfaceFactory,
@@ -815,6 +813,7 @@ export class PocketIc {
    *
    * await pic.tearDown();
    * await picServer.stop();
+   * ```
    */
   public async getControllers(canisterId: Principal): Promise<Principal[]> {
     return await this.client.getControllers({ canisterId });
@@ -1283,7 +1282,7 @@ export class PocketIc {
    * const picServer = await PocketIcServer.start();
    * const pic = await PocketIc.create(picServer.getUrl());
    *
-   * const newCyclesBalance = await pic.addCycles(canisterId, 10_000_000);
+   * const newCyclesBalance = await pic.addCycles(canisterId, BigInt(10_000_000));
    *
    * await pic.tearDown();
    * await picServer.stop();
