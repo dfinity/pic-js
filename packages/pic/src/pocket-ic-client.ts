@@ -350,7 +350,7 @@ export class PocketIcClient {
     return decodeIngressStatusResponse(res);
   }
 
-  public async awaitCallWithSpecifiedRounds(
+  public async awaitCallWithRounds(
     req: AwaitCanisterCallRequest,
     rounds: number,
   ): Promise<AwaitCanisterCallResponse> {
