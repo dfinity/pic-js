@@ -378,7 +378,7 @@ export class PocketIcClient {
   public async awaitCall(
     req: AwaitCanisterCallRequest,
   ): Promise<AwaitCanisterCallResponse> {
-    return this.awaitCallWithSpecifiedRounds(req, AWAIT_INGRESS_STATUS_ROUNDS);
+    return this.awaitCallWithRounds(req, AWAIT_INGRESS_STATUS_ROUNDS);
   }
 
   private async post<B, R extends {}>(
