@@ -13,6 +13,9 @@ importers:
 
   .:
     devDependencies:
+      '@icp-sdk/core':
+        specifier: ^5.0.0
+        version: 5.0.0
       '@swc/core':
         specifier: ^1.15.3
         version: 1.15.3

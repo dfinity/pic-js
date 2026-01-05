@@ -46,6 +46,7 @@
     "postinstall": "tar -xvf examples/nns_proxy/tests/state/nns_state.tar.xz -C examples/nns_proxy/tests/state"
   },
   "devDependencies": {
+    "@icp-sdk/core": "^5.0.0",
     "@swc/core": "^1.15.3",
     "@swc/jest": "^0.2.39",
     "@tsconfig/node24": "^24.0.3",
