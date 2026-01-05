@@ -1,5 +1,9 @@
 ## Unreleased
 
+### Feat
+
+- `awaitCallWithRounds` method on `PocketIcClient` (#220)
+
 ## 0.17.1 (2025-12-15)
 
 ## 0.17.0 (2025-12-11)
