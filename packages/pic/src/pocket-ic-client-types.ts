@@ -1147,7 +1147,9 @@ export function decodeIngressStatusResponse(
 
 //#region AwaitCanisterCall
 
-export type AwaitCanisterCallRequest = SubmitCanisterCallResponse;
+export type AwaitCanisterCallRequest = SubmitCanisterCallResponse & {
+  rounds?: number;
+};
 
 export type EncodedAwaitCanisterCallRequest = EncodedCanisterCallId;
 
