@@ -350,10 +350,10 @@ export class PocketIcClient {
     return decodeIngressStatusResponse(res);
   }
 
-  public async awaitCallWithRounds(
-    req: AwaitCanisterCallRequest,
-    rounds: number,
-  ): Promise<AwaitCanisterCallResponse> {
+  public async awaitCall({
+    rounds = AWAIT_INGRESS_STATUS_ROUNDS,
+    ...req
+  }: AwaitCanisterCallRequest): Promise<AwaitCanisterCallResponse> {
     this.assertInstanceNotDeleted();
     const encodedReq = {
       messageId: encodeAwaitCanisterCallRequest(req),
@@ -373,12 +373,6 @@ export class PocketIcClient {
     throw new Error(
       `PocketIC did not complete the update call within ${rounds} rounds`,
     );
-  }
-
-  public async awaitCall(
-    req: AwaitCanisterCallRequest,
-  ): Promise<AwaitCanisterCallResponse> {
-    return this.awaitCallWithRounds(req, AWAIT_INGRESS_STATUS_ROUNDS);
   }
 
   private async post<B, R extends {}>(
