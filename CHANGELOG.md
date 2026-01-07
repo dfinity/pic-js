@@ -2,6 +2,7 @@
 
 ### Feat
 
+- revert and add rounds as request parameter of awaitCall (#223)
 - `awaitCallWithRounds` method on `PocketIcClient` (#220)
 
 ## 0.17.1 (2025-12-15)
