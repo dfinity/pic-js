@@ -1154,7 +1154,7 @@ export type AwaitCanisterCallRequest = SubmitCanisterCallResponse & {
 export type EncodedAwaitCanisterCallRequest = EncodedCanisterCallId;
 
 export function encodeAwaitCanisterCallRequest(
-  req: AwaitCanisterCallRequest,
+  req: Omit<AwaitCanisterCallRequest, 'rounds'>,
 ): EncodedAwaitCanisterCallRequest {
   return {
     effective_principal: encodeEffectivePrincipal(req.effectivePrincipal),
