@@ -1,8 +1,11 @@
 ## Unreleased
 
+## 0.17.2 (2026-01-08)
+
 ### Feat
 
-- `awaitCallWithRounds` method on `PocketIcClient` (#220)
+- introduce a new `rounds` option for `awaitCall` method on `PocketIcClient` (#223)
+- bump icp-sdk/core to v5 (#221)
 
 ## 0.17.1 (2025-12-15)
 
