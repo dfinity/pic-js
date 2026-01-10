@@ -38,7 +38,7 @@ Create a `tsconfig.json` file:
     "module": "ESNext",
     "moduleDetection": "force",
     "allowJs": true, // allow importing `.js` from `.ts`
-    "types": ["node"],
+    "types": ["node", "vitest"],
 
     // Bundler mode
     "moduleResolution": "bundler",
@@ -64,16 +64,16 @@ Create a `tsconfig.json` file:
 The PocketIC server needs to be started before running tests and stopped once they're finished running. This can be done by creating a `global-setup.ts` file in your project's root directory:
 
 ```ts title="global-setup.ts"
-import type { GlobalSetupContext } from 'vitest/node';
+import type { TestProject } from 'vitest/node';
 import { PocketIcServer } from '@dfinity/pic';
 
 let pic: PocketIcServer | undefined;
 
-export async function setup(ctx: GlobalSetupContext): Promise<void> {
+export async function setup(project: TestProject): Promise<void> {
   pic = await PocketIcServer.start();
   const url = pic.getUrl();
 
-  ctx.provide('PIC_URL', url);
+  project.provide('PIC_URL', url);
 }
 
 export async function teardown(): Promise<void> {
@@ -81,7 +81,7 @@ export async function teardown(): Promise<void> {
 }
 ```
 
-To improve type-safety for `ctx.provide('PIC_URL')` and (later) `inject('PIC_URL')`, create a `types.d.ts` file:
+To improve type-safety for `project.provide('PIC_URL')` and (later) `inject('PIC_URL')`, create a `types.d.ts` file:
 
 ```ts title="types.d.ts"
 export declare module 'vitest' {
