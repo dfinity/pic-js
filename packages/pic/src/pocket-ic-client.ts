@@ -380,7 +380,7 @@ export class PocketIcClient {
     }
 
     throw new Error(
-      `PocketIC did not complete the update call within ${AWAIT_INGRESS_STATUS_ROUNDS} rounds`,
+      `PocketIC did not complete the update call within ${this.awaitIngressStatusRounds} rounds`,
     );
   }
 

@@ -1,7 +1,7 @@
 {
   "name": "@dfinity/pic",
   "description": "An Internet Computer Protocol canister testing library for TypeScript and JavaScript.",
-  "version": "0.17.1",
+  "version": "0.17.2",
   "author": "DFINITY Stiftung",
   "license": "Apache-2.0",
   "repository": "github:dfinity/pic-js",
@@ -29,7 +29,7 @@
     "postinstall": "node ./postinstall.mjs"
   },
   "dependencies": {
-    "@icp-sdk/core": "^4.2.3",
+    "@icp-sdk/core": "^5.0.0",
     "bip39": "^3.1.0",
     "json-with-bigint": "3.4.4"
   }
