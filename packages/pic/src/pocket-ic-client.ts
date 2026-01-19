@@ -94,6 +94,7 @@ export class PocketIcClient {
   private constructor(
     private readonly serverClient: Http2Client,
     private readonly instancePath: string,
+    private awaitIngressStatusRounds: number
   ) {}
 
   public static async create(
@@ -102,6 +103,7 @@ export class PocketIcClient {
   ): Promise<PocketIcClient> {
     const processingTimeoutMs =
       req?.processingTimeoutMs ?? PROCESSING_TIME_VALUE_MS;
+    const awaitIngressStatusRounds = req?.awaitIngressStatusRounds ?? AWAIT_INGRESS_STATUS_ROUNDS;
     const serverClient = new Http2Client(url, processingTimeoutMs);
 
     const res = await serverClient.jsonPost<
@@ -120,7 +122,7 @@ export class PocketIcClient {
 
     const instanceId = res.Created.instance_id;
 
-    return new PocketIcClient(serverClient, `/instances/${instanceId}`);
+    return new PocketIcClient(serverClient, `/instances/${instanceId}`, awaitIngressStatusRounds);
   }
 
   public async deleteInstance(): Promise<void> {
@@ -132,6 +134,14 @@ export class PocketIcClient {
     });
 
     this.isInstanceDeleted = true;
+  }
+
+  public setAwaitIngressStatusRounds(numberOfRounds : number){
+    this.awaitIngressStatusRounds = numberOfRounds;
+  }
+
+  public getAwaitIngressStatusRounds() {
+    return this.awaitIngressStatusRounds;
   }
 
   public async getControllers(
@@ -361,7 +371,7 @@ export class PocketIcClient {
       caller: undefined,
     };
 
-    for (let i = 0; i < AWAIT_INGRESS_STATUS_ROUNDS; i++) {
+    for (let i = 0; i < this.awaitIngressStatusRounds; i++) {
       await this.tick();
       const result = await this.ingressStatus(encodedReq);
       if (isNotNil(result)) {

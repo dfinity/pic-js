@@ -78,7 +78,7 @@
     },
     "packages/pic": {
       "name": "@dfinity/pic",
-      "version": "0.16.1",
+      "version": "0.17.1",
       "dependencies": {
         "@icp-sdk/core": "^4.2.3",
         "bip39": "^3.1.0",

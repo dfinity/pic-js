@@ -69,6 +69,10 @@ export interface CreateInstanceOptions {
   processingTimeoutMs?: number;
 
   /**
+   * How many IngressStatusRounds all IC update calls should wait, till we get a timeout.
+   */
+  awaitIngressStatusRounds?: number;
+  /**
    * Determines what non-mainnet features should be
    * enabled for the PocketIC instance.
    */

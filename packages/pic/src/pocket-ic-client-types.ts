@@ -24,6 +24,7 @@ export interface CreateInstanceRequest {
   application?: ApplicationSubnetConfig[];
   verifiedApplication?: VerifiedApplicationSubnetConfig[];
   processingTimeoutMs?: number;
+  awaitIngressStatusRounds? : number;
   icpConfig?: IcpConfig;
   icpFeatures?: IcpFeatures;
 }
