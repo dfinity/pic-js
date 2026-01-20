@@ -94,7 +94,7 @@ export class PocketIcClient {
   private constructor(
     private readonly serverClient: Http2Client,
     private readonly instancePath: string,
-    private readonly awaitIngressStatusRounds: number,
+    private readonly ingressMaxRetries: number,
   ) {}
 
   public static async create(
@@ -103,8 +103,6 @@ export class PocketIcClient {
   ): Promise<PocketIcClient> {
     const processingTimeoutMs =
       req?.processingTimeoutMs ?? PROCESSING_TIME_VALUE_MS;
-    const awaitIngressStatusRounds =
-      req?.awaitIngressStatusRounds ?? AWAIT_INGRESS_STATUS_ROUNDS;
     const serverClient = new Http2Client(url, processingTimeoutMs);
 
     const res = await serverClient.jsonPost<
@@ -123,10 +121,13 @@ export class PocketIcClient {
 
     const instanceId = res.Created.instance_id;
 
+    const ingressMaxRetries =
+      req?.ingressMaxRetries ?? AWAIT_INGRESS_STATUS_ROUNDS;
+
     return new PocketIcClient(
       serverClient,
       `/instances/${instanceId}`,
-      awaitIngressStatusRounds,
+      ingressMaxRetries,
     );
   }
 
@@ -368,7 +369,7 @@ export class PocketIcClient {
       caller: undefined,
     };
 
-    for (let i = 0; i < this.awaitIngressStatusRounds; i++) {
+    for (let i = 0; i < this.ingressMaxRetries; i++) {
       await this.tick();
       const result = await this.ingressStatus(encodedReq);
       if (isNotNil(result)) {
@@ -377,7 +378,7 @@ export class PocketIcClient {
     }
 
     throw new Error(
-      `PocketIC did not complete the update call within ${this.awaitIngressStatusRounds} rounds`,
+      `PocketIC did not complete the update call within ${this.ingressMaxRetries} rounds`,
     );
   }
 
