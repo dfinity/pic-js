@@ -1148,14 +1148,12 @@ export function decodeIngressStatusResponse(
 
 //#region AwaitCanisterCall
 
-export type AwaitCanisterCallRequest = SubmitCanisterCallResponse & {
-  rounds?: number;
-};
+export type AwaitCanisterCallRequest = SubmitCanisterCallResponse;
 
 export type EncodedAwaitCanisterCallRequest = EncodedCanisterCallId;
 
 export function encodeAwaitCanisterCallRequest(
-  req: Omit<AwaitCanisterCallRequest, 'rounds'>,
+  req: AwaitCanisterCallRequest,
 ): EncodedAwaitCanisterCallRequest {
   return {
     effective_principal: encodeEffectivePrincipal(req.effectivePrincipal),
