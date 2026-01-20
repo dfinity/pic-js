@@ -141,10 +141,6 @@ export class PocketIcClient {
     this.isInstanceDeleted = true;
   }
 
-  public getAwaitIngressStatusRounds() {
-    return this.awaitIngressStatusRounds;
-  }
-
   public async getControllers(
     req: GetControllersRequest,
   ): Promise<GetControllersResponse> {
