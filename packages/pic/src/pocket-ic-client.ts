@@ -94,7 +94,7 @@ export class PocketIcClient {
   private constructor(
     private readonly serverClient: Http2Client,
     private readonly instancePath: string,
-    private awaitIngressStatusRounds: number,
+    private readonly awaitIngressStatusRounds: number,
   ) {}
 
   public static async create(
@@ -139,10 +139,6 @@ export class PocketIcClient {
     });
 
     this.isInstanceDeleted = true;
-  }
-
-  public setAwaitIngressStatusRounds(numberOfRounds: number) {
-    this.awaitIngressStatusRounds = numberOfRounds;
   }
 
   public getAwaitIngressStatusRounds() {
