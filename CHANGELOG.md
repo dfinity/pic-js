@@ -1,5 +1,9 @@
 ## Unreleased
 
+### Feat
+
+- Length of wait for ingress status configurable. (#227)
+
 ## 0.17.2 (2026-01-08)
 
 ### Feat
