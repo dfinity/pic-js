@@ -94,6 +94,7 @@ export class PocketIcClient {
   private constructor(
     private readonly serverClient: Http2Client,
     private readonly instancePath: string,
+    private readonly ingressMaxRetries: number,
   ) {}
 
   public static async create(
@@ -120,7 +121,14 @@ export class PocketIcClient {
 
     const instanceId = res.Created.instance_id;
 
-    return new PocketIcClient(serverClient, `/instances/${instanceId}`);
+    const ingressMaxRetries =
+      req?.ingressMaxRetries ?? AWAIT_INGRESS_STATUS_ROUNDS;
+
+    return new PocketIcClient(
+      serverClient,
+      `/instances/${instanceId}`,
+      ingressMaxRetries,
+    );
   }
 
   public async deleteInstance(): Promise<void> {
@@ -350,10 +358,9 @@ export class PocketIcClient {
     return decodeIngressStatusResponse(res);
   }
 
-  public async awaitCall({
-    rounds = AWAIT_INGRESS_STATUS_ROUNDS,
-    ...req
-  }: AwaitCanisterCallRequest): Promise<AwaitCanisterCallResponse> {
+  public async awaitCall(
+    req: AwaitCanisterCallRequest,
+  ): Promise<AwaitCanisterCallResponse> {
     this.assertInstanceNotDeleted();
     const encodedReq = {
       messageId: encodeAwaitCanisterCallRequest(req),
@@ -362,7 +369,7 @@ export class PocketIcClient {
       caller: undefined,
     };
 
-    for (let i = 0; i < rounds; i++) {
+    for (let i = 0; i < this.ingressMaxRetries; i++) {
       await this.tick();
       const result = await this.ingressStatus(encodedReq);
       if (isNotNil(result)) {
@@ -371,7 +378,7 @@ export class PocketIcClient {
     }
 
     throw new Error(
-      `PocketIC did not complete the update call within ${rounds} rounds`,
+      `PocketIC did not complete the update call within ${this.ingressMaxRetries} rounds`,
     );
   }
 
