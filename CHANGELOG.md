@@ -2,9 +2,12 @@
 
 ## 0.18.0 (2026-01-08)
 
-### Feat
+### BREAKING CHANCE
 
 - Reverts "introduce a new `rounds` option for `awaitCall` method on `PocketIcClient` (#223)"
+
+### Feat
+
 - Introduce `ingressMaxRetries` to configure how many rounds an instance will
 wait for update calls to complete before timing out (#227)
 
