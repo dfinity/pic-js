@@ -415,6 +415,7 @@ export class PocketIcClient {
       throw new Error(res.Error.message);
     }
 
+    this.httpGatewayInstanceId = res.Created.instance_id;
     return res.Created.port;
   }
 
@@ -423,10 +424,10 @@ export class PocketIcClient {
       return;
     }
 
-    this.httpGatewayInstanceId = null;
     await this.serverClient.jsonPost<{}, {}>({
       path: `/http_gateway/${this.httpGatewayInstanceId}/stop`,
     });
+    this.httpGatewayInstanceId = null;
   }
 
   private async post<B, R extends {}>(

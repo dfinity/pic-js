@@ -220,7 +220,7 @@ async function getResBody<R extends {}>(
     return jsonParser(resBody) as ApiResponse<R>;
   } catch (error) {
     console.error('Error parsing PocketIC server response body:', error);
-    if (resBody.length < 10_024) {
+    if (resBody.length < 10_240) {
       console.error('Original body:', resBody);
       throw new Error(resBody);
     }
