@@ -5,6 +5,7 @@
     "": {
       "name": "pic-js",
       "devDependencies": {
+        "@icp-sdk/core": "^5.0.0",
         "@swc/core": "^1.15.3",
         "@swc/jest": "^0.2.39",
         "@tsconfig/node24": "^24.0.3",
@@ -72,7 +73,7 @@
     },
     "packages/pic": {
       "name": "@dfinity/pic",
-      "version": "0.17.1",
+      "version": "0.18.0",
       "dependencies": {
         "@icp-sdk/core": "^5.0.0",
         "bip39": "^3.1.0",
