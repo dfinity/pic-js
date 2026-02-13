@@ -20,6 +20,8 @@ import {
   UpdateCallOptions,
   PendingHttpsOutcall,
   MockPendingHttpsOutcallOptions,
+  FetchCanisterLogsOptions,
+  CanisterLogRecord as CanisterLogRecordPublic,
 } from './pocket-ic-types';
 import {
   MANAGEMENT_CANISTER_ID,
@@ -28,6 +30,8 @@ import {
   encodeInstallCodeRequest,
   encodeStartCanisterRequest,
   encodeUpdateCanisterSettingsRequest,
+  encodeFetchCanisterLogsRequest,
+  decodeFetchCanisterLogsResponse,
 } from './management-canister';
 import {
   createDeferredActorClass,
@@ -692,6 +696,37 @@ export class PocketIc {
     });
 
     return res.body;
+  }
+
+  /**
+   * Fetches the logs for the given canister.
+   *
+   * @param options Options for fetching canister logs, see {@link FetchCanisterLogsOptions}.
+   * @returns An array of {@link CanisterLogRecord} entries.
+   */
+  public async fetchCanisterLogs({
+    canisterId,
+    sender = Principal.anonymous(),
+  }: FetchCanisterLogsOptions): Promise<CanisterLogRecordPublic[]> {
+    const payload = encodeFetchCanisterLogsRequest({
+      canister_id: canisterId,
+    });
+
+    const res = await this.client.queryCall({
+      canisterId: MANAGEMENT_CANISTER_ID,
+      sender,
+      method: 'fetch_canister_logs',
+      payload,
+      effectivePrincipal: { canisterId },
+    });
+
+    const decoded = decodeFetchCanisterLogsResponse(res.body);
+
+    return decoded.canister_log_records.map(record => ({
+      idx: record.idx,
+      timestampNanos: record.timestamp_nanos,
+      content: new Uint8Array(record.content),
+    }));
   }
 
   /**
