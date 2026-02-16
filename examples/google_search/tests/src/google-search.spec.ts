@@ -10,11 +10,10 @@ const WASM_PATH = resolve(
   '..',
   '..',
   '..',
-  '.dfx',
-  'local',
-  'canisters',
+  '.icp',
+  'cache',
+  'artifacts',
   'google_search',
-  'google_search.wasm.gz',
 );
 
 describe('GoogleSearch', () => {

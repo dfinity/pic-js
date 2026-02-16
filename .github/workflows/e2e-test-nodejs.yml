@@ -31,10 +31,14 @@ jobs:
       - name: Setup PNPM
         uses: dfinity/ci-tools/actions/setup-pnpm@main
 
-      - name: Setup DFX
-        uses: dfinity/setup-dfx@main
-        with:
-          dfx-version: 'auto'
+      - name: Install ICP CLI tools
+        run: pnpm add -g @icp-sdk/icp-cli @icp-sdk/ic-wasm ic-mops
+
+      - name: Install Motoko toolchain
+        run: mops toolchain init
+
+      - name: Add wasm32 Rust target
+        run: rustup target add wasm32-unknown-unknown
 
       - name: Build
         run: pnpm run build
@@ -64,10 +68,14 @@ jobs:
         shell: bash
         run: bun i --frozen-lockfile
 
-      - name: Setup DFX
-        uses: dfinity/setup-dfx@main
-        with:
-          dfx-version: 'auto'
+      - name: Install ICP CLI tools
+        run: bun add -g @icp-sdk/icp-cli @icp-sdk/ic-wasm ic-mops
+
+      - name: Install Motoko toolchain
+        run: mops toolchain init
+
+      - name: Add wasm32 Rust target
+        run: rustup target add wasm32-unknown-unknown
 
       - name: Build
         run: bun run build

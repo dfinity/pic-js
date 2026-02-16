@@ -1,0 +1,3 @@
+service : {
+  get : () -> (int) query;
+}
