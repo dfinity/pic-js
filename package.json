@@ -45,7 +45,7 @@
     "build:todo": "dfx generate todo && dfx build todo --check",
     "test:todo": "jest -c ./examples/todo/tests/jest.config.ts",
     "build:http": "dfx generate http && dfx build http --check",
-    "test:http": "jest -c ./examples/http/tests/jest.config.ts",
+    "test:http": "vitest run -c ./examples/http/tests/vitest.config.ts",
     "postinstall": "tar -xvf examples/nns_proxy/tests/state/nns_state.tar.xz -C examples/nns_proxy/tests/state"
   },
   "devDependencies": {

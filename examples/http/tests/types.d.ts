@@ -1,11 +1,5 @@
-import { PocketIcServer } from '@dfinity/pic';
-
-declare global {
-  declare var __PIC__: PocketIcServer;
-
-  namespace NodeJS {
-    interface ProcessEnv {
-      PIC_URL: string;
-    }
+export declare module 'vitest' {
+  export interface ProvidedContext {
+    PIC_URL: string;
   }
 }

@@ -1,9 +1,15 @@
+import type { TestProject } from 'vitest/node';
 import { PocketIcServer } from '@dfinity/pic';
 
-module.exports = async function (): Promise<void> {
-  const pic = await PocketIcServer.start();
+let pic: PocketIcServer | undefined;
+
+export async function setup(ctx: TestProject): Promise<void> {
+  pic = await PocketIcServer.start();
   const url = pic.getUrl();
 
-  process.env.PIC_URL = url;
-  global.__PIC__ = pic;
-};
+  ctx.provide('PIC_URL', url);
+}
+
+export async function teardown(): Promise<void> {
+  await pic?.stop();
+}
