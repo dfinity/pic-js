@@ -68,7 +68,7 @@ canisters:
   # Rust canisters
   - name: todo
     recipe:
-      type: '@dfinity/rust@v3.0.0'
+      type: 'https://raw.githubusercontent.com/dfinity/icp-cli-recipes/e0830170ad900528e6b47ca2a881121187c2244b/recipes/rust/recipe.hbs'
       configuration:
         package: todo
         candid: examples/todo/todo.did
@@ -76,7 +76,7 @@ canisters:
 
   - name: icp_features
     recipe:
-      type: '@dfinity/rust@v3.0.0'
+      type: 'https://raw.githubusercontent.com/dfinity/icp-cli-recipes/e0830170ad900528e6b47ca2a881121187c2244b/recipes/rust/recipe.hbs'
       configuration:
         package: icp_features
         candid: examples/icp_features/icp_features.did
@@ -84,7 +84,7 @@ canisters:
 
   - name: nns_proxy
     recipe:
-      type: '@dfinity/rust@v3.0.0'
+      type: 'https://raw.githubusercontent.com/dfinity/icp-cli-recipes/e0830170ad900528e6b47ca2a881121187c2244b/recipes/rust/recipe.hbs'
       configuration:
         package: nns_proxy
         candid: examples/nns_proxy/nns_proxy.did
