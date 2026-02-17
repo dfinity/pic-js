@@ -32,10 +32,29 @@ jobs:
         uses: dfinity/ci-tools/actions/setup-pnpm@main
 
       - name: Install ICP CLI tools
-        run: pnpm add -g @icp-sdk/icp-cli @icp-sdk/ic-wasm ic-mops
+        run: pnpm add -g @icp-sdk/icp-cli @icp-sdk/ic-wasm
 
-      - name: Install Motoko toolchain and packages
-        run: mops install
+      - name: Cache Mops
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/mops
+            ~/Library/Caches/mops
+            .mops
+          key: mops-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('mops.toml') }}
+
+      - name: Setup Motoko toolchain
+        run: |
+          pnpm add -g ic-mops
+          mops install
+
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            target
+          key: cargo-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Add wasm32 Rust target
         run: rustup target add wasm32-unknown-unknown
@@ -69,10 +88,29 @@ jobs:
         run: bun i --frozen-lockfile
 
       - name: Install ICP CLI tools
-        run: bun add -g @icp-sdk/icp-cli @icp-sdk/ic-wasm ic-mops
+        run: bun add -g @icp-sdk/icp-cli @icp-sdk/ic-wasm
 
-      - name: Install Motoko toolchain and packages
-        run: mops install
+      - name: Cache Mops
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/mops
+            ~/Library/Caches/mops
+            .mops
+          key: mops-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('mops.toml') }}
+
+      - name: Setup Motoko toolchain
+        run: |
+          bun add -g ic-mops
+          mops install
+
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            target
+          key: cargo-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Add wasm32 Rust target
         run: rustup target add wasm32-unknown-unknown
