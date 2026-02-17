@@ -5,6 +5,8 @@
     "": {
       "name": "pic-js",
       "devDependencies": {
+        "@icp-sdk/bindgen": "^0.2.1",
+        "@icp-sdk/core": "^5.0.0",
         "@swc/core": "^1.15.3",
         "@swc/jest": "^0.2.39",
         "@tsconfig/node24": "^24.0.3",
@@ -72,7 +74,7 @@
     },
     "packages/pic": {
       "name": "@dfinity/pic",
-      "version": "0.17.1",
+      "version": "0.18.0",
       "dependencies": {
         "@icp-sdk/core": "^5.0.0",
         "bip39": "^3.1.0",
@@ -229,6 +231,8 @@
     "@esbuild/win32-x64": ["@esbuild/win32-x64@0.25.12", "", { "os": "win32", "cpu": "x64" }, "sha512-alJC0uCZpTFrSL0CCDjcgleBXPnCrEAhTBILpeAp7M/OFgoqtAetfBzX0xM00MUsVVPpVjlPuMbREqnZCXaTnA=="],
 
     "@gerrit0/mini-shiki": ["@gerrit0/mini-shiki@3.19.0", "", { "dependencies": { "@shikijs/engine-oniguruma": "^3.19.0", "@shikijs/langs": "^3.19.0", "@shikijs/themes": "^3.19.0", "@shikijs/types": "^3.19.0", "@shikijs/vscode-textmate": "^10.0.2" } }, "sha512-ZSlWfLvr8Nl0T4iA3FF/8VH8HivYF82xQts2DY0tJxZd4wtXJ8AA0nmdW9lmO4hlrh3f9xNwEPtOgqETPqKwDA=="],
+
+    "@icp-sdk/bindgen": ["@icp-sdk/bindgen@0.2.1", "", { "dependencies": { "commander": "^14.0.2" }, "bin": { "icp-bindgen": "dist/esm/cli/icp-bindgen.js" } }, "sha512-/YXJcYdqb4Qi+c33NVU8BgY4O/ZVqOQy+eYH4fSu5asT5/eAQl5NNgsjMTkhbGknRbxm8N9/ZopzAf2GX0n5lg=="],
 
     "@icp-sdk/core": ["@icp-sdk/core@5.0.0", "", { "dependencies": { "@dfinity/cbor": "^0.2.2", "@noble/curves": "^1.9.2", "@noble/hashes": "^1.8.0", "@scure/bip32": "^1.7.0", "@scure/bip39": "^1.6.0", "asn1js": "^3.0.5" } }, "sha512-t6iRbdylHG57MicWRpR1uMTFXRW7GCzec6KAg55CBwDHbHLQDKikQ252lmlcEa80DrKa3LPvMKYZEUYjEq5XUQ=="],
 
