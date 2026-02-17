@@ -16,6 +16,7 @@
     "examples/multicanister/tests",
     "examples/nns_proxy/tests",
     "examples/todo/tests",
+    "examples/http/tests",
     "packages/pic",
     "packages/pic-server",
     "docs"
