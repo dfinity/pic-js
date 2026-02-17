@@ -34,10 +34,8 @@ jobs:
       - name: Install ICP CLI tools
         run: pnpm add -g @icp-sdk/icp-cli @icp-sdk/ic-wasm ic-mops
 
-      - name: Install Motoko toolchain
-        run: mops toolchain init
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Motoko toolchain and packages
+        run: mops install
 
       - name: Add wasm32 Rust target
         run: rustup target add wasm32-unknown-unknown
@@ -73,10 +71,8 @@ jobs:
       - name: Install ICP CLI tools
         run: bun add -g @icp-sdk/icp-cli @icp-sdk/ic-wasm ic-mops
 
-      - name: Install Motoko toolchain
-        run: mops toolchain init
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Motoko toolchain and packages
+        run: mops install
 
       - name: Add wasm32 Rust target
         run: rustup target add wasm32-unknown-unknown
