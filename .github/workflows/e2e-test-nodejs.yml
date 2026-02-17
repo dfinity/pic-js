@@ -36,6 +36,8 @@ jobs:
 
       - name: Install Motoko toolchain
         run: mops toolchain init
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Add wasm32 Rust target
         run: rustup target add wasm32-unknown-unknown
@@ -73,6 +75,8 @@ jobs:
 
       - name: Install Motoko toolchain
         run: mops toolchain init
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Add wasm32 Rust target
         run: rustup target add wasm32-unknown-unknown
