@@ -18,6 +18,7 @@ const WASM_PATH = resolve(
 describe('HTTP', () => {
   let pic: PocketIc;
   let httpGatewayUrl: string;
+  let httpGatewayHost: string;
 
   beforeEach(async () => {
     pic = await PocketIc.create(process.env.PIC_URL, {
@@ -29,7 +30,8 @@ describe('HTTP', () => {
     await pic.installCode({ canisterId, wasm: WASM_PATH });
 
     const httpGatewayPort = await pic.makeLive();
-    httpGatewayUrl = `http://${canisterId}.localhost:${httpGatewayPort}`;
+    httpGatewayUrl = `http://127.0.0.1:${httpGatewayPort}`;
+    httpGatewayHost = `${canisterId}.localhost:${httpGatewayPort}`;
   });
 
   afterEach(async () => {
@@ -38,7 +40,12 @@ describe('HTTP', () => {
   });
 
   it('should return an index.html page', async () => {
-    const res = await fetch(`${httpGatewayUrl}/index.html`);
+    // Use 127.0.0.1 with an explicit Host header instead of
+    // `${canisterId}.localhost` because macOS does not resolve
+    // *.localhost subdomains on CI runners (mDNSResponder is disabled).
+    const res = await fetch(`${httpGatewayUrl}/index.html`, {
+      headers: { Host: httpGatewayHost },
+    });
     const resBody = await res.text();
     expect(resBody).toContain('<h1>Hello, World!</h1>');
   });
