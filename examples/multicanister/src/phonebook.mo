@@ -1,5 +1,5 @@
-import Map "mo:base/HashMap";
-import Text "mo:base/Text";
+import Map "mo:core/Map";
+import Text "mo:core/Text";
 
 persistent actor PhoneBook {
   public type ContactName = Text;
@@ -9,13 +9,13 @@ persistent actor PhoneBook {
     description : Text;
   };
 
-  transient let phonebook = Map.HashMap<ContactName, PhoneBookEntry>(0, Text.equal, Text.hash);
+  let phonebook = Map.empty<ContactName, PhoneBookEntry>();
 
   public func insert(name : ContactName, entry : PhoneBookEntry) : async () {
-    phonebook.put(name, entry);
+    Map.add(phonebook, Text.compare, name, entry);
   };
 
   public query func lookup(name : ContactName) : async ?PhoneBookEntry {
-    phonebook.get(name);
+    Map.get(phonebook, Text.compare, name);
   };
 };

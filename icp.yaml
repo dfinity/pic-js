@@ -1,0 +1,91 @@
+# yaml-language-server: $schema=https://github.com/dfinity/icp-cli/raw/refs/tags/v0.1.0/docs/schemas/icp-yaml-schema.json
+
+canisters:
+  # Motoko canisters
+  - name: test_canister
+    recipe:
+      type: '@dfinity/motoko@v4.0.0'
+      configuration:
+        main: packages/pic/tests/test-canister/main.mo
+        candid: packages/pic/tests/test-canister/test_canister.did
+        args: ''
+        compress: true
+
+  - name: counter
+    recipe:
+      type: '@dfinity/motoko@v4.0.0'
+      configuration:
+        main: examples/counter/src/main.mo
+        candid: examples/counter/counter.did
+        args: ''
+        compress: true
+
+  - name: clock
+    recipe:
+      type: '@dfinity/motoko@v4.0.0'
+      configuration:
+        main: examples/clock/src/main.mo
+        candid: examples/clock/clock.did
+        args: ''
+        compress: true
+
+  - name: google_search
+    recipe:
+      type: '@dfinity/motoko@v4.0.0'
+      configuration:
+        main: examples/google_search/src/main.mo
+        candid: examples/google_search/google_search.did
+        args: ''
+        compress: true
+
+  - name: phonebook
+    recipe:
+      type: '@dfinity/motoko@v4.0.0'
+      configuration:
+        main: examples/multicanister/src/phonebook.mo
+        candid: examples/multicanister/phonebook.did
+        args: ''
+        compress: true
+
+  - name: superheroes
+    recipe:
+      type: '@dfinity/motoko@v4.0.0'
+      configuration:
+        main: examples/multicanister/src/superheroes.mo
+        candid: examples/multicanister/superheroes.did
+        args: ''
+        compress: true
+
+  - name: multicanister
+    recipe:
+      type: '@dfinity/motoko@v4.0.0'
+      configuration:
+        main: examples/multicanister/src/main.mo
+        candid: examples/multicanister/multicanister.did
+        args: ''
+        compress: true
+
+  # Rust canisters
+  - name: todo
+    recipe:
+      type: 'https://raw.githubusercontent.com/dfinity/icp-cli-recipes/e0830170ad900528e6b47ca2a881121187c2244b/recipes/rust/recipe.hbs'
+      configuration:
+        package: todo
+        candid: examples/todo/todo.did
+        compress: true
+
+  - name: icp_features
+    recipe:
+      type: 'https://raw.githubusercontent.com/dfinity/icp-cli-recipes/e0830170ad900528e6b47ca2a881121187c2244b/recipes/rust/recipe.hbs'
+      configuration:
+        package: icp_features
+        candid: examples/icp_features/icp_features.did
+        compress: true
+
+  - name: nns_proxy
+    recipe:
+      type: 'https://raw.githubusercontent.com/dfinity/icp-cli-recipes/e0830170ad900528e6b47ca2a881121187c2244b/recipes/rust/recipe.hbs'
+      configuration:
+        package: nns_proxy
+        candid: examples/nns_proxy/nns_proxy.did
+        compress: true

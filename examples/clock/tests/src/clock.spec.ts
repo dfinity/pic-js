@@ -11,11 +11,10 @@ const WASM_PATH = resolve(
   '..',
   '..',
   '..',
-  '.dfx',
-  'local',
-  'canisters',
+  '.icp',
+  'cache',
+  'artifacts',
   'clock',
-  'clock.wasm.gz',
 );
 
 describe('Clock', () => {

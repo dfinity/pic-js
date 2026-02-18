@@ -31,10 +31,33 @@ jobs:
       - name: Setup PNPM
         uses: dfinity/ci-tools/actions/setup-pnpm@main
 
-      - name: Setup DFX
-        uses: dfinity/setup-dfx@main
+      - name: Install ICP CLI tools
+        run: pnpm add -g @icp-sdk/icp-cli @icp-sdk/ic-wasm
+
+      - name: Cache Mops
+        uses: actions/cache@v4
         with:
-          dfx-version: 'auto'
+          path: |
+            ~/.cache/mops
+            ~/Library/Caches/mops
+            .mops
+          key: mops-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('mops.toml') }}
+
+      - name: Setup Motoko toolchain
+        run: |
+          pnpm add -g ic-mops
+          mops install
+
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            target
+          key: cargo-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Add wasm32 Rust target
+        run: rustup target add wasm32-unknown-unknown
 
       - name: Build
         run: pnpm run build
@@ -64,10 +87,33 @@ jobs:
         shell: bash
         run: bun i --frozen-lockfile
 
-      - name: Setup DFX
-        uses: dfinity/setup-dfx@main
+      - name: Install ICP CLI tools
+        run: bun add -g @icp-sdk/icp-cli @icp-sdk/ic-wasm
+
+      - name: Cache Mops
+        uses: actions/cache@v4
         with:
-          dfx-version: 'auto'
+          path: |
+            ~/.cache/mops
+            ~/Library/Caches/mops
+            .mops
+          key: mops-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('mops.toml') }}
+
+      - name: Setup Motoko toolchain
+        run: |
+          bun add -g ic-mops
+          mops install
+
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            target
+          key: cargo-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Add wasm32 Rust target
+        run: rustup target add wasm32-unknown-unknown
 
       - name: Build
         run: bun run build
