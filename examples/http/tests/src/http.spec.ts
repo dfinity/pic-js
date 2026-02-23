@@ -16,14 +16,10 @@ const WASM_PATH = resolve(
   'http.wasm.gz',
 );
 
-const isCI = !!process.env.CI;
-const isMacOS = process.platform === 'darwin';
-
-// macOS CI runners have mDNSResponder disabled, so *.localhost subdomains
-// don't resolve. Skip until PocketIC supports ?canisterId= query param routing.
-describe.skipIf(isCI && isMacOS)('HTTP', () => {
+describe('HTTP', () => {
   let pic: PocketIc;
-  let httpGatewayUrl: string;
+  let httpGatewayPort: number;
+  let canisterId: string;
 
   beforeEach(async () => {
     pic = await PocketIc.create(inject('PIC_URL'), {
@@ -31,11 +27,11 @@ describe.skipIf(isCI && isMacOS)('HTTP', () => {
       application: [{ state: { type: SubnetStateType.New } }],
     });
 
-    const canisterId = await pic.createCanister();
-    await pic.installCode({ canisterId, wasm: WASM_PATH });
+    const id = await pic.createCanister();
+    await pic.installCode({ canisterId: id, wasm: WASM_PATH });
 
-    const httpGatewayPort = await pic.makeLive();
-    httpGatewayUrl = `http://${canisterId}.localhost:${httpGatewayPort}`;
+    httpGatewayPort = await pic.makeLive();
+    canisterId = id.toString();
   });
 
   afterEach(async () => {
@@ -44,7 +40,12 @@ describe.skipIf(isCI && isMacOS)('HTTP', () => {
   });
 
   it('should return an index.html page', async () => {
-    const res = await fetch(`${httpGatewayUrl}/index.html`);
+    // Use ?canisterId= query param instead of subdomain-based routing
+    // (e.g. canisterId.localhost) for cross-platform compatibility.
+    // macOS does not resolve *.localhost subdomains on CI runners.
+    const res = await fetch(
+      `http://localhost:${httpGatewayPort}/index.html?canisterId=${canisterId}`,
+    );
     const resBody = await res.text();
     expect(resBody).toContain('<h1>Hello, World!</h1>');
   });
