@@ -1,0 +1,6 @@
+{
+  "name": "http-tests",
+  "devDependencies": {
+    "@dfinity/pic": "workspace:*"
+  }
+}

@@ -1,3 +1,8 @@
 [workspace]
-members = ["examples/todo", "examples/nns_proxy", "examples/icp_features"]
+members = [
+  "examples/http",
+  "examples/icp_features",
+  "examples/nns_proxy",
+  "examples/todo",
+]
 resolver = "2"

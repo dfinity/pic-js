@@ -1,6 +1,6 @@
 import { Principal } from '@icp-sdk/core/principal';
 import { IDL } from '@icp-sdk/core/candid';
-import { optional, readFileAsBytes } from './util';
+import { isNil, optional, readFileAsBytes } from './util';
 import { PocketIcClient } from './pocket-ic-client';
 import { ActorInterface, Actor, createActorClass } from './pocket-ic-actor';
 import {
@@ -85,6 +85,8 @@ const NANOS_PER_MILLISECOND = BigInt(1_000_000);
  * ```
  */
 export class PocketIc {
+  private httpGatewayPort: number | null = null;
+
   private constructor(private readonly client: PocketIcClient) {}
 
   /**
@@ -1474,5 +1476,102 @@ export class PocketIc {
       subnetId,
       additionalResponses,
     });
+  }
+
+  /**
+   * Make the PocketIC instance live by enabling auto progress and starting the HTTP Gateway.
+   * If the server is already live, this method will return the HTTP Gateway URL.
+   * The PocketIC instance must be created with at least an NNS subnet in
+   * order for `fetchRootKey` to work correctly.
+   *
+   * @example
+   * ```ts
+   * import { Principal } from '@icp-sdk/core/principal';
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
+   * import { resolve } from 'node:path';
+   *
+   * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
+   * const wasm = resolve('..', '..', 'canister.wasm');
+   *
+   * const picServer = await PocketIcServer.start();
+   * const pic = await PocketIc.create(picServer.getUrl(), {
+   *   nns: { state: { type: SubnetStateType.New } },
+   *   application: [{ state: { type: SubnetStateType.New } }],
+   * });
+   *
+   * const canister = await pic.installCode({ canisterId, wasm });
+   * await pic.installCode({ canisterId, wasm });
+   *
+   * const httpGatewayUrl = await pic.makeLive();
+   * const agent = await HttpAgent.create({
+   *   host: httpGatewayUrl,
+   *   shouldFetchRootKey: true,
+   * });
+   * const actor = Actor.createActor(idlFactory, { agent, canisterId });
+   *
+   * await pic.stopLive();
+   * await pic.tearDown();
+   * await picServer.stop();
+   * ```
+   *
+   * @returns The HTTP Gateway port.
+   */
+  public async makeLive(): Promise<number> {
+    const isLive = await this.client.autoProgressEnabled();
+    if (isLive) {
+      if (isNil(this.httpGatewayPort)) {
+        throw new Error(
+          'Inconsistent state, PocketIC server is live but no HTTP Gateway URL is known',
+        );
+      }
+
+      return this.httpGatewayPort;
+    }
+
+    await this.client.autoProgress();
+    this.httpGatewayPort = await this.client.startHttpGateway();
+
+    return this.httpGatewayPort;
+  }
+
+  /**
+   * Disables auto progress and stops the HTTP Gateway for the PocketIC instance.
+   *
+   *
+   * @example
+   * ```ts
+   * import { Principal } from '@icp-sdk/core/principal';
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
+   * import { resolve } from 'node:path';
+   *
+   * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
+   * const wasm = resolve('..', '..', 'canister.wasm');
+   *
+   * const picServer = await PocketIcServer.start();
+   * const pic = await PocketIc.create(picServer.getUrl(), {
+   *   nns: { state: { type: SubnetStateType.New } },
+   *   application: [{ state: { type: SubnetStateType.New } }],
+   * });
+   *
+   * const canister = await pic.installCode({ canisterId, wasm });
+   * await pic.installCode({ canisterId, wasm });
+   *
+   * const httpGatewayUrl = await pic.makeLive();
+   * const agent = await HttpAgent.create({
+   *   host: httpGatewayUrl,
+   *   shouldFetchRootKey: true,
+   * });
+   * const actor = Actor.createActor(idlFactory, { agent, canisterId });
+   *
+   * await pic.stopLive();
+   * await pic.tearDown();
+   * await picServer.stop();
+   * ```
+   */
+  public async stopLive(): Promise<void> {
+    this.httpGatewayPort = null;
+
+    await this.client.stopHttpGateway();
+    await this.client.stopProgress();
   }
 }

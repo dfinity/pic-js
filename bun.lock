@@ -5,6 +5,7 @@
     "": {
       "name": "pic-js",
       "devDependencies": {
+        "@icp-sdk/core": "^5.0.0",
         "@swc/core": "^1.15.3",
         "@swc/jest": "^0.2.39",
         "@tsconfig/node24": "^24.0.3",
@@ -46,6 +47,12 @@
         "@dfinity/pic": "workspace:*",
       },
     },
+    "examples/http/tests": {
+      "name": "http-tests",
+      "devDependencies": {
+        "@dfinity/pic": "workspace:*",
+      },
+    },
     "examples/icp_features/tests": {
       "name": "icp-features-tests",
       "devDependencies": {
@@ -72,7 +79,7 @@
     },
     "packages/pic": {
       "name": "@dfinity/pic",
-      "version": "0.17.1",
+      "version": "0.18.0",
       "dependencies": {
         "@icp-sdk/core": "^5.0.0",
         "bip39": "^3.1.0",
@@ -729,6 +736,8 @@
     "hosted-git-info": ["hosted-git-info@2.8.9", "", {}, "sha512-mxIDAb9Lsm6DoOJ7xH+5+X4y1LU/4Hi50L9C5sIswK3JzULS4bwk1FvjdBgvYR4bzT4tuUQiC15FE2f5HbLvYw=="],
 
     "html-escaper": ["html-escaper@2.0.2", "", {}, "sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg=="],
+
+    "http-tests": ["http-tests@workspace:examples/http/tests"],
 
     "human-signals": ["human-signals@2.1.0", "", {}, "sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw=="],
 

@@ -1164,3 +1164,31 @@ export function encodeAwaitCanisterCallRequest(
 export type AwaitCanisterCallResponse = CanisterCallResponse;
 
 //#endregion AwaitCanisterCall
+
+//#region LiveMode
+export type EncodedAutoProgressRequest = {
+  artificial_delay_ms?: number;
+};
+
+export type EncodedHttpGatewayRequest = {
+  ip_addr?: string;
+  port?: number;
+  forward_to: { Replica: string } | { PocketIcInstance: number };
+  domains?: string[];
+  https_config?: {
+    cert_path: string;
+    key_path: string;
+  };
+};
+
+export type EncodedHttpGatewayResponse =
+  | {
+      Error: { message: string };
+    }
+  | {
+      Created: {
+        instance_id: number;
+        port: number;
+      };
+    };
+//#endregion LiveMode
