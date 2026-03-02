@@ -89,6 +89,10 @@ export class Http2Client {
           return resBody;
         }
 
+        if (typeof resBody === 'boolean') {
+          return resBody;
+        }
+
         // server encountered an error, throw and try again
         if ('message' in resBody) {
           console.error(
@@ -208,15 +212,21 @@ async function getResBody<R extends {}>(
   jsonParser: typeof JSON.parse,
 ): Promise<ApiResponse<R>> {
   const resBody = await res.text();
+  if (!resBody.length) {
+    return null as unknown as R;
+  }
+
   try {
     return jsonParser(resBody) as ApiResponse<R>;
   } catch (error) {
-    const message = resBody;
-
     console.error('Error parsing PocketIC server response body:', error);
-    console.error('Original body:', message);
+    // don't break the user's console by logging large response bodies
+    if (resBody.length < 10_240) {
+      console.error('Original body:', resBody);
+      throw new Error(resBody);
+    }
 
-    throw new Error(message);
+    throw new Error(String(error));
   }
 }
 

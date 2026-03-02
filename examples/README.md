@@ -18,10 +18,12 @@ but `@dfinity/pic` can be used with JavaScript and any other testing runner, suc
 - [Clock](./clock/README.md)
   This example demonstrates how to work with the replica's system time, canister timers as well as checking for canister existence and cycle management.
 - [Todo](./todo/README.md)
-  This example demonstrates how to work with more complex canisters, identities, canister upgrades, and stable memory management.
+  This example demonstrates how to work with more complex canisters, identities, canister upgrades, and stable memory management. It also shows how to use "live" mode with agent-js (in contrast to the pic-js actor).
 - [Multicanister](./multicanister/README.md)
   This example demonstrates how to work with multiple canisters and multiple subnets.
 - [NNS Proxy](./nns_proxy/README.md)
   This example demonstrates how to work with an NNS state directory.
 - [Google Search](./google_search/README.md)
   This example demonstrates how to mock HTTPS Outcalls.
+- [HTTP](./http/README.md)
+  This example demonstrates how to use "live" mode with an HTTP canister.

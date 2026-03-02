@@ -7,7 +7,7 @@
     "npm": "please use pnpm"
   },
   "type": "module",
-  "packageManager": "pnpm@10.19.0+sha512.c9fc7236e92adf5c8af42fd5bf1612df99c2ceb62f27047032f4720b33f8eacdde311865e91c411f2774f618d82f320808ecb51718bfa82c060c4ba7c76a32b8",
+  "packageManager": "pnpm@10.28.2+sha512.41872f037ad22f7348e3b1debbaf7e867cfd448f2726d9cf74c08f19507c31d2c8e7a11525b983febc2df640b5438dee6023ebb1f84ed43cc2d654d2bc326264",
   "workspaces": [
     "examples/clock/tests",
     "examples/counter/tests",
@@ -16,6 +16,7 @@
     "examples/multicanister/tests",
     "examples/nns_proxy/tests",
     "examples/todo/tests",
+    "examples/http/tests",
     "packages/pic",
     "packages/pic-server",
     "docs"
@@ -28,7 +29,7 @@
     "test:pic": "jest -c ./packages/pic/jest.config.ts",
     "build:test-canister": "dfx generate test_canister && dfx build test_canister --check && mv .dfx/local/canisters/test_canister/test_canister.wasm.gz packages/pic/tests/test-canister",
     "build:examples": "dfx generate phonebook && dfx generate superheroes && dfx generate && dfx build --all --check",
-    "test:examples": "run-p test:clock test:counter test:google-search test:icp-features test:multicanister test:nns-proxy test:todo",
+    "test:examples": "run-p test:clock test:counter test:google-search test:icp-features test:multicanister test:nns-proxy test:todo test:http",
     "build:clock": "dfx generate clock && dfx build clock --check",
     "test:clock": "jest -c ./examples/clock/tests/jest.config.ts",
     "build:counter": "dfx generate counter && dfx build counter --check",
@@ -43,6 +44,8 @@
     "test:nns-proxy": "jest -c ./examples/nns_proxy/tests/jest.config.ts",
     "build:todo": "dfx generate todo && dfx build todo --check",
     "test:todo": "jest -c ./examples/todo/tests/jest.config.ts",
+    "build:http": "dfx generate http && dfx build http --check",
+    "test:http": "vitest run -c ./examples/http/tests/vitest.config.ts",
     "postinstall": "tar -xvf examples/nns_proxy/tests/state/nns_state.tar.xz -C examples/nns_proxy/tests/state"
   },
   "devDependencies": {

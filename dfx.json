@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "dfx": "0.29.1",
+  "dfx": "0.30.2",
   "output_env_file": ".env",
   "networks": {
     "local": {
@@ -110,6 +110,18 @@
       "declarations": {
         "bindings": ["mo"],
         "output": "examples/multicanister/declarations/superheroes"
+      },
+      "gzip": true,
+      "optimize": "cycles"
+    },
+    "http": {
+      "type": "rust",
+      "candid": "examples/http/http.did",
+      "package": "http-canister",
+      "frontend": {},
+      "declarations": {
+        "bindings": ["js", "ts"],
+        "output": "examples/http/declarations"
       },
       "gzip": true,
       "optimize": "cycles"
