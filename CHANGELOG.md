@@ -2,6 +2,7 @@
 
 ### Feat
 
+- add http gateway support (#233)
 - bump PocketIC server to v12.0.0 (#231)
 
 ## 0.18.0 (2026-01-21)
