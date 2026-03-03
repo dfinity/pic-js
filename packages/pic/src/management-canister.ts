@@ -156,3 +156,52 @@ export function encodeUpdateCanisterSettingsRequest(
 ): Uint8Array {
   return new Uint8Array(IDL.encode([UpdateCanisterSettingsRequest], [arg]));
 }
+
+const CanisterLogRecord = IDL.Record({
+  idx: IDL.Nat64,
+  timestamp_nanos: IDL.Nat64,
+  content: IDL.Vec(IDL.Nat8),
+});
+
+export interface CanisterLogRecord {
+  idx: bigint;
+  timestamp_nanos: bigint;
+  content: Uint8Array;
+}
+
+const FetchCanisterLogsRequest = IDL.Record({
+  canister_id: IDL.Principal,
+});
+
+export interface FetchCanisterLogsRequest {
+  canister_id: Principal;
+}
+
+export function encodeFetchCanisterLogsRequest(
+  arg: FetchCanisterLogsRequest,
+): Uint8Array {
+  return new Uint8Array(IDL.encode([FetchCanisterLogsRequest], [arg]));
+}
+
+const FetchCanisterLogsResponse = IDL.Record({
+  canister_log_records: IDL.Vec(CanisterLogRecord),
+});
+
+export interface FetchCanisterLogsResponse {
+  canister_log_records: CanisterLogRecord[];
+}
+
+export function decodeFetchCanisterLogsResponse(
+  arg: Uint8Array,
+): FetchCanisterLogsResponse {
+  const payload = decodeCandid<FetchCanisterLogsResponse>(
+    [FetchCanisterLogsResponse],
+    arg,
+  );
+
+  if (isNil(payload)) {
+    throw new Error('Failed to decode FetchCanisterLogsResponse');
+  }
+
+  return payload;
+}

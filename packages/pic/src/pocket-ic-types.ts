@@ -920,3 +920,46 @@ export interface HttpsOutcallRejectResponse {
 }
 
 //#endregion HTTPS Outcalls
+
+//#region FetchCanisterLogs
+
+/**
+ * Options for fetching canister logs.
+ *
+ * @category Types
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ */
+export interface FetchCanisterLogsOptions {
+  /**
+   * The Principal of the canister to fetch logs for.
+   */
+  canisterId: Principal;
+
+  /**
+   * The Principal to send the request as.
+   * Defaults to the anonymous principal.
+   */
+  sender?: Principal;
+}
+
+/**
+ * A canister log record.
+ */
+export interface CanisterLogRecord {
+  /**
+   * The index of the log record.
+   */
+  idx: bigint;
+
+  /**
+   * The timestamp of the log record in nanoseconds since epoch.
+   */
+  timestampNanos: bigint;
+
+  /**
+   * The content of the log record.
+   */
+  content: Uint8Array;
+}
+
+//#endregion FetchCanisterLogs
