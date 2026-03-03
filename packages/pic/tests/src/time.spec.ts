@@ -144,4 +144,15 @@ describe('time', () => {
     // Time should not go backwards
     expect(finalTime).toEqual(initialTime);
   });
+
+  it('should fail immediately when setting time into the past', async () => {
+    const farPast = new Date('2000-01-01T00:00:00Z');
+
+    const startTime = Date.now();
+    await expect(fixture.pic.setTime(farPast)).rejects.toThrow(
+      /PocketIC server error/,
+    );
+    // Should fail almost immediately, not wait for the 30s timeout
+    expect(Date.now() - startTime).toBeLessThan(5000);
+  });
 });
