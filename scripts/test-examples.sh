@@ -1,6 +1,6 @@
 #!/bin/bash
 # Run tests for examples.
-# Usage: ./scripts/test-example.sh [name ...]
+# Usage: ./scripts/test-examples.sh [name ...]
 # If no names are provided, runs tests for all examples.
 
 set -euo pipefail
@@ -19,20 +19,14 @@ else
   examples=("${args[@]}")
 fi
 
-pids=()
 for name in "${examples[@]}"; do
   dir="examples/$name/tests"
   if [ -f "$dir/vitest.config.ts" ]; then
-    vitest run -c "./$dir/vitest.config.ts" &
+    vitest run -c "./$dir/vitest.config.ts"
   elif [ -f "$dir/jest.config.ts" ]; then
-    jest -c "./$dir/jest.config.ts" &
+    jest -c "./$dir/jest.config.ts"
   else
     echo "No test config found for $name" >&2
     exit 1
   fi
-  pids+=($!)
-done
-
-for pid in "${pids[@]}"; do
-  wait "$pid" || exit 1
 done

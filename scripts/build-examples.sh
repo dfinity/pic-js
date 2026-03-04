@@ -1,6 +1,6 @@
 #!/bin/bash
 # Build canisters and generate TypeScript bindings for examples.
-# Usage: ./scripts/build-example.sh [name ...]
+# Usage: ./scripts/build-examples.sh [name ...]
 # If no names are provided, builds all canisters and generates all bindings.
 
 set -euo pipefail

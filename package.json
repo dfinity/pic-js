@@ -29,8 +29,8 @@
     "test:pic": "jest -c ./packages/pic/jest.config.ts",
     "build:test-canister": "icp build test_canister && cp .icp/cache/artifacts/test_canister packages/pic/tests/test-canister/test_canister.wasm.gz && pnpm run generate:test-canister",
     "generate:test-canister": "icp-bindgen --did-file packages/pic/tests/test-canister/test_canister.did --out-dir packages/pic/tests/test-canister --actor-disabled --force",
-    "build:examples": "./scripts/build-example.sh",
-    "test:examples": "./scripts/test-example.sh",
+    "build:examples": "./scripts/build-examples.sh",
+    "test:examples": "./scripts/test-examples.sh",
     "postinstall": "tar -xvf examples/nns_proxy/tests/state/nns_state.tar.xz -C examples/nns_proxy/tests/state"
   },
   "devDependencies": {
