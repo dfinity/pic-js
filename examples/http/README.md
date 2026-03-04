@@ -2,14 +2,14 @@
 
 This example demonstrates how to use "live" mode with an HTTP canister.
 
-Build the HTTP canister:
+Build the canister:
 
 ```shell
-bun build:http
+bun build:examples -- http
 ```
 
-Run the HTTP tests:
+Run the tests:
 
 ```shell
-bun test:http
+bun test:examples -- http
 ```

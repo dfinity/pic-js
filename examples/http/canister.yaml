@@ -1,0 +1,7 @@
+name: http
+recipe:
+  type: '@dfinity/rust@v3.2.0'
+  configuration:
+    package: http-canister
+    candid: http.did
+    compress: true

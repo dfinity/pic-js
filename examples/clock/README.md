@@ -2,14 +2,14 @@
 
 This example demonstrates how to work with the replica's system time, canister timers as well as checking for canister existence and cycle management.
 
-Build the counter canister:
+Build the canister:
 
 ```shell
-bun build:clock
+bun build:examples -- clock
 ```
 
-Run the counter tests:
+Run the tests:
 
 ```shell
-bun test:clock
+bun test:examples -- clock
 ```

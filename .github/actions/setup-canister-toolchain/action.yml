@@ -1,0 +1,41 @@
+name: Setup Canister Toolchain
+description: Install ICP CLI, Motoko toolchain, Rust wasm32 target, and configure caching
+
+inputs:
+  package-manager:
+    description: 'Package manager to use (pnpm or bun)'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Install ICP CLI tools
+      shell: bash
+      run: ${{ inputs.package-manager }} add -g @icp-sdk/icp-cli @icp-sdk/ic-wasm
+
+    - name: Cache Mops
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/mops
+          ~/Library/Caches/mops
+          .mops
+        key: mops-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('mops.toml') }}
+
+    - name: Setup Motoko toolchain
+      shell: bash
+      run: |
+        ${{ inputs.package-manager }} add -g ic-mops
+        mops install
+
+    - name: Cache Cargo
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry
+          target
+        key: cargo-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/Cargo.lock') }}
+
+    - name: Add wasm32 Rust target
+      shell: bash
+      run: rustup target add wasm32-unknown-unknown
