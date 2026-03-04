@@ -50,22 +50,17 @@
   },
   "devDependencies": {
     "@icp-sdk/core": "^5.0.0",
-    "@swc/core": "^1.15.3",
+    "@swc/core": "^1.15.18",
     "@swc/jest": "^0.2.39",
-    "@tsconfig/node24": "^24.0.3",
-    "@types/jest": "^29.5.14",
-    "@types/node": "^22.13.10",
+    "@tsconfig/node24": "^24.0.4",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^25.3.3",
     "bip39": "^3.1.0",
     "jest": "^30.2.0",
     "npm-run-all": "^4.1.5",
-    "prettier": "3.4.1",
+    "prettier": "3.8.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.2",
-    "vitest": "^4.0.15"
-  },
-  "overrides": {
-    "path-to-regexp@<0.1.12": ">=0.1.12",
-    "path-to-regexp@>=2.0.0 <3.3.0": ">=3.3.0",
-    "esbuild@<=0.24.2": ">=0.25.0"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
   }
 }
