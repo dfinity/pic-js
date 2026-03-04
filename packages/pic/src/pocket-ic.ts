@@ -51,10 +51,10 @@ import {
 } from './pocket-ic-deferred-actor';
 
 const NANOS_PER_MILLISECOND = BigInt(1_000_000);
-// The IC ingress message limit is 2 MB. We subtract a safety margin to
-// account for the Candid encoding overhead of the install_code request
-// (type table, mode variant, canister_id, length prefixes, etc.).
-const MAX_INSTALL_CODE_PAYLOAD_SIZE = 2_000_000 - 1_024;
+// The IC ingress message limit is 2 MB, but that covers the entire message
+// envelope (signature, delegations, Candid overhead, etc.).
+// We use 1.85 MB to match dfx's conservative threshold.
+const MAX_INSTALL_CODE_PAYLOAD_SIZE = 1_850_000;
 const WASM_CHUNK_SIZE = 1_000_000;
 const CHUNK_UPLOAD_BATCH_SIZE = 12;
 
