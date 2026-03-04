@@ -399,8 +399,8 @@ export class PocketIc {
 
     if (wasm.byteLength + arg.byteLength > MAX_INSTALL_CODE_PAYLOAD_SIZE) {
       return this.installCodeChunked({
-        wasm: new Uint8Array(wasm),
-        arg: new Uint8Array(arg),
+        wasm,
+        arg,
         canisterId,
         mode: { install: null },
         sender,
@@ -470,8 +470,8 @@ export class PocketIc {
 
     if (wasm.byteLength + arg.byteLength > MAX_INSTALL_CODE_PAYLOAD_SIZE) {
       return this.installCodeChunked({
-        wasm: new Uint8Array(wasm),
-        arg: new Uint8Array(arg),
+        wasm,
+        arg,
         canisterId,
         mode: { reinstall: null },
         sender,
@@ -536,8 +536,8 @@ export class PocketIc {
 
     if (wasm.byteLength + arg.byteLength > MAX_INSTALL_CODE_PAYLOAD_SIZE) {
       return this.installCodeChunked({
-        wasm: new Uint8Array(wasm),
-        arg: new Uint8Array(arg),
+        wasm,
+        arg,
         canisterId,
         mode: { upgrade: optional(upgradeModeOptions) },
         sender,
