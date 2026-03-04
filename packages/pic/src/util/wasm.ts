@@ -4,6 +4,10 @@ export function splitIntoChunks(
   wasm: Uint8Array,
   chunkSize: number,
 ): Uint8Array[] {
+  if (chunkSize <= 0) {
+    throw new Error(`chunkSize must be positive, got ${chunkSize}`);
+  }
+
   const chunks: Uint8Array[] = [];
 
   for (let offset = 0; offset < wasm.byteLength; offset += chunkSize) {

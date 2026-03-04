@@ -57,6 +57,17 @@ describe('splitIntoChunks', () => {
     expect(reassembled).toEqual(data);
   });
 
+  it('should throw for non-positive chunkSize', () => {
+    const data = new Uint8Array([1, 2, 3]);
+
+    expect(() => splitIntoChunks(data, 0)).toThrow(
+      'chunkSize must be positive',
+    );
+    expect(() => splitIntoChunks(data, -1)).toThrow(
+      'chunkSize must be positive',
+    );
+  });
+
   it('should handle empty data', () => {
     const data = new Uint8Array(0);
     const chunks = splitIntoChunks(data, 100);
