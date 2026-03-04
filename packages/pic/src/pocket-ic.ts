@@ -1755,16 +1755,15 @@ export class PocketIc {
     }
 
     // 3. Install the chunked code
-    const installChunkedCodePayload =
-      encodeInstallChunkedCodeRequest({
-        mode,
-        target_canister: canisterId,
-        store_canister: [],
-        chunk_hashes_list: chunkHashes,
-        wasm_module_hash: sha256(wasm),
-        arg,
-        sender_canister_version: [],
-      });
+    const installChunkedCodePayload = encodeInstallChunkedCodeRequest({
+      mode,
+      target_canister: canisterId,
+      store_canister: [],
+      chunk_hashes_list: chunkHashes,
+      wasm_module_hash: sha256(wasm),
+      arg,
+      sender_canister_version: [],
+    });
 
     await this.client.updateCall({
       canisterId: MANAGEMENT_CANISTER_ID,
