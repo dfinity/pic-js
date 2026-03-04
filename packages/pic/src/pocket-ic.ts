@@ -51,7 +51,10 @@ import {
 } from './pocket-ic-deferred-actor';
 
 const NANOS_PER_MILLISECOND = BigInt(1_000_000);
-const MAX_INSTALL_CODE_PAYLOAD_SIZE = 2_000_000;
+// The IC ingress message limit is 2 MB. We subtract a safety margin to
+// account for the Candid encoding overhead of the install_code request
+// (type table, mode variant, canister_id, length prefixes, etc.).
+const MAX_INSTALL_CODE_PAYLOAD_SIZE = 2_000_000 - 1_024;
 const WASM_CHUNK_SIZE = 1_000_000;
 const CHUNK_UPLOAD_BATCH_SIZE = 12;
 
@@ -1752,7 +1755,7 @@ export class PocketIc {
     }
 
     // 3. Install the chunked code
-    const encodeInstallChunkedCodeRequestPayload =
+    const installChunkedCodePayload =
       encodeInstallChunkedCodeRequest({
         mode,
         target_canister: canisterId,
@@ -1767,7 +1770,7 @@ export class PocketIc {
       canisterId: MANAGEMENT_CANISTER_ID,
       sender,
       method: 'install_chunked_code',
-      payload: encodeInstallChunkedCodeRequestPayload,
+      payload: installChunkedCodePayload,
       effectivePrincipal,
     });
   }
