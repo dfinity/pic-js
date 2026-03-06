@@ -158,6 +158,10 @@ describe.each(wasmVariants)('PocketIc — %s WASM', (_label, targetSize) => {
       canisterId,
       wasm,
       sender: CONTROLLER_PRINCIPAL,
+      upgradeModeOptions: {
+        skip_pre_upgrade: [],
+        wasm_memory_persistence: [{ replace: null }],
+      },
     });
 
     const actor = pic.createActor<TestCanister>(idlFactory, canisterId);

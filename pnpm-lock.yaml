@@ -15,7 +15,7 @@ importers:
     devDependencies:
       '@icp-sdk/bindgen':
         specifier: ^0.2.1
-        version: 0.2.1
+        version: 0.2.2
       '@icp-sdk/core':
         specifier: ^5.0.0
         version: 5.0.0
@@ -483,8 +483,8 @@ packages:
   '@gerrit0/mini-shiki@3.23.0':
     resolution: {integrity: sha512-bEMORlG0cqdjVyCEuU0cDQbORWX+kYCeo0kV1lbxF5bt4r7SID2l9bqsxJEM0zndaxpOUT7riCyIVEuqq/Ynxg==}
 
-  '@icp-sdk/bindgen@0.2.1':
-    resolution: {integrity: sha512-/YXJcYdqb4Qi+c33NVU8BgY4O/ZVqOQy+eYH4fSu5asT5/eAQl5NNgsjMTkhbGknRbxm8N9/ZopzAf2GX0n5lg==}
+  '@icp-sdk/bindgen@0.2.2':
+    resolution: {integrity: sha512-zGeFBIwogs1oFrhNSnSeBuHbNKnuqtZ4MqKLuWp2qcNxw+JLglK6JHNo7we6+PtnjaeKABg3/hjhha+mzSJzlg==}
     hasBin: true
 
   '@icp-sdk/core@5.0.0':
@@ -1293,10 +1293,6 @@ packages:
 
   color-name@1.1.4:
     resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
-
-  commander@14.0.3:
-    resolution: {integrity: sha512-H+y0Jo/T1RZ9qPP4Eh1pkcQcLRglraJaSLoyOtHxu6AapkjWVCy2Sit1QQ4x3Dng8qDlSsZEet7g5Pq06MvTgw==}
-    engines: {node: '>=20'}
 
   commander@14.0.3:
     resolution: {integrity: sha512-H+y0Jo/T1RZ9qPP4Eh1pkcQcLRglraJaSLoyOtHxu6AapkjWVCy2Sit1QQ4x3Dng8qDlSsZEet7g5Pq06MvTgw==}
@@ -2989,7 +2985,7 @@ snapshots:
       '@shikijs/types': 3.23.0
       '@shikijs/vscode-textmate': 10.0.2
 
-  '@icp-sdk/bindgen@0.2.1':
+  '@icp-sdk/bindgen@0.2.2':
     dependencies:
       commander: 14.0.3
 
@@ -3823,8 +3819,6 @@ snapshots:
   color-name@1.1.3: {}
 
   color-name@1.1.4: {}
-
-  commander@14.0.3: {}
 
   commander@14.0.3: {}
 
