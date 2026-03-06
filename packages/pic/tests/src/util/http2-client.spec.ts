@@ -39,7 +39,9 @@ describe('Http2Client', () => {
     });
 
     it('should throw ServerError immediately on error response', async () => {
-      fetchMock.mockResolvedValue(jsonResponse({ message: 'SettingTimeIntoPast' }));
+      fetchMock.mockResolvedValue(
+        jsonResponse({ message: 'SettingTimeIntoPast' }),
+      );
 
       const start = Date.now();
       const err = await client.jsonGet({ path: '/test' }).catch(e => e);
@@ -51,7 +53,9 @@ describe('Http2Client', () => {
 
     it('should retry on 409 busy response and eventually succeed', async () => {
       fetchMock
-        .mockResolvedValueOnce(jsonResponse({ state_label: 'busy', op_id: '1' }, 409))
+        .mockResolvedValueOnce(
+          jsonResponse({ state_label: 'busy', op_id: '1' }, 409),
+        )
         .mockResolvedValueOnce(jsonResponse({ value: 42 }));
 
       const result = await client.jsonGet<{ value: number }>({ path: '/test' });
@@ -90,7 +94,10 @@ describe('Http2Client', () => {
     it('should return the parsed response on success', async () => {
       fetchMock.mockResolvedValue(jsonResponse({ value: 42 }));
 
-      const result = await client.jsonPost<{ input: string }, { value: number }>({
+      const result = await client.jsonPost<
+        { input: string },
+        { value: number }
+      >({
         path: '/test',
         body: { input: 'hello' },
       });
@@ -100,10 +107,14 @@ describe('Http2Client', () => {
 
     it('should retry on 409 busy response and eventually succeed', async () => {
       fetchMock
-        .mockResolvedValueOnce(jsonResponse({ state_label: 'busy', op_id: '1' }, 409))
+        .mockResolvedValueOnce(
+          jsonResponse({ state_label: 'busy', op_id: '1' }, 409),
+        )
         .mockResolvedValueOnce(jsonResponse({ value: 42 }));
 
-      const result = await client.jsonPost<unknown, { value: number }>({ path: '/test' });
+      const result = await client.jsonPost<unknown, { value: number }>({
+        path: '/test',
+      });
 
       expect(result).toEqual({ value: 42 });
       expect(fetchMock).toHaveBeenCalledTimes(2);
@@ -111,13 +122,19 @@ describe('Http2Client', () => {
 
     it('should poll read_graph on 202 until the result is ready', async () => {
       fetchMock
-        .mockResolvedValueOnce(jsonResponse({ state_label: 'processing', op_id: '42' }, 202))
+        .mockResolvedValueOnce(
+          jsonResponse({ state_label: 'processing', op_id: '42' }, 202),
+        )
         // first read_graph poll: still processing
-        .mockResolvedValueOnce(jsonResponse({ state_label: 'processing', op_id: '42' }))
+        .mockResolvedValueOnce(
+          jsonResponse({ state_label: 'processing', op_id: '42' }),
+        )
         // second read_graph poll: done
         .mockResolvedValueOnce(jsonResponse({ value: 42 }));
 
-      const result = await client.jsonPost<unknown, { value: number }>({ path: '/test' });
+      const result = await client.jsonPost<unknown, { value: number }>({
+        path: '/test',
+      });
 
       expect(result).toEqual({ value: 42 });
       expect(fetchMock).toHaveBeenNthCalledWith(
@@ -129,7 +146,9 @@ describe('Http2Client', () => {
 
     it('should throw ServerError immediately when read_graph returns an error', async () => {
       fetchMock
-        .mockResolvedValueOnce(jsonResponse({ state_label: 'processing', op_id: '42' }, 202))
+        .mockResolvedValueOnce(
+          jsonResponse({ state_label: 'processing', op_id: '42' }, 202),
+        )
         .mockResolvedValueOnce(jsonResponse({ message: 'ProcessingFailed' }));
 
       const start = Date.now();
