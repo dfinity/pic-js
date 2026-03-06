@@ -1,0 +1,7 @@
+name: multicanister
+recipe:
+  type: '@dfinity/motoko@v4.1.0'
+  configuration:
+    main: src/main.mo
+    candid: multicanister.did
+    compress: true

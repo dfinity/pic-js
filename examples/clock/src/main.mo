@@ -1,5 +1,5 @@
-import Time "mo:base/Time";
-import { setTimer; recurringTimer } = "mo:base/Timer";
+import Time "mo:core/Time";
+import { setTimer; recurringTimer } = "mo:core/Timer";
 
 persistent actor Clock {
   private type Time = Time.Time;

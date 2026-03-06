@@ -1,0 +1,20 @@
+type HttpHeader = record {
+  name : text;
+  value : text;
+};
+
+type CanisterHttpResponsePayload = record {
+  status : nat;
+  headers : vec HttpHeader;
+  body : vec nat8;
+};
+
+type TransformArgs = record {
+  response : CanisterHttpResponsePayload;
+  context : blob;
+};
+
+service : {
+  google_search : () -> (text);
+  transform : (TransformArgs) -> (CanisterHttpResponsePayload) query;
+}

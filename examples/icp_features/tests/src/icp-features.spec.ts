@@ -9,11 +9,10 @@ const WASM_PATH = resolve(
   '..',
   '..',
   '..',
-  '.dfx',
-  'local',
-  'canisters',
+  '.icp',
+  'cache',
+  'artifacts',
   'icp_features',
-  'icp_features.wasm.gz',
 );
 
 const E8S_PER_ICP = 100_000_000;
