@@ -1,3 +1,5 @@
+import { RetryableError } from '../error';
+
 export interface PollOptions {
   intervalMs: number;
   timeoutMs: number;
@@ -17,6 +19,10 @@ export async function poll<T extends (...args: any) => any>(
         const result = await cb();
         return resolve(result);
       } catch (e) {
+        if (!(e instanceof RetryableError)) {
+          return reject(e);
+        }
+
         if (currentTimeMs - startTimeMs >= timeoutMs) {
           return reject(e);
         }

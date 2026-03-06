@@ -1,4 +1,6 @@
 export class BinStartError extends Error {
+  override name = 'BinStartError';
+
   constructor(cause: Error) {
     super(
       `There was an error starting the PocketIC Binary.
@@ -11,6 +13,8 @@ ${cause.stack}`,
 }
 
 export class BinStartMacOSArmError extends Error {
+  override name = 'BinStartMacOSArmError';
+
   constructor(cause: Error) {
     super(
       `There was an error starting the PocketIC Binary.
@@ -26,6 +30,8 @@ ${cause.stack}`,
 }
 
 export class BinNotFoundError extends Error {
+  override name = 'BinNotFoundError';
+
   constructor(picBinPath: string) {
     super(
       `Could not find the PocketIC binary. The PocketIC binary could not be found at ${picBinPath}. Please try installing @dfinity/pic again.`,
@@ -33,19 +39,17 @@ export class BinNotFoundError extends Error {
   }
 }
 
-export class BinTimeoutError extends Error {
-  constructor() {
-    super('The PocketIC binary took too long to start. Please try again.');
-  }
-}
-
 export class ServerRequestTimeoutError extends Error {
+  override name = 'ServerRequestTimeoutError';
+
   constructor() {
     super('A request to the PocketIC server timed out.');
   }
 }
 
 export class InstanceDeletedError extends Error {
+  override name = 'InstanceDeletedError';
+
   constructor() {
     super(
       'This PocketIC instance has been torn down. Please create a new instance before interacting further with PocketIC.',
@@ -54,9 +58,33 @@ export class InstanceDeletedError extends Error {
 }
 
 export class TopologyValidationError extends Error {
+  override name = 'TopologyValidationError';
+
   constructor() {
     super(
       'The provided subnet configuration is invalid. At least one subnet must be configured and the number of both application and system subnets must be at least 0 (non-negative).',
     );
+  }
+}
+
+export class RetryableError extends Error {
+  override name: string = 'RetryableError';
+}
+
+export class BinTimeoutError extends RetryableError {
+  override name = 'BinTimeoutError';
+
+  constructor() {
+    super('The PocketIC binary took too long to start. Please try again.');
+  }
+}
+
+export class ServerError extends Error {
+  override name = 'ServerError';
+  public readonly serverMessage: string;
+
+  constructor(serverMessage: string) {
+    super(`PocketIC server error: ${serverMessage}`);
+    this.serverMessage = serverMessage;
   }
 }
