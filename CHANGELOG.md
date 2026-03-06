@@ -4,14 +4,9 @@
 
 ### Feat
 
+- **pic**: add chunked WASM upload and canisterStatus method (#239)
 - add http gateway support (#233)
 - bump PocketIC server to v12.0.0 (#231)
-- transparent large WASM installation via chunked upload for `installCode`, `reinstallCode`, `upgradeCanister`, and `setupCanister`
-- add `canisterStatus` method to `PocketIc` for querying canister status
-
-### Chore
-
-- remove unnecessary pnpm overrides
 
 ## 0.18.0 (2026-01-21)
 
