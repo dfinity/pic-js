@@ -1,13 +1,21 @@
+# Changelog
+
 ## Unreleased
 
 ### Feat
 
 - add http gateway support (#233)
 - bump PocketIC server to v12.0.0 (#231)
+- transparent large WASM installation via chunked upload for `installCode`, `reinstallCode`, `upgradeCanister`, and `setupCanister`
+- add `canisterStatus` method to `PocketIc` for querying canister status
+
+### Chore
+
+- remove unnecessary pnpm overrides
 
 ## 0.18.0 (2026-01-21)
 
-### BREAKING CHANCE
+### BREAKING CHANGE
 
 - Reverts "introduce a new `rounds` option for `awaitCall` method on `PocketIcClient` (#223)"
 
