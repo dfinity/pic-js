@@ -2,14 +2,14 @@
 
 This example demonstrates how to work with a simple canister as well as init arguments, canister upgrades and WASM reinstallation.
 
-Build the counter canister:
+Build the canister:
 
 ```shell
-bun build:counter
+bun build:examples -- counter
 ```
 
-Run the counter tests:
+Run the tests:
 
 ```shell
-bun test:counter
+bun test:examples -- counter
 ```

@@ -15,11 +15,10 @@ const WASM_PATH = resolve(
   '..',
   '..',
   '..',
-  '.dfx',
-  'local',
-  'canisters',
+  '.icp',
+  'cache',
+  'artifacts',
   'nns_proxy',
-  'nns_proxy.wasm.gz',
 );
 
 const NNS_STATE_PATH = resolve(__dirname, '..', 'state', 'nns_state');

@@ -1,0 +1,7 @@
+name: counter
+recipe:
+  type: '@dfinity/motoko@v4.1.0'
+  configuration:
+    main: src/main.mo
+    candid: counter.did
+    compress: true

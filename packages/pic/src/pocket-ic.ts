@@ -1,6 +1,12 @@
 import { Principal } from '@icp-sdk/core/principal';
 import { IDL } from '@icp-sdk/core/candid';
-import { optional, readFileAsBytes } from './util';
+import {
+  isNil,
+  optional,
+  readFileAsBytes,
+  sha256,
+  splitIntoChunks,
+} from './util';
 import { PocketIcClient } from './pocket-ic-client';
 import { ActorInterface, Actor, createActorClass } from './pocket-ic-actor';
 import {
@@ -20,14 +26,24 @@ import {
   UpdateCallOptions,
   PendingHttpsOutcall,
   MockPendingHttpsOutcallOptions,
+  CanisterStatusOptions,
+  CanisterStatusResult,
 } from './pocket-ic-types';
 import {
   MANAGEMENT_CANISTER_ID,
+  CanisterInstallMode,
+  ChunkHash,
   decodeCreateCanisterResponse,
+  decodeUploadChunkResponse,
+  encodeClearChunkStoreRequest,
   encodeCreateCanisterRequest,
+  encodeInstallChunkedCodeRequest,
   encodeInstallCodeRequest,
   encodeStartCanisterRequest,
   encodeUpdateCanisterSettingsRequest,
+  encodeUploadChunkRequest,
+  decodeCanisterStatusResponse,
+  encodeCanisterStatusRequest,
 } from './management-canister';
 import {
   createDeferredActorClass,
@@ -35,6 +51,12 @@ import {
 } from './pocket-ic-deferred-actor';
 
 const NANOS_PER_MILLISECOND = BigInt(1_000_000);
+// The IC ingress message limit is 2 MB, but that covers the entire message
+// envelope (signature, delegations, Candid overhead, etc.).
+// We use 1.85 MB to match dfx's conservative threshold.
+const MAX_INSTALL_CODE_PAYLOAD_SIZE = 1_850_000;
+const WASM_CHUNK_SIZE = 1_000_000;
+const CHUNK_UPLOAD_BATCH_SIZE = 12;
 
 /**
  * This class represents the main PocketIC client.
@@ -85,6 +107,8 @@ const NANOS_PER_MILLISECOND = BigInt(1_000_000);
  * ```
  */
 export class PocketIc {
+  private httpGatewayPort: number | null = null;
+
   private constructor(private readonly client: PocketIcClient) {}
 
   /**
@@ -373,6 +397,17 @@ export class PocketIc {
       wasm = await readFileAsBytes(wasm);
     }
 
+    if (wasm.byteLength + arg.byteLength > MAX_INSTALL_CODE_PAYLOAD_SIZE) {
+      return this.installCodeChunked({
+        wasm,
+        arg,
+        canisterId,
+        mode: { install: null },
+        sender,
+        targetSubnetId,
+      });
+    }
+
     const payload = encodeInstallCodeRequest({
       arg: new Uint8Array(arg),
       canister_id: canisterId,
@@ -433,6 +468,16 @@ export class PocketIc {
       wasm = await readFileAsBytes(wasm);
     }
 
+    if (wasm.byteLength + arg.byteLength > MAX_INSTALL_CODE_PAYLOAD_SIZE) {
+      return this.installCodeChunked({
+        wasm,
+        arg,
+        canisterId,
+        mode: { reinstall: null },
+        sender,
+      });
+    }
+
     const payload = encodeInstallCodeRequest({
       arg: new Uint8Array(arg),
       canister_id: canisterId,
@@ -487,6 +532,16 @@ export class PocketIc {
   }: UpgradeCanisterOptions): Promise<void> {
     if (typeof wasm === 'string') {
       wasm = await readFileAsBytes(wasm);
+    }
+
+    if (wasm.byteLength + arg.byteLength > MAX_INSTALL_CODE_PAYLOAD_SIZE) {
+      return this.installCodeChunked({
+        wasm,
+        arg,
+        canisterId,
+        mode: { upgrade: optional(upgradeModeOptions) },
+        sender,
+      });
     }
 
     const payload = encodeInstallCodeRequest({
@@ -558,6 +613,72 @@ export class PocketIc {
       method: 'update_settings',
       payload,
     });
+  }
+
+  /**
+   * Returns the status of the given canister.
+   *
+   * @param options Options for querying the canister status, see {@link CanisterStatusOptions}.
+   * @returns The canister status, see {@link CanisterStatusResult}.
+   *
+   * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+   *
+   * @example
+   * ```ts
+   * import { Principal } from '@icp-sdk/core/principal';
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
+   *
+   * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
+   *
+   * const picServer = await PocketIcServer.start();
+   * const pic = await PocketIc.create(picServer.getUrl());
+   *
+   * const status = await pic.canisterStatus({ canisterId });
+   *
+   * await pic.tearDown();
+   * await picServer.stop();
+   * ```
+   */
+  public async canisterStatus({
+    canisterId,
+    sender = Principal.anonymous(),
+  }: CanisterStatusOptions): Promise<CanisterStatusResult> {
+    const payload = encodeCanisterStatusRequest({
+      canister_id: canisterId,
+    });
+
+    const res = await this.client.updateCall({
+      canisterId: MANAGEMENT_CANISTER_ID,
+      sender,
+      method: 'canister_status',
+      payload,
+    });
+
+    const response = decodeCanisterStatusResponse(res.body);
+
+    return {
+      status: response.status,
+      settings: {
+        controllers: response.settings.controllers,
+        computeAllocation: response.settings.compute_allocation,
+        memoryAllocation: response.settings.memory_allocation,
+        freezingThreshold: response.settings.freezing_threshold,
+        reservedCyclesLimit: response.settings.reserved_cycles_limit,
+      },
+      moduleHash: response.module_hash[0] ?? null,
+      memorySize: response.memory_size,
+      cycles: response.cycles,
+      reservedCycles: response.reserved_cycles,
+      idleCyclesBurnedPerDay: response.idle_cycles_burned_per_day,
+      queryStats: {
+        numCallsTotal: response.query_stats.num_calls_total,
+        numInstructionsTotal: response.query_stats.num_instructions_total,
+        requestPayloadBytesTotal:
+          response.query_stats.request_payload_bytes_total,
+        responsePayloadBytesTotal:
+          response.query_stats.response_payload_bytes_total,
+      },
+    };
   }
 
   /**
@@ -1473,6 +1594,183 @@ export class PocketIc {
       response,
       subnetId,
       additionalResponses,
+    });
+  }
+
+  /**
+   * Make the PocketIC instance live by enabling auto progress and starting the HTTP Gateway.
+   * If the server is already live, this method will return the HTTP Gateway URL.
+   * The PocketIC instance must be created with at least an NNS subnet in
+   * order for `fetchRootKey` to work correctly.
+   *
+   * @example
+   * ```ts
+   * import { Principal } from '@icp-sdk/core/principal';
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
+   * import { resolve } from 'node:path';
+   *
+   * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
+   * const wasm = resolve('..', '..', 'canister.wasm');
+   *
+   * const picServer = await PocketIcServer.start();
+   * const pic = await PocketIc.create(picServer.getUrl(), {
+   *   nns: { state: { type: SubnetStateType.New } },
+   *   application: [{ state: { type: SubnetStateType.New } }],
+   * });
+   *
+   * const canister = await pic.installCode({ canisterId, wasm });
+   * await pic.installCode({ canisterId, wasm });
+   *
+   * const httpGatewayUrl = await pic.makeLive();
+   * const agent = await HttpAgent.create({
+   *   host: httpGatewayUrl,
+   *   shouldFetchRootKey: true,
+   * });
+   * const actor = Actor.createActor(idlFactory, { agent, canisterId });
+   *
+   * await pic.stopLive();
+   * await pic.tearDown();
+   * await picServer.stop();
+   * ```
+   *
+   * @returns The HTTP Gateway port.
+   */
+  public async makeLive(): Promise<number> {
+    const isLive = await this.client.autoProgressEnabled();
+    if (isLive) {
+      if (isNil(this.httpGatewayPort)) {
+        throw new Error(
+          'Inconsistent state, PocketIC server is live but no HTTP Gateway URL is known',
+        );
+      }
+
+      return this.httpGatewayPort;
+    }
+
+    await this.client.autoProgress();
+    this.httpGatewayPort = await this.client.startHttpGateway();
+
+    return this.httpGatewayPort;
+  }
+
+  /**
+   * Disables auto progress and stops the HTTP Gateway for the PocketIC instance.
+   *
+   *
+   * @example
+   * ```ts
+   * import { Principal } from '@icp-sdk/core/principal';
+   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
+   * import { resolve } from 'node:path';
+   *
+   * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
+   * const wasm = resolve('..', '..', 'canister.wasm');
+   *
+   * const picServer = await PocketIcServer.start();
+   * const pic = await PocketIc.create(picServer.getUrl(), {
+   *   nns: { state: { type: SubnetStateType.New } },
+   *   application: [{ state: { type: SubnetStateType.New } }],
+   * });
+   *
+   * const canister = await pic.installCode({ canisterId, wasm });
+   * await pic.installCode({ canisterId, wasm });
+   *
+   * const httpGatewayUrl = await pic.makeLive();
+   * const agent = await HttpAgent.create({
+   *   host: httpGatewayUrl,
+   *   shouldFetchRootKey: true,
+   * });
+   * const actor = Actor.createActor(idlFactory, { agent, canisterId });
+   *
+   * await pic.stopLive();
+   * await pic.tearDown();
+   * await picServer.stop();
+   * ```
+   */
+  public async stopLive(): Promise<void> {
+    this.httpGatewayPort = null;
+
+    await this.client.stopHttpGateway();
+    await this.client.stopProgress();
+  }
+
+  private async installCodeChunked({
+    wasm,
+    arg,
+    canisterId,
+    mode,
+    sender,
+    targetSubnetId,
+  }: {
+    wasm: Uint8Array;
+    arg: Uint8Array;
+    canisterId: Principal;
+    mode: CanisterInstallMode;
+    sender: Principal;
+    targetSubnetId?: Principal;
+  }): Promise<void> {
+    const effectivePrincipal = targetSubnetId
+      ? { subnetId: targetSubnetId }
+      : { canisterId };
+
+    const clearChunkStoreRequestPayload = encodeClearChunkStoreRequest({
+      canister_id: canisterId,
+    });
+
+    // 1. Clear existing chunk store
+    await this.client.updateCall({
+      canisterId: MANAGEMENT_CANISTER_ID,
+      sender,
+      method: 'clear_chunk_store',
+      payload: clearChunkStoreRequestPayload,
+      effectivePrincipal,
+    });
+
+    // 2. Split WASM into chunks and upload in parallel batches
+    const chunks = splitIntoChunks(wasm, WASM_CHUNK_SIZE);
+    const chunkHashes: ChunkHash[] = [];
+
+    for (let i = 0; i < chunks.length; i += CHUNK_UPLOAD_BATCH_SIZE) {
+      const batch = chunks.slice(i, i + CHUNK_UPLOAD_BATCH_SIZE);
+
+      const chunkHashResponses = await Promise.all(
+        batch.map(async chunk => {
+          const uploadChunkRequestPayload = encodeUploadChunkRequest({
+            canister_id: canisterId,
+            chunk,
+          });
+          const response = await this.client.updateCall({
+            canisterId: MANAGEMENT_CANISTER_ID,
+            sender,
+            method: 'upload_chunk',
+            payload: uploadChunkRequestPayload,
+            effectivePrincipal,
+          });
+
+          return decodeUploadChunkResponse(response.body);
+        }),
+      );
+
+      chunkHashes.push(...chunkHashResponses);
+    }
+
+    // 3. Install the chunked code
+    const installChunkedCodePayload = encodeInstallChunkedCodeRequest({
+      mode,
+      target_canister: canisterId,
+      store_canister: [],
+      chunk_hashes_list: chunkHashes,
+      wasm_module_hash: sha256(wasm),
+      arg,
+      sender_canister_version: [],
+    });
+
+    await this.client.updateCall({
+      canisterId: MANAGEMENT_CANISTER_ID,
+      sender,
+      method: 'install_chunked_code',
+      payload: installChunkedCodePayload,
+      effectivePrincipal,
     });
   }
 }

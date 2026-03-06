@@ -1,5 +1,17 @@
 # NNS Proxy
 
+Build the canister:
+
+```shell
+bun build:examples -- nns_proxy
+```
+
+Run the tests:
+
+```shell
+bun test:examples -- nns_proxy
+```
+
 ## NNS State Directory
 
 This example project leverages an NNS state directory to provide the initial state for the NNS subnet. To learn more about how this state directory was created, check out the guide on [working with the NNS](https://js.icp.build/pic-js/latest/guides/working-with-the-nns).

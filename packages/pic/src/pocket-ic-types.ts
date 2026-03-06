@@ -685,8 +685,7 @@ export interface UpgradeCanisterOptions {
  * @category Types
  * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
  */
-export interface UpdateCanisterSettingsOptions
-  extends Partial<CanisterSettings> {
+export interface UpdateCanisterSettingsOptions extends Partial<CanisterSettings> {
   /**
    * The Principal of the canister to update the settings for.
    */
@@ -697,6 +696,102 @@ export interface UpdateCanisterSettingsOptions
    * Defaults to the anonymous principal.
    */
   sender?: Principal;
+}
+
+/**
+ * Options for querying the status of a given canister.
+ *
+ * @category Types
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ */
+export interface CanisterStatusOptions {
+  /**
+   * The Principal of the canister to query the status of.
+   */
+  canisterId: Principal;
+
+  /**
+   * The Principal to send the request as.
+   * Defaults to the anonymous principal.
+   */
+  sender?: Principal;
+}
+
+/**
+ * The status of a canister.
+ *
+ * @category Types
+ */
+export type CanisterStatus =
+  | { running: null }
+  | { stopping: null }
+  | { stopped: null };
+
+/**
+ * Query statistics for a canister.
+ *
+ * @category Types
+ */
+export interface CanisterQueryStats {
+  numCallsTotal: bigint;
+  numInstructionsTotal: bigint;
+  requestPayloadBytesTotal: bigint;
+  responsePayloadBytesTotal: bigint;
+}
+
+/**
+ * The result of querying the status of a canister.
+ * Matches the IC management canister `canister_status` response.
+ *
+ * @category Types
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ */
+export interface CanisterStatusResult {
+  /**
+   * The current status of the canister.
+   */
+  status: CanisterStatus;
+
+  /**
+   * The definite settings of the canister.
+   */
+  settings: {
+    controllers: Principal[];
+    computeAllocation: bigint;
+    memoryAllocation: bigint;
+    freezingThreshold: bigint;
+    reservedCyclesLimit: bigint;
+  };
+
+  /**
+   * The SHA-256 hash of the installed WASM module, if any.
+   */
+  moduleHash: Uint8Array | null;
+
+  /**
+   * The total memory size of the canister in bytes.
+   */
+  memorySize: bigint;
+
+  /**
+   * The current cycle balance of the canister.
+   */
+  cycles: bigint;
+
+  /**
+   * The reserved cycles of the canister.
+   */
+  reservedCycles: bigint;
+
+  /**
+   * The amount of cycles burned per day when idle.
+   */
+  idleCyclesBurnedPerDay: bigint;
+
+  /**
+   * Query call statistics for the canister.
+   */
+  queryStats: CanisterQueryStats;
 }
 
 //#endregion CanisterLifecycle

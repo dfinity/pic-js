@@ -4,3 +4,4 @@ export * from './fs';
 export * from './is-nil';
 export * from './os';
 export * from './poll';
+export * from './wasm';

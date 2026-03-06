@@ -1,15 +1,15 @@
-# Multi canister
+# Google Search
 
-This example demonstrates how to test HTTPS Outcalls in canisters.
+This example demonstrates how to mock HTTPS Outcalls in canisters.
 
-Build the canisters:
+Build the canister:
 
 ```shell
-bun build:google_search
+bun build:examples -- google_search
 ```
 
 Run the tests:
 
 ```shell
-bun test:google_search
+bun test:examples -- google_search
 ```

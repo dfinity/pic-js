@@ -7,7 +7,7 @@
     "npm": "please use pnpm"
   },
   "type": "module",
-  "packageManager": "pnpm@10.19.0+sha512.c9fc7236e92adf5c8af42fd5bf1612df99c2ceb62f27047032f4720b33f8eacdde311865e91c411f2774f618d82f320808ecb51718bfa82c060c4ba7c76a32b8",
+  "packageManager": "pnpm@10.28.2+sha512.41872f037ad22f7348e3b1debbaf7e867cfd448f2726d9cf74c08f19507c31d2c8e7a11525b983febc2df640b5438dee6023ebb1f84ed43cc2d654d2bc326264",
   "workspaces": [
     "examples/clock/tests",
     "examples/counter/tests",
@@ -16,6 +16,7 @@
     "examples/multicanister/tests",
     "examples/nns_proxy/tests",
     "examples/todo/tests",
+    "examples/http/tests",
     "packages/pic",
     "packages/pic-server",
     "docs"
@@ -26,43 +27,26 @@
     "build": "run-p build:pic",
     "build:pic": "tsc -p ./packages/pic/tsconfig.json",
     "test:pic": "jest -c ./packages/pic/jest.config.ts",
-    "build:test-canister": "dfx generate test_canister && dfx build test_canister --check && mv .dfx/local/canisters/test_canister/test_canister.wasm.gz packages/pic/tests/test-canister",
-    "build:examples": "dfx generate phonebook && dfx generate superheroes && dfx generate && dfx build --all --check",
-    "test:examples": "run-p test:clock test:counter test:google-search test:icp-features test:multicanister test:nns-proxy test:todo",
-    "build:clock": "dfx generate clock && dfx build clock --check",
-    "test:clock": "jest -c ./examples/clock/tests/jest.config.ts",
-    "build:counter": "dfx generate counter && dfx build counter --check",
-    "test:counter": "vitest run -c ./examples/counter/tests/vitest.config.ts",
-    "build:google-search": "dfx generate google_search && dfx build google_search --check",
-    "test:google-search": "jest -c ./examples/google_search/tests/jest.config.ts",
-    "build:icp-features": "dfx generate icp_features && dfx build icp_features --check",
-    "test:icp-features": "jest -c ./examples/icp_features/tests/jest.config.ts",
-    "build:multicanister": "dfx generate multicanister && dfx build multicanister --check",
-    "test:multicanister": "jest -c ./examples/multicanister/tests/jest.config.ts",
-    "build:nns-proxy": "dfx generate nns_proxy && dfx build nns_proxy --check",
-    "test:nns-proxy": "jest -c ./examples/nns_proxy/tests/jest.config.ts",
-    "build:todo": "dfx generate todo && dfx build todo --check",
-    "test:todo": "jest -c ./examples/todo/tests/jest.config.ts",
+    "build:test-canister": "icp build test_canister && cp .icp/cache/artifacts/test_canister packages/pic/tests/test-canister/test_canister.wasm.gz && pnpm run generate:test-canister",
+    "generate:test-canister": "icp-bindgen --did-file packages/pic/tests/test-canister/test_canister.did --out-dir packages/pic/tests/test-canister --actor-disabled --force",
+    "build:examples": "./scripts/build-examples.sh",
+    "test:examples": "./scripts/test-examples.sh",
     "postinstall": "tar -xvf examples/nns_proxy/tests/state/nns_state.tar.xz -C examples/nns_proxy/tests/state"
   },
   "devDependencies": {
+    "@icp-sdk/bindgen": "^0.2.1",
     "@icp-sdk/core": "^5.0.0",
-    "@swc/core": "^1.15.3",
+    "@swc/core": "^1.15.18",
     "@swc/jest": "^0.2.39",
-    "@tsconfig/node24": "^24.0.3",
-    "@types/jest": "^29.5.14",
-    "@types/node": "^22.13.10",
+    "@tsconfig/node24": "^24.0.4",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^25.3.3",
     "bip39": "^3.1.0",
     "jest": "^30.2.0",
     "npm-run-all": "^4.1.5",
-    "prettier": "3.4.1",
+    "prettier": "3.8.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.2",
-    "vitest": "^4.0.15"
-  },
-  "overrides": {
-    "path-to-regexp@<0.1.12": ">=0.1.12",
-    "path-to-regexp@>=2.0.0 <3.3.0": ">=3.3.0",
-    "esbuild@<=0.24.2": ">=0.25.0"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
   }
 }
