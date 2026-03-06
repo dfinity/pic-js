@@ -170,14 +170,14 @@ export class Http2Client {
 
                 const stateBody = (await stateRes.json()) as ApiResponse<R>;
 
-                // the server is still processing, throw and try again
-                if (isNil(stateBody) || 'state_label' in stateBody) {
+                // the server is still processing or the op has not been
+                // registered yet — throw and try again
+                if (
+                  isNil(stateBody) ||
+                  'state_label' in stateBody ||
+                  'message' in stateBody
+                ) {
                   throw new RetryableError('Polling has not succeeded yet');
-                }
-
-                // the server encountered an error, fail immediately
-                if ('message' in stateBody) {
-                  throw new ServerError(stateBody.message);
                 }
 
                 // the request was successful, exit the loop

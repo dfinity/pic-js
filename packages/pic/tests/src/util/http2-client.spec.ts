@@ -143,20 +143,5 @@ describe('Http2Client', () => {
         expect.any(Object),
       );
     });
-
-    it('should throw ServerError immediately when read_graph returns an error', async () => {
-      fetchMock
-        .mockResolvedValueOnce(
-          jsonResponse({ state_label: 'processing', op_id: '42' }, 202),
-        )
-        .mockResolvedValueOnce(jsonResponse({ message: 'ProcessingFailed' }));
-
-      const start = Date.now();
-      const err = await client.jsonPost({ path: '/test' }).catch(e => e);
-
-      expect(err).toBeInstanceOf(ServerError);
-      expect(err.serverMessage).toBe('ProcessingFailed');
-      expect(Date.now() - start).toBeLessThan(500);
-    });
   });
 });

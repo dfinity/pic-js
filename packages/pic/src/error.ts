@@ -1,5 +1,5 @@
 export class BinStartError extends Error {
-  override readonly name = 'BinStartError';
+  override name = 'BinStartError';
 
   constructor(cause: Error) {
     super(
@@ -13,7 +13,7 @@ ${cause.stack}`,
 }
 
 export class BinStartMacOSArmError extends Error {
-  override readonly name = 'BinStartMacOSArmError';
+  override name = 'BinStartMacOSArmError';
 
   constructor(cause: Error) {
     super(
@@ -30,7 +30,7 @@ ${cause.stack}`,
 }
 
 export class BinNotFoundError extends Error {
-  override readonly name = 'BinNotFoundError';
+  override name = 'BinNotFoundError';
 
   constructor(picBinPath: string) {
     super(
@@ -40,7 +40,7 @@ export class BinNotFoundError extends Error {
 }
 
 export class ServerRequestTimeoutError extends Error {
-  override readonly name = 'ServerRequestTimeoutError';
+  override name = 'ServerRequestTimeoutError';
 
   constructor() {
     super('A request to the PocketIC server timed out.');
@@ -48,7 +48,7 @@ export class ServerRequestTimeoutError extends Error {
 }
 
 export class InstanceDeletedError extends Error {
-  override readonly name = 'InstanceDeletedError';
+  override name = 'InstanceDeletedError';
 
   constructor() {
     super(
@@ -58,7 +58,7 @@ export class InstanceDeletedError extends Error {
 }
 
 export class TopologyValidationError extends Error {
-  override readonly name = 'TopologyValidationError';
+  override name = 'TopologyValidationError';
 
   constructor() {
     super(
@@ -68,11 +68,11 @@ export class TopologyValidationError extends Error {
 }
 
 export class RetryableError extends Error {
-  override readonly name: string = 'RetryableError';
+  override name: string = 'RetryableError';
 }
 
 export class BinTimeoutError extends RetryableError {
-  override readonly name = 'BinTimeoutError';
+  override name = 'BinTimeoutError';
 
   constructor() {
     super('The PocketIC binary took too long to start. Please try again.');
@@ -80,7 +80,7 @@ export class BinTimeoutError extends RetryableError {
 }
 
 export class ServerError extends Error {
-  override readonly name = 'ServerError';
+  override name = 'ServerError';
   public readonly serverMessage: string;
 
   constructor(serverMessage: string) {

@@ -94,9 +94,17 @@ export class PocketIcServer {
 
     return await poll(
       async () => {
-        const portString = await readFileAsString(portFilePath).catch(() => {
-          throw new BinTimeoutError();
-        });
+        const portString = await readFileAsString(portFilePath).catch(
+          (err: unknown) => {
+            if (
+              err instanceof Error &&
+              (err as NodeJS.ErrnoException).code === 'ENOENT'
+            ) {
+              throw new BinTimeoutError();
+            }
+            throw err;
+          },
+        );
 
         const port = parseInt(portString);
         if (isNaN(port)) {
