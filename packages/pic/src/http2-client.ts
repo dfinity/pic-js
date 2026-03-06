@@ -218,10 +218,10 @@ async function getResBody<R extends {}>(
     // don't break the user's console by logging large response bodies
     if (resBody.length < 10_240) {
       console.error('Original body:', resBody);
-      throw new Error(resBody);
+      throw new ServerError(resBody);
     }
 
-    throw new Error(String(error));
+    throw new ServerError(String(error));
   }
 }
 

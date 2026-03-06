@@ -5,7 +5,7 @@ import {
   BinNotFoundError,
   BinStartError,
   BinStartMacOSArmError,
-  RetryableError,
+  BinTimeoutError,
 } from './error';
 import {
   exists,
@@ -95,12 +95,12 @@ export class PocketIcServer {
     return await poll(
       async () => {
         const portString = await readFileAsString(portFilePath).catch(() => {
-          throw new RetryableError('PocketIC binary not ready yet');
+          throw new BinTimeoutError();
         });
 
         const port = parseInt(portString);
         if (isNaN(port)) {
-          throw new RetryableError('PocketIC binary not ready yet');
+          throw new BinTimeoutError();
         }
 
         return new PocketIcServer(serverProcess, port);

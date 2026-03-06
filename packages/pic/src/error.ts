@@ -39,14 +39,6 @@ export class BinNotFoundError extends Error {
   }
 }
 
-export class BinTimeoutError extends Error {
-  override readonly name = 'BinTimeoutError';
-
-  constructor() {
-    super('The PocketIC binary took too long to start. Please try again.');
-  }
-}
-
 export class ServerRequestTimeoutError extends Error {
   override readonly name = 'ServerRequestTimeoutError';
 
@@ -76,10 +68,14 @@ export class TopologyValidationError extends Error {
 }
 
 export class RetryableError extends Error {
-  override readonly name = 'RetryableError';
+  override readonly name: string = 'RetryableError';
+}
 
-  constructor(message: string) {
-    super(message);
+export class BinTimeoutError extends RetryableError {
+  override readonly name = 'BinTimeoutError';
+
+  constructor() {
+    super('The PocketIC binary took too long to start. Please try again.');
   }
 }
 
