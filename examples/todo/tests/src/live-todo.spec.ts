@@ -9,11 +9,10 @@ const WASM_PATH = resolve(
   '..',
   '..',
   '..',
-  '.dfx',
-  'local',
-  'canisters',
+  '.icp',
+  'cache',
+  'artifacts',
   'todo',
-  'todo.wasm.gz',
 );
 
 describe('Live Todo', () => {

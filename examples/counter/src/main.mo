@@ -1,4 +1,4 @@
-import Nat "mo:base/Nat";
+import Nat "mo:core/Nat";
 
 persistent actor class Counter(initial_count : Nat) {
   private var counter = initial_count;

@@ -1,0 +1,7 @@
+name: phonebook
+recipe:
+  type: '@dfinity/motoko@v4.1.0'
+  configuration:
+    main: phonebook.mo
+    candid: phonebook.did
+    compress: true

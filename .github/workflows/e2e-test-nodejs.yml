@@ -31,10 +31,10 @@ jobs:
       - name: Setup PNPM
         uses: dfinity/ci-tools/actions/setup-pnpm@main
 
-      - name: Setup DFX
-        uses: dfinity/setup-dfx@main
+      - name: Setup Canister Toolchain
+        uses: ./.github/actions/setup-canister-toolchain
         with:
-          dfx-version: 'auto'
+          package-manager: pnpm
 
       - name: Build
         run: pnpm run build
@@ -64,10 +64,10 @@ jobs:
         shell: bash
         run: bun i --frozen-lockfile
 
-      - name: Setup DFX
-        uses: dfinity/setup-dfx@main
+      - name: Setup Canister Toolchain
+        uses: ./.github/actions/setup-canister-toolchain
         with:
-          dfx-version: 'auto'
+          package-manager: bun
 
       - name: Build
         run: bun run build

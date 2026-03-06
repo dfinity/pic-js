@@ -1,0 +1,26 @@
+type PhoneBookEntry = record {
+  phone : text;
+  description : text;
+};
+
+type SuperHero = record {
+  name : text;
+  superpowers : vec text;
+};
+
+type PhoneBookService = service {
+  insert : (text, PhoneBookEntry) -> ();
+  lookup : (text) -> (opt PhoneBookEntry) query;
+};
+
+type SuperHeroesService = service {
+  insert : (SuperHero) -> (nat32);
+  lookup : (nat32) -> (opt SuperHero) query;
+};
+
+service : (PhoneBookService, SuperHeroesService) -> {
+  insert_phone_book_entry : (text, PhoneBookEntry) -> ();
+  lookup_phone_book_entry : (text) -> (opt PhoneBookEntry) composite_query;
+  insert_super_hero : (SuperHero) -> (nat32);
+  lookup_super_hero : (nat32) -> (opt SuperHero);
+}

@@ -1,4 +1,6 @@
 /.dfx/
+/.icp/cache/
+/.mops/
 /node_modules/
 /target/
 
