@@ -43,12 +43,11 @@ describe('Http2Client', () => {
         jsonResponse({ message: 'SettingTimeIntoPast' }),
       );
 
-      const start = Date.now();
       const err = await client.jsonGet({ path: '/test' }).catch(e => e);
 
       expect(err).toBeInstanceOf(ServerError);
       expect(err.serverMessage).toBe('SettingTimeIntoPast');
-      expect(Date.now() - start).toBeLessThan(500);
+      expect(fetchMock).toHaveBeenCalledTimes(1);
     });
 
     it('should retry on 409 busy response and eventually succeed', async () => {
@@ -65,28 +64,38 @@ describe('Http2Client', () => {
     });
 
     it('should throw ServerError immediately on parse failure with small body', async () => {
-      jest.spyOn(console, 'error').mockImplementation(() => {});
-      fetchMock.mockResolvedValue(textResponse('not valid json'));
+      const consoleSpy = jest
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+      try {
+        fetchMock.mockResolvedValue(textResponse('not valid json'));
 
-      const start = Date.now();
-      const err = await client.jsonGet({ path: '/test' }).catch(e => e);
+        const err = await client.jsonGet({ path: '/test' }).catch(e => e);
 
-      expect(err).toBeInstanceOf(ServerError);
-      expect(err.serverMessage).toBe('not valid json');
-      expect(Date.now() - start).toBeLessThan(500);
+        expect(err).toBeInstanceOf(ServerError);
+        expect(err.serverMessage).toBe('not valid json');
+        expect(fetchMock).toHaveBeenCalledTimes(1);
+      } finally {
+        consoleSpy.mockRestore();
+      }
     });
 
     it('should throw ServerError immediately on parse failure with large body', async () => {
-      jest.spyOn(console, 'error').mockImplementation(() => {});
-      fetchMock.mockResolvedValue(textResponse('x'.repeat(10_241)));
+      const consoleSpy = jest
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+      try {
+        fetchMock.mockResolvedValue(textResponse('x'.repeat(10_241)));
 
-      const start = Date.now();
-      const err = await client.jsonGet({ path: '/test' }).catch(e => e);
+        const err = await client.jsonGet({ path: '/test' }).catch(e => e);
 
-      // large body: serverMessage is the stringify'd parse error, not the body
-      expect(err).toBeInstanceOf(ServerError);
-      expect(err.serverMessage).toMatch(/SyntaxError/);
-      expect(Date.now() - start).toBeLessThan(500);
+        // large body: serverMessage is the stringify'd parse error, not the body
+        expect(err).toBeInstanceOf(ServerError);
+        expect(err.serverMessage).toMatch(/SyntaxError/);
+        expect(fetchMock).toHaveBeenCalledTimes(1);
+      } finally {
+        consoleSpy.mockRestore();
+      }
     });
   });
 

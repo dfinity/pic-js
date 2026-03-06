@@ -42,41 +42,39 @@ describe('poll', () => {
   });
 
   it('should immediately reject on non-retryable Error', async () => {
-    const startTime = Date.now();
+    let calls = 0;
 
     await expect(
       poll(
         () => {
+          calls++;
           throw new Error('fatal error');
         },
         { intervalMs: 10, timeoutMs: 5000 },
       ),
     ).rejects.toThrow('fatal error');
 
-    expect(Date.now() - startTime).toBeLessThan(1000);
+    expect(calls).toBe(1);
   });
 
   it('should immediately reject with a ServerError instance and preserve serverMessage', async () => {
-    const startTime = Date.now();
+    let calls = 0;
 
-    try {
-      await poll(
-        () => {
-          throw new ServerError('SettingTimeIntoPast');
-        },
-        { intervalMs: 10, timeoutMs: 5000 },
-      );
-      fail('Expected poll to reject');
-    } catch (e) {
-      expect(e).toBeInstanceOf(ServerError);
-      expect(e).not.toBeInstanceOf(RetryableError);
-      expect((e as ServerError).name).toBe('ServerError');
-      expect((e as ServerError).serverMessage).toBe('SettingTimeIntoPast');
-      expect((e as ServerError).message).toBe(
-        'PocketIC server error: SettingTimeIntoPast',
-      );
-    }
+    const err = await poll(
+      () => {
+        calls++;
+        throw new ServerError('SettingTimeIntoPast');
+      },
+      { intervalMs: 10, timeoutMs: 5000 },
+    ).catch(e => e);
 
-    expect(Date.now() - startTime).toBeLessThan(1000);
+    expect(calls).toBe(1);
+    expect(err).toBeInstanceOf(ServerError);
+    expect(err).not.toBeInstanceOf(RetryableError);
+    expect((err as ServerError).name).toBe('ServerError');
+    expect((err as ServerError).serverMessage).toBe('SettingTimeIntoPast');
+    expect((err as ServerError).message).toBe(
+      'PocketIC server error: SettingTimeIntoPast',
+    );
   });
 });
