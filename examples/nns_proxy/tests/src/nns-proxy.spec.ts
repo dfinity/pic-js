@@ -33,6 +33,8 @@ describe('NNS Proxy', () => {
 
   beforeEach(async () => {
     // Enabling beta features to have a smoke test for that config.
+    // NNS operations (neuron creation, proposals) can take >30 s on CI,
+    // so use a longer processing timeout than the 30 s default.
     pic = await PocketIc.create(process.env.PIC_URL, {
       nns: {
         state: {
@@ -43,6 +45,7 @@ describe('NNS Proxy', () => {
       icpConfig: {
         betaFeatures: IcpConfigFlag.Enabled,
       },
+      processingTimeoutMs: 60_000,
     });
     await pic.setTime(new Date(2025, 4, 29).getTime());
     await pic.tick();
