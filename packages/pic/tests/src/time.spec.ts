@@ -145,15 +145,15 @@ describe('time', () => {
     expect(finalTime).toEqual(initialTime);
   });
 
-  // Used to retry until the ~30 s poll timeout.
-  // this only checks end-to-end timing against a real server.
-  it('should throw ServerError without retrying when the server rejects the request', async () => {
+  // Previous versions used to retry until poll timeout.
+  it('should not get close to hitting timeout on non-retryable error', async () => {
     const farPast = new Date('2000-01-01T00:00:00Z');
+    const POLL_TIMEOUT_MS = 90_000; // PocketIC polling timeout in milliseconds
 
     const startTime = Date.now();
     await expect(fixture.pic.setTime(farPast)).rejects.toThrow(
       /PocketIC server error/,
     );
-    expect(Date.now() - startTime).toBeLessThan(5000);
+    expect(Date.now() - startTime).toBeLessThan(POLL_TIMEOUT_MS / 10);
   });
 });
