@@ -1,5 +1,9 @@
 import { JSONStringify } from 'json-with-bigint';
-import { ServerRequestTimeoutError } from './error';
+import {
+  RetryableError,
+  ServerError,
+  ServerRequestTimeoutError,
+} from './error';
 import { isNil, poll } from './util';
 
 export interface RequestOptions {
@@ -93,31 +97,26 @@ export class Http2Client {
           return resBody;
         }
 
-        // server encountered an error, throw and try again
+        // server encountered an error, fail immediately
         if ('message' in resBody) {
-          console.error(
-            'PocketIC server encountered an error',
-            resBody.message,
-          );
-
-          throw new Error(resBody.message);
+          throw new ServerError(resBody.message);
         }
 
         // the server has started processing or is busy
         if ('state_label' in resBody) {
           // the server is too busy to process the request, throw and try again
           if (res.status === 409) {
-            throw new Error('Server busy');
+            throw new RetryableError('Server busy');
           }
 
           // the server has started processing the request
           // this shouldn't happen for GET requests, throw and try again
           if (res.status === 202) {
-            throw new Error('Server started processing');
+            throw new RetryableError('Server started processing');
           }
 
           // something weird happened, throw and try again
-          throw new Error('Unknown state');
+          throw new RetryableError('Unknown state');
         }
 
         // the request was successful, exit the loop
@@ -148,21 +147,16 @@ export class Http2Client {
           return resBody;
         }
 
-        // server encountered an error, throw and try again
+        // server encountered an error, fail immediately
         if ('message' in resBody) {
-          console.error(
-            'PocketIC server encountered an error',
-            resBody.message,
-          );
-
-          throw new Error(resBody.message);
+          throw new ServerError(resBody.message);
         }
 
         // the server has started processing or is busy
         if ('state_label' in resBody) {
           // the server is too busy to process the request, throw and try again
           if (res.status === 409) {
-            throw new Error('Server busy');
+            throw new RetryableError('Server busy');
           }
 
           // the server has started processing the request, poll until it is done
@@ -176,13 +170,14 @@ export class Http2Client {
 
                 const stateBody = (await stateRes.json()) as ApiResponse<R>;
 
-                // the server encountered an error, throw and try again
+                // the server is still processing or the op has not been
+                // registered yet — throw and try again
                 if (
                   isNil(stateBody) ||
-                  'message' in stateBody ||
-                  'state_label' in stateBody
+                  'state_label' in stateBody ||
+                  'message' in stateBody
                 ) {
-                  throw new Error('Polling has not succeeded yet');
+                  throw new RetryableError('Polling has not succeeded yet');
                 }
 
                 // the request was successful, exit the loop
@@ -196,7 +191,7 @@ export class Http2Client {
           }
 
           // something weird happened, throw and try again
-          throw new Error('Unknown state');
+          throw new RetryableError('Unknown state');
         }
 
         // the request was successful, exit the loop
@@ -221,16 +216,17 @@ async function getResBody<R extends {}>(
   } catch (error) {
     console.error('Error parsing PocketIC server response body:', error);
     // don't break the user's console by logging large response bodies
-    if (resBody.length < 10_240) {
+    if (resBody.length < MAX_LOGGABLE_BODY_LENGTH) {
       console.error('Original body:', resBody);
-      throw new Error(resBody);
+      throw new ServerError(resBody);
     }
 
-    throw new Error(String(error));
+    throw new ServerError(String(error));
   }
 }
 
 const POLLING_INTERVAL_MS = 10;
+export const MAX_LOGGABLE_BODY_LENGTH = 10_240;
 
 interface StartedOrBusyApiResponse {
   state_label: string;

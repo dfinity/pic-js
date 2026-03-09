@@ -8,6 +8,10 @@
 - add http gateway support (#233)
 - bump PocketIC server to v12.0.0 (#231)
 
+### Fix
+
+- fail immediately on non-retryable PocketIC server errors instead of polling until timeout
+
 ## 0.18.0 (2026-01-21)
 
 ### BREAKING CHANGE
