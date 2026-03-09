@@ -13,8 +13,6 @@ export async function poll<T extends (...args: any) => any>(
 
   return new Promise((resolve, reject) => {
     async function runPoll(): Promise<void> {
-      const currentTimeMs = Date.now();
-
       try {
         const result = await cb();
         return resolve(result);
@@ -23,7 +21,7 @@ export async function poll<T extends (...args: any) => any>(
           return reject(e);
         }
 
-        if (currentTimeMs - startTimeMs >= timeoutMs) {
+        if (Date.now() - startTimeMs >= timeoutMs) {
           return reject(e);
         }
 
