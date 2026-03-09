@@ -63,7 +63,7 @@ describe('poll', () => {
     const err = await poll(
       () => {
         calls++;
-        throw new ServerError('SettingTimeIntoPast');
+        throw new ServerError('something went wrong');
       },
       { intervalMs: 10, timeoutMs: 5000 },
     ).catch(e => e);
@@ -72,9 +72,9 @@ describe('poll', () => {
     expect(err).toBeInstanceOf(ServerError);
     expect(err).not.toBeInstanceOf(RetryableError);
     expect((err as ServerError).name).toBe('ServerError');
-    expect((err as ServerError).serverMessage).toBe('SettingTimeIntoPast');
+    expect((err as ServerError).serverMessage).toBe('something went wrong');
     expect((err as ServerError).message).toBe(
-      'PocketIC server error: SettingTimeIntoPast',
+      'PocketIC server error: something went wrong',
     );
   });
 });

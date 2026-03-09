@@ -216,7 +216,7 @@ async function getResBody<R extends {}>(
   } catch (error) {
     console.error('Error parsing PocketIC server response body:', error);
     // don't break the user's console by logging large response bodies
-    if (resBody.length < 10_240) {
+    if (resBody.length < MAX_LOGGABLE_BODY_LENGTH) {
       console.error('Original body:', resBody);
       throw new ServerError(resBody);
     }
@@ -226,6 +226,7 @@ async function getResBody<R extends {}>(
 }
 
 const POLLING_INTERVAL_MS = 10;
+export const MAX_LOGGABLE_BODY_LENGTH = 10_240;
 
 interface StartedOrBusyApiResponse {
   state_label: string;

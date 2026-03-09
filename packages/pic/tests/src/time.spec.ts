@@ -145,14 +145,15 @@ describe('time', () => {
     expect(finalTime).toEqual(initialTime);
   });
 
-  it('should fail immediately when setting time into the past', async () => {
+  // Used to retry until the ~30 s poll timeout.
+  // this only checks end-to-end timing against a real server.
+  it('should throw ServerError without retrying when the server rejects the request', async () => {
     const farPast = new Date('2000-01-01T00:00:00Z');
 
     const startTime = Date.now();
     await expect(fixture.pic.setTime(farPast)).rejects.toThrow(
       /PocketIC server error/,
     );
-    // Should fail almost immediately, not wait for the 30s timeout
     expect(Date.now() - startTime).toBeLessThan(5000);
   });
 });

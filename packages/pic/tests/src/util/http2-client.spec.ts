@@ -1,4 +1,7 @@
-import { Http2Client } from '../../../src/http2-client';
+import {
+  Http2Client,
+  MAX_LOGGABLE_BODY_LENGTH,
+} from '../../../src/http2-client';
 import { ServerError } from '../../../src/error';
 
 const BASE_URL = 'http://localhost:9999';
@@ -85,7 +88,9 @@ describe('Http2Client', () => {
         .spyOn(console, 'error')
         .mockImplementation(() => {});
       try {
-        fetchMock.mockResolvedValue(textResponse('x'.repeat(10_241)));
+        fetchMock.mockResolvedValue(
+          textResponse('x'.repeat(MAX_LOGGABLE_BODY_LENGTH + 1)),
+        );
 
         const err = await client.jsonGet({ path: '/test' }).catch(e => e);
 
