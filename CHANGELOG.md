@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.19.0 (2026-03-10)
 
 ### Feat
 
@@ -10,7 +10,7 @@
 
 ### Fix
 
-- fail immediately on non-retryable PocketIC server errors instead of polling until timeout
+- **pic**: fail immediately on non-retryable PocketIC server errors (#242)
 
 ## 0.18.0 (2026-01-21)
 
