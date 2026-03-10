@@ -1,6 +1,6 @@
 # Contributing
 
-Thank you for your interest in contributing to the Response Verification package for the Internet Computer.
+Thank you for your interest in contributing to PicJS for the Internet Computer.
 By participating in this project, you agree to abide by our [Code of Conduct](./CODE_OF_CONDUCT.md).
 
 As a member of the community, you are invited and encouraged to contribute by submitting issues, offering suggestions for improvements, adding review comments to existing pull requests, or creating new pull requests to fix issues.
@@ -15,7 +15,7 @@ The contributor guidelines are intended to make the contribution process easy an
 
 Before contributing, consider the following:
 
-- If you want to report an issue, click [issues](https://github.com/dfinity/pic/issues).
+- If you want to report an issue, click [issues](https://github.com/dfinity/pic-js/issues).
 - If you have more general questions related to this package and its use, post a message to the [community forum](https://forum.dfinity.org/).
 - If you are reporting a bug, provide as much information about the problem as possible.
 - If you want to contribute directly to this repository, typical fixes might include any of the following:
@@ -40,7 +40,7 @@ This section describes the most common workflow scenarios:
 
 To open a new issue:
 
-1. Click [create a new issue](https://github.com/dfinity/pic/issues/new).
+1. Click [create a new issue](https://github.com/dfinity/pic-js/issues/new).
 2. Type a title and description, then click **Submit new issue**.
    - Be as clear and descriptive as possible.
    - For any problem, describe it in detail, including details about the crate, the version of the code you are using, the results you expected, and how the actual results differed from your expectations.
@@ -50,7 +50,7 @@ To open a new issue:
 If you want to submit a pull request to fix an issue or add a feature, here's a summary of what you need to do:
 
 1. Make sure you have a GitHub account, an internet connection, and access to a terminal shell or GitHub Desktop application for running commands.
-2. Navigate to the [repository's homepage](https://github.com/dfinity/pic) in a web browser.
+2. Navigate to the [repository's homepage](https://github.com/dfinity/pic-js) in a web browser.
 3. Click **Fork** to create a copy of the repository under your GitHub account or organization name.
 4. Clone the forked repository to your local machine.
 5. Create a new branch for your fix by running a command similar to the following:
