@@ -1,5 +1,133 @@
 # Changelog
 
+## Unreleased
+
+### Feat
+
+- **pic**: add chunked WASM upload and canisterStatus method (#239)
+- add http gateway support (#233)
+- bump PocketIC server to v12.0.0 (#231)
+
+### Fix
+
+- **pic**: fail immediately on non-retryable PocketIC server errors (#242)
+
+## 0.18.0 (2026-01-21)
+
+### Feat
+
+- Length of wait for ingress status configurable. (#227)
+
+## 0.17.2 (2026-01-08)
+
+### Feat
+
+- revert and add rounds as request parameter of awaitCall (#223)
+- `awaitCallWithRounds` method on `PocketIcClient` (#220)
+
+## 0.17.1 (2025-12-15)
+
+## 0.17.0 (2025-12-11)
+
+### Feat
+
+- replace `@dfinity/*` deps with `@icp-sdk/core` (#199)
+- `getDefaultEffectiveCanisterId` method in `PocketIc` class (#209)
+- switch to `Uint8Array` for all buffers (#202)
+- bump PocketIC server to v11.0.0 (#196)
+
+### Fix
+
+- use bigint for `addCycles` and `getCyclesBalance` (#208)
+
+## 0.16.1 (2025-09-22)
+
+### Fix
+
+- docs typos and exports (#183)
+
+## 0.16.0 (2025-09-17)
+
+### Feat
+
+- upgrade options on install canister code (#173)
+
+### Fix
+
+- increase poll timeout (#175)
+
+## 0.15.0 (2025-09-16)
+
+### Feat
+
+- add `icpFeatures` field (#167)
+
+## 0.14.1 (2025-09-12)
+
+### Fix
+
+- readme links and install instructions (#164)
+
+## 0.14.0 (2025-09-12)
+
+### BREAKING CHANGE
+
+- Moves `@dfinity/agent`, `@dfinity/candid`,
+`@dfinity/identity` and `@dfinity/principal` from `peerDependencies` to
+`dependencies`
+- `nonmainnetFeatures` in `CreateInstanceRequest` is
+renamed to `icpConfig` and is now a record with multiple configuration
+options to override
+
+### Feat
+
+- bump agent-js deps to v3 (#158)
+- make pic-js compatible with server v10.0.0 (#147)
+
+### Fix
+
+- set the create-prs environment (#149)
+- state copy to not include parent folder (#134)
+
+### Refactor
+
+- poll ingress messages instead of awaiting them (#137)
+
+## 0.13.1 (2025-05-07)
+
+## 0.13.0 (2025-04-29)
+
+### BREAKING CHANGE
+
+- `FromPathSubnetStateConfig` and the `FromPath` variant
+of `state_config` in `EncodedSubnetConfig` no longer take a `subnet_id`.
+
+### Feat
+
+- update to PocketIC server v9.0.0 (#120)
+
+## 0.12.0 (2025-04-07)
+
+### Feat
+
+- add support for certified time endpoint (#109)
+- update dependencies (#106)
+- upgrade to pocketic version 8.0.0 (#96)
+- add support get controllers and get topology endpoints
+- update dependencies
+
+### Fix
+
+- **pocket-ic-server.ts**: switch from --pid to --port-file for pic server
+
+## 0.10.0 (2024-11-27)
+
+### Feat
+
+- add support for mocking https outcalls
+- upgrade to server v6
+- upgrade pic server to v5
+
 ## 0.19.0 (2026-03-10)
 
 ### Feat
