@@ -99,7 +99,7 @@ export class Http2Client {
 
         // server encountered an error, fail immediately
         if ('message' in resBody) {
-          throw new ServerError(resBody.message);
+          throw new ServerError(`${resBody.message} (${init.path})`);
         }
 
         // the server has started processing or is busy
@@ -149,7 +149,7 @@ export class Http2Client {
 
         // server encountered an error, fail immediately
         if ('message' in resBody) {
-          throw new ServerError(resBody.message);
+          throw new ServerError(`${resBody.message} (${init.path})`);
         }
 
         // the server has started processing or is busy
