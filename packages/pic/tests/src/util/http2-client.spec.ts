@@ -134,6 +134,20 @@ describe('Http2Client', () => {
       expect(fetchMock).toHaveBeenCalledTimes(2);
     });
 
+    it('should throw ServerError immediately on error response', async () => {
+      fetchMock.mockResolvedValue(
+        jsonResponse({ message: 'InstanceNotFound' }),
+      );
+
+      const err = await client
+        .jsonPost({ path: '/test' })
+        .catch(e => e);
+
+      expect(err).toBeInstanceOf(ServerError);
+      expect(err.serverMessage).toBe('InstanceNotFound (/test)');
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
+
     it('should poll read_graph on 202 until the result is ready', async () => {
       fetchMock
         .mockResolvedValueOnce(
