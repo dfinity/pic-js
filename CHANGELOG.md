@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Fix
+
+- **pic**: include request path in PocketIC server error messages (#70) (#249)
+
 ## 0.19.0 (2026-03-10)
 
 ### Feat
