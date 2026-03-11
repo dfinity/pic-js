@@ -139,9 +139,7 @@ describe('Http2Client', () => {
         jsonResponse({ message: 'InstanceNotFound' }),
       );
 
-      const err = await client
-        .jsonPost({ path: '/test' })
-        .catch(e => e);
+      const err = await client.jsonPost({ path: '/test' }).catch(e => e);
 
       expect(err).toBeInstanceOf(ServerError);
       expect(err.serverMessage).toBe('InstanceNotFound (/test)');
