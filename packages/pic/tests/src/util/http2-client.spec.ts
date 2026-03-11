@@ -49,7 +49,7 @@ describe('Http2Client', () => {
       const err = await client.jsonGet({ path: '/test' }).catch(e => e);
 
       expect(err).toBeInstanceOf(ServerError);
-      expect(err.serverMessage).toBe('SettingTimeIntoPast');
+      expect(err.serverMessage).toBe('SettingTimeIntoPast (/test)');
       expect(fetchMock).toHaveBeenCalledTimes(1);
     });
 
