@@ -1,10 +1,10 @@
 # Changelog
 
-## Unreleased
+## 0.20.0 (2026-03-12)
 
 ### Feat
 
-- **pic**: extend canister settings with `logVisibility`, `wasmMemoryLimit`, `wasmMemoryThreshold`, and `environmentVariables` for `createCanister`, `updateCanisterSettings`, and `canisterStatus` to match the current management canister interface
+- update canister settings to match spec (#251)
 
 ### Fix
 
