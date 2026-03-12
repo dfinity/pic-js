@@ -2,6 +2,8 @@ import { Principal } from '@icp-sdk/core/principal';
 import { IDL } from '@icp-sdk/core/candid';
 import {
   isNil,
+  logVisibilityFromIDL,
+  optLogVisibilityToIDL,
   optional,
   readFileAsBytes,
   sha256,
@@ -51,6 +53,7 @@ import {
 } from './pocket-ic-deferred-actor';
 
 const NANOS_PER_MILLISECOND = BigInt(1_000_000);
+
 // The IC ingress message limit is 2 MB, but that covers the entire message
 // envelope (signature, delegations, Candid overhead, etc.).
 // We use 1.85 MB to match dfx's conservative threshold.
@@ -182,9 +185,13 @@ export class PocketIc {
     cycles,
     freezingThreshold,
     memoryAllocation,
+    reservedCyclesLimit,
+    logVisibility,
+    wasmMemoryLimit,
+    wasmMemoryThreshold,
+    environmentVariables,
     targetCanisterId,
     targetSubnetId,
-    reservedCyclesLimit,
   }: SetupCanisterOptions): Promise<CanisterFixture<T>> {
     const canisterId = await this.createCanister({
       computeAllocation,
@@ -193,6 +200,10 @@ export class PocketIc {
       freezingThreshold,
       memoryAllocation,
       reservedCyclesLimit,
+      logVisibility,
+      wasmMemoryLimit,
+      wasmMemoryThreshold,
+      environmentVariables,
       targetCanisterId,
       targetSubnetId,
       sender,
@@ -236,6 +247,10 @@ export class PocketIc {
     freezingThreshold,
     memoryAllocation,
     reservedCyclesLimit,
+    logVisibility,
+    wasmMemoryLimit,
+    wasmMemoryThreshold,
+    environmentVariables,
     targetCanisterId,
     targetSubnetId,
   }: CreateCanisterOptions = {}): Promise<Principal> {
@@ -247,6 +262,10 @@ export class PocketIc {
           memory_allocation: optional(memoryAllocation),
           freezing_threshold: optional(freezingThreshold),
           reserved_cycles_limit: optional(reservedCyclesLimit),
+          log_visibility: optLogVisibilityToIDL(logVisibility),
+          wasm_memory_limit: optional(wasmMemoryLimit),
+          wasm_memory_threshold: optional(wasmMemoryThreshold),
+          environment_variables: optional(environmentVariables),
         },
       ],
       amount: [cycles],
@@ -594,6 +613,10 @@ export class PocketIc {
     freezingThreshold,
     memoryAllocation,
     reservedCyclesLimit,
+    logVisibility,
+    wasmMemoryLimit,
+    wasmMemoryThreshold,
+    environmentVariables,
     sender = Principal.anonymous(),
   }: UpdateCanisterSettingsOptions): Promise<void> {
     const payload = encodeUpdateCanisterSettingsRequest({
@@ -604,6 +627,10 @@ export class PocketIc {
         memory_allocation: optional(memoryAllocation),
         freezing_threshold: optional(freezingThreshold),
         reserved_cycles_limit: optional(reservedCyclesLimit),
+        log_visibility: optLogVisibilityToIDL(logVisibility),
+        wasm_memory_limit: optional(wasmMemoryLimit),
+        wasm_memory_threshold: optional(wasmMemoryThreshold),
+        environment_variables: optional(environmentVariables),
       },
     });
 
@@ -664,6 +691,10 @@ export class PocketIc {
         memoryAllocation: response.settings.memory_allocation,
         freezingThreshold: response.settings.freezing_threshold,
         reservedCyclesLimit: response.settings.reserved_cycles_limit,
+        logVisibility: logVisibilityFromIDL(response.settings.log_visibility),
+        wasmMemoryLimit: response.settings.wasm_memory_limit,
+        wasmMemoryThreshold: response.settings.wasm_memory_threshold,
+        environmentVariables: response.settings.environment_variables,
       },
       moduleHash: response.module_hash[0] ?? null,
       memorySize: response.memory_size,

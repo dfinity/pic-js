@@ -17,6 +17,7 @@ const WASM_PATH = path.resolve(
 
 const CONTROLLER = generateRandomIdentity();
 const CONTROLLER_PRINCIPAL = CONTROLLER.getPrincipal();
+const OTHER_PRINCIPAL = generateRandomIdentity().getPrincipal();
 
 /**
  * Pads a WASM module to the target size by appending a custom section.
@@ -195,5 +196,50 @@ describe.each(wasmVariants)('PocketIc — %s WASM', (_label, targetSize) => {
     });
     expect(status.status).toEqual({ running: null });
     expect(status.moduleHash).toEqual(expectedHash);
+  });
+
+  it('should update canister settings', async () => {
+    const canisterId = await pic.createCanister({
+      sender: CONTROLLER_PRINCIPAL,
+      controllers: [CONTROLLER_PRINCIPAL],
+    });
+
+    const envVars = [
+      { name: 'FOO', value: 'bar' },
+      { name: 'BAZ', value: 'qux' },
+    ];
+    const wasmThreshold = 4_000_000n;
+
+    let status = await pic.canisterStatus({
+      canisterId,
+      sender: CONTROLLER_PRINCIPAL,
+    });
+    expect(status.settings.controllers).toEqual([CONTROLLER_PRINCIPAL]);
+
+    await pic.updateCanisterSettings({
+      canisterId,
+      controllers: [CONTROLLER_PRINCIPAL, OTHER_PRINCIPAL],
+      logVisibility: { public: null },
+      wasmMemoryThreshold: wasmThreshold,
+      environmentVariables: envVars,
+      sender: CONTROLLER_PRINCIPAL,
+    });
+
+    status = await pic.canisterStatus({
+      canisterId,
+      sender: CONTROLLER_PRINCIPAL,
+    });
+    expect(status.settings.controllers).toEqual(
+      expect.arrayContaining([CONTROLLER_PRINCIPAL, OTHER_PRINCIPAL]),
+    );
+    expect(status.settings.controllers).toHaveLength(2);
+
+    expect(status.settings.logVisibility).toEqual({ public: null });
+    expect(status.settings.wasmMemoryThreshold).toEqual(wasmThreshold);
+
+    expect(status.settings.environmentVariables).toEqual(
+      expect.arrayContaining(envVars),
+    );
+    expect(status.settings.environmentVariables).toHaveLength(envVars.length);
   });
 });

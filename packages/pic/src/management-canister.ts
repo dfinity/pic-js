@@ -4,12 +4,37 @@ import { decodeCandid, isNil } from './util';
 
 export const MANAGEMENT_CANISTER_ID = Principal.fromText('aaaaa-aa');
 
+const EnvironmentVariable = IDL.Record({
+  name: IDL.Text,
+  value: IDL.Text,
+});
+
+export interface EnvironmentVariable {
+  name: string;
+  value: string;
+}
+
+const LogVisibility = IDL.Variant({
+  controllers: IDL.Null,
+  public: IDL.Null,
+  allowed_viewers: IDL.Vec(IDL.Principal),
+});
+
+export type LogVisibility =
+  | { controllers: null }
+  | { public: null }
+  | { allowed_viewers: Principal[] };
+
 export interface CanisterSettings {
   controllers: [] | [Principal[]];
   compute_allocation: [] | [bigint];
   memory_allocation: [] | [bigint];
   freezing_threshold: [] | [bigint];
   reserved_cycles_limit: [] | [bigint];
+  log_visibility: [] | [LogVisibility];
+  wasm_memory_limit: [] | [bigint];
+  wasm_memory_threshold: [] | [bigint];
+  environment_variables: [] | [EnvironmentVariable[]];
 }
 
 export const CanisterSettings = IDL.Record({
@@ -18,6 +43,10 @@ export const CanisterSettings = IDL.Record({
   memory_allocation: IDL.Opt(IDL.Nat),
   freezing_threshold: IDL.Opt(IDL.Nat),
   reserved_cycles_limit: IDL.Opt(IDL.Nat),
+  log_visibility: IDL.Opt(LogVisibility),
+  wasm_memory_limit: IDL.Opt(IDL.Nat),
+  wasm_memory_threshold: IDL.Opt(IDL.Nat),
+  environment_variables: IDL.Opt(IDL.Vec(EnvironmentVariable)),
 });
 
 export interface CreateCanisterRequest {
@@ -179,6 +208,10 @@ const DefiniteCanisterSettings = IDL.Record({
   memory_allocation: IDL.Nat,
   freezing_threshold: IDL.Nat,
   reserved_cycles_limit: IDL.Nat,
+  log_visibility: LogVisibility,
+  wasm_memory_limit: IDL.Nat,
+  wasm_memory_threshold: IDL.Nat,
+  environment_variables: IDL.Vec(EnvironmentVariable),
 });
 
 export interface DefiniteCanisterSettings {
@@ -187,6 +220,10 @@ export interface DefiniteCanisterSettings {
   memory_allocation: bigint;
   freezing_threshold: bigint;
   reserved_cycles_limit: bigint;
+  log_visibility: LogVisibility;
+  wasm_memory_limit: bigint;
+  wasm_memory_threshold: bigint;
+  environment_variables: EnvironmentVariable[];
 }
 
 const QueryStats = IDL.Record({

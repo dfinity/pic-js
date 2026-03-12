@@ -457,6 +457,27 @@ export interface CanisterFixture<T extends ActorInterface<T> = ActorInterface> {
 }
 
 /**
+ * Environment variable for canister settings.
+ *
+ * @category Types
+ */
+export interface EnvironmentVariable {
+  name: string;
+  value: string;
+}
+
+/**
+ * Log visibility for canister settings.
+ *
+ * @category Types
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ */
+export type LogVisibility =
+  | { controllers: null }
+  | { public: null }
+  | { allowedViewers: Principal[] };
+
+/**
  * Canister settings.
  *
  * @category Types
@@ -488,6 +509,27 @@ export interface CanisterSettings {
    * The reserved cycles limit of the canister.
    */
   reservedCyclesLimit?: bigint;
+
+  /**
+   * The log visibility of the canister.
+   */
+  logVisibility?: LogVisibility;
+
+  /**
+   * The WASM memory limit of the canister in bytes.
+   */
+  wasmMemoryLimit?: bigint;
+
+  /**
+   * The WASM memory threshold of the canister in bytes.
+   * The canister_on_low_wasm_memory function will be called when the canister's remaining wasm memory is below this threshold.
+   */
+  wasmMemoryThreshold?: bigint;
+
+  /**
+   * Environment variables exposed to the canister.
+   */
+  environmentVariables?: EnvironmentVariable[];
 }
 
 /**
@@ -761,6 +803,10 @@ export interface CanisterStatusResult {
     memoryAllocation: bigint;
     freezingThreshold: bigint;
     reservedCyclesLimit: bigint;
+    logVisibility: LogVisibility;
+    wasmMemoryLimit: bigint;
+    wasmMemoryThreshold: bigint;
+    environmentVariables: EnvironmentVariable[];
   };
 
   /**
