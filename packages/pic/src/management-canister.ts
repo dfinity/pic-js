@@ -25,6 +25,17 @@ export type LogVisibility =
   | { public: null }
   | { allowed_viewers: Principal[] };
 
+const SnapshotVisibility = IDL.Variant({
+  controllers: IDL.Null,
+  public: IDL.Null,
+  allowed_viewers: IDL.Vec(IDL.Principal),
+});
+
+export type SnapshotVisibility =
+  | { controllers: null }
+  | { public: null }
+  | { allowed_viewers: Principal[] };
+
 export interface CanisterSettings {
   controllers: [] | [Principal[]];
   compute_allocation: [] | [bigint];
@@ -32,6 +43,8 @@ export interface CanisterSettings {
   freezing_threshold: [] | [bigint];
   reserved_cycles_limit: [] | [bigint];
   log_visibility: [] | [LogVisibility];
+  snapshot_visibility: [] | [SnapshotVisibility];
+  log_memory_limit: [] | [bigint];
   wasm_memory_limit: [] | [bigint];
   wasm_memory_threshold: [] | [bigint];
   environment_variables: [] | [EnvironmentVariable[]];
@@ -44,6 +57,8 @@ export const CanisterSettings = IDL.Record({
   freezing_threshold: IDL.Opt(IDL.Nat),
   reserved_cycles_limit: IDL.Opt(IDL.Nat),
   log_visibility: IDL.Opt(LogVisibility),
+  snapshot_visibility: IDL.Opt(SnapshotVisibility),
+  log_memory_limit: IDL.Opt(IDL.Nat),
   wasm_memory_limit: IDL.Opt(IDL.Nat),
   wasm_memory_threshold: IDL.Opt(IDL.Nat),
   environment_variables: IDL.Opt(IDL.Vec(EnvironmentVariable)),

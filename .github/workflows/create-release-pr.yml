@@ -10,8 +10,13 @@ on:
         type: boolean
 
 jobs:
+  check_spec_drift:
+    name: check_spec_drift
+    uses: ./.github/workflows/check-spec-drift.yml
+
   create_release_pr:
     name: create_release_pr
+    needs: check_spec_drift
     runs-on: ubuntu-latest
     environment: release
     permissions:
