@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Feat
+
+- **pic**: add IC spec drift detection and update canister settings (#255)
+
 ## 0.20.0 (2026-03-12)
 
 ### Feat
