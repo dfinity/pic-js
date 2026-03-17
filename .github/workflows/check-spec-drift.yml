@@ -11,6 +11,7 @@ on:
 env:
   # The dfinity/portal commit that pic-js is currently aligned with.
   # Update this after syncing management-canister.ts with a newer spec.
+  # 2026/03/10: allow PUT/DELETE in http calls
   IC_SPEC_PINNED_COMMIT: '415b6182079cabf7926231af12405032fdc62319'
 
 jobs:
