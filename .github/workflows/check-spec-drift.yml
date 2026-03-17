@@ -1,0 +1,26 @@
+name: check_spec_drift
+
+on:
+  schedule:
+    # Every Sunday at 09:00 UTC
+    - cron: '0 9 * * 0'
+  workflow_dispatch:
+  workflow_call:
+  pull_request:
+
+env:
+  # The dfinity/portal commit that pic-js is currently aligned with.
+  # Update this after syncing management-canister.ts with a newer spec.
+  # 2026/03/10: allow PUT/DELETE in http calls
+  IC_SPEC_PINNED_COMMIT: '415b6182079cabf7926231af12405032fdc62319'
+
+jobs:
+  check_spec_drift:
+    name: check_spec_drift
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Check for spec drift
+        run: bash scripts/check-spec-drift.sh "$IC_SPEC_PINNED_COMMIT"

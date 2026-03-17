@@ -1,13 +1,15 @@
 import { IDL } from '@icp-sdk/core/candid';
 import type { LogVisibility as LogVisibilityIDL } from '../management-canister';
+import type { SnapshotVisibility as SnapshotVisibilityIDL } from '../management-canister';
 import type { LogVisibility as LogVisibilityPIC } from '../pocket-ic-types';
+import type { SnapshotVisibility as SnapshotVisibilityPIC } from '../pocket-ic-types';
 import { isNil } from './is-nil';
 
 export function optional<T>(value: T | undefined | null): [] | [T] {
   return isNil(value) ? [] : [value];
 }
 
-export type { LogVisibilityIDL };
+export type { LogVisibilityIDL, SnapshotVisibilityIDL };
 
 export function optLogVisibilityToIDL(
   lv: LogVisibilityPIC | undefined,
@@ -21,6 +23,23 @@ export function optLogVisibilityToIDL(
 export function logVisibilityFromIDL(lv: LogVisibilityIDL): LogVisibilityPIC {
   if ('allowed_viewers' in lv) return { allowedViewers: lv.allowed_viewers };
   if ('public' in lv) return { public: null };
+  return { controllers: null };
+}
+
+export function optSnapshotVisibilityToIDL(
+  sv: SnapshotVisibilityPIC | undefined,
+): [] | [SnapshotVisibilityIDL] {
+  if (sv === undefined) return [];
+  if ('controllers' in sv) return [{ controllers: null }];
+  if ('public' in sv) return [{ public: null }];
+  return [{ allowed_viewers: sv.allowedViewers }];
+}
+
+export function snapshotVisibilityFromIDL(
+  sv: SnapshotVisibilityIDL,
+): SnapshotVisibilityPIC {
+  if ('allowed_viewers' in sv) return { allowedViewers: sv.allowed_viewers };
+  if ('public' in sv) return { public: null };
   return { controllers: null };
 }
 

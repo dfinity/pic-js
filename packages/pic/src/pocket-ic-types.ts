@@ -478,6 +478,17 @@ export type LogVisibility =
   | { allowedViewers: Principal[] };
 
 /**
+ * Snapshot visibility for canister settings.
+ *
+ * @category Types
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ */
+export type SnapshotVisibility =
+  | { controllers: null }
+  | { public: null }
+  | { allowedViewers: Principal[] };
+
+/**
  * Canister settings.
  *
  * @category Types
@@ -514,6 +525,16 @@ export interface CanisterSettings {
    * The log visibility of the canister.
    */
   logVisibility?: LogVisibility;
+
+  /**
+   * The snapshot visibility of the canister.
+   */
+  snapshotVisibility?: SnapshotVisibility;
+
+  /**
+   * The log memory limit of the canister in bytes.
+   */
+  logMemoryLimit?: bigint;
 
   /**
    * The WASM memory limit of the canister in bytes.
@@ -783,7 +804,9 @@ export interface CanisterQueryStats {
 
 /**
  * The result of querying the status of a canister.
- * Matches the IC management canister `canister_status` response.
+ * This is a subset of the IC management canister `canister_status` response.
+ * Some fields (e.g. `snapshotVisibility`, `logMemoryLimit`, `memoryMetrics`)
+ * are not yet included because the PocketIC server does not return them.
  *
  * @category Types
  * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
