@@ -1,37 +1,48 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Checks for drift between the pinned IC management canister spec and the upstream version.
-# Usage: ./scripts/check-spec-drift.sh
+# Checks for drift between a pinned commit and the latest master of the IC spec.
+# Source: https://github.com/dfinity/portal/blob/master/docs/references/_attachments/ic.did
+# Usage: ./scripts/check-spec-drift.sh <pinned-commit>
 #
 # Exit codes:
 #   0 - no drift detected, drift detected (warning), or fetch failed (warning)
-#   1 - pinned spec file missing
 
-UPSTREAM_URL="https://raw.githubusercontent.com/dfinity/ic/master/rs/types/management_canister_types/tests/ic.did"
-PINNED_SPEC="$(cd "$(dirname "$0")/.." && pwd)/spec/ic.did"
+SPEC_PATH="docs/references/_attachments/ic.did"
+BASE_URL="https://raw.githubusercontent.com/dfinity/portal"
 
-if [[ ! -f "$PINNED_SPEC" ]]; then
-  echo "ERROR: Pinned spec not found at $PINNED_SPEC"
-  exit 1
-fi
+PINNED_COMMIT="$1"
+PINNED_URL="${BASE_URL}/${PINNED_COMMIT}/${SPEC_PATH}"
+LATEST_URL="${BASE_URL}/master/${SPEC_PATH}"
 
-TMPFILE=$(mktemp)
-trap 'rm -f "$TMPFILE"' EXIT
+CURL_OPTS=(--retry 3 --retry-all-errors --connect-timeout 10 --max-time 60 -fsSL)
 
-echo "Fetching upstream spec from $UPSTREAM_URL ..."
-if ! curl -fsSL --retry 3 --retry-all-errors --connect-timeout 5 --max-time 60 "$UPSTREAM_URL" -o "$TMPFILE"; then
-  echo "WARNING: Failed to fetch upstream spec — skipping drift check"
+PINNED_FILE=$(mktemp)
+LATEST_FILE=$(mktemp)
+trap 'rm -f "$PINNED_FILE" "$LATEST_FILE"' EXIT
+
+echo "Fetching pinned spec at commit '${PINNED_COMMIT}' ..."
+if ! curl "${CURL_OPTS[@]}" "$PINNED_URL" -o "$PINNED_FILE"; then
+  echo "WARNING: Failed to fetch pinned spec at commit '${PINNED_COMMIT}' — skipping drift check"
   if [[ -n "${GITHUB_ACTIONS:-}" ]]; then
-    echo "::warning::Failed to fetch upstream IC spec — drift check skipped"
+    echo "::warning::Failed to fetch IC spec at pinned commit '${PINNED_COMMIT}' — drift check skipped"
   fi
   exit 0
 fi
 
-DIFF_OUTPUT=$(diff -u "$PINNED_SPEC" "$TMPFILE" || true)
+echo "Fetching latest spec from master ..."
+if ! curl "${CURL_OPTS[@]}" "$LATEST_URL" -o "$LATEST_FILE"; then
+  echo "WARNING: Failed to fetch latest spec from master — skipping drift check"
+  if [[ -n "${GITHUB_ACTIONS:-}" ]]; then
+    echo "::warning::Failed to fetch latest IC spec from master — drift check skipped"
+  fi
+  exit 0
+fi
+
+DIFF_OUTPUT=$(diff -u "$PINNED_FILE" "$LATEST_FILE" || true)
 
 if [[ -z "$DIFF_OUTPUT" ]]; then
-  echo "No drift detected — pinned spec matches upstream."
+  echo "No drift detected — pinned commit '${PINNED_COMMIT}' matches upstream master."
   exit 0
 fi
 
@@ -40,21 +51,22 @@ echo "=========================================="
 echo "  SPEC DRIFT DETECTED"
 echo "=========================================="
 echo ""
-echo "The pinned spec/ic.did differs from upstream."
-echo "Upstream: $UPSTREAM_URL"
+echo "The IC spec at pinned commit '${PINNED_COMMIT}' differs from master."
+echo "Pinned:  $PINNED_URL"
+echo "Latest:  $LATEST_URL"
 echo ""
-echo "Diff (pinned → upstream):"
+echo "Diff (pinned → latest):"
 echo ""
 echo "$DIFF_OUTPUT"
 echo ""
 echo "Action required:"
 echo "  1. Review the upstream changes"
-echo "  2. Update the relevant source files to match"
-echo "  3. Re-pin the spec: curl -fsSL '$UPSTREAM_URL' -o spec/ic.did"
+echo "  2. Update the relevant source files to match the latest spec"
+echo "  3. Update the pinned commit in .github/workflows/check-spec-drift.yml"
 
 # Emit GitHub Actions warning annotation if running in CI
 if [[ -n "${GITHUB_ACTIONS:-}" ]]; then
-  echo "::warning::IC management canister spec drift detected. The pinned spec/ic.did differs from upstream."
+  echo "::warning::IC spec drift detected — pinned commit '${PINNED_COMMIT}' differs from upstream master."
 fi
 
 exit 0
