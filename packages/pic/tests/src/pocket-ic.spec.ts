@@ -222,6 +222,8 @@ describe.each(wasmVariants)('PocketIc — %s WASM', (_label, targetSize) => {
       logVisibility: { public: null },
       wasmMemoryThreshold: wasmThreshold,
       environmentVariables: envVars,
+      snapshotVisibility: { controllers: null },
+      logMemoryLimit: 4_096n,
       sender: CONTROLLER_PRINCIPAL,
     });
 
