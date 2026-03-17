@@ -35,6 +35,14 @@ export function optSnapshotVisibilityToIDL(
   return [{ allowed_viewers: sv.allowedViewers }];
 }
 
+export function snapshotVisibilityFromIDL(
+  sv: SnapshotVisibilityIDL,
+): SnapshotVisibilityPIC {
+  if ('allowed_viewers' in sv) return { allowedViewers: sv.allowed_viewers };
+  if ('public' in sv) return { public: null };
+  return { controllers: null };
+}
+
 export function decodeCandid<T>(types: IDL.Type[], data: Uint8Array): T | null {
   const returnValues = IDL.decode(types, data);
 
