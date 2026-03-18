@@ -1,5 +1,5 @@
 import { JSONParse } from 'json-with-bigint';
-import { Http2Client } from './http2-client';
+import { Http2Client, ServerRequestTimeoutError } from './http2-client';
 import {
   EncodedAddCyclesRequest,
   EncodedAddCyclesResponse,
@@ -366,12 +366,24 @@ export class PocketIcClient {
   ): Promise<AwaitCanisterCallResponse> {
     this.assertInstanceNotDeleted();
 
-    const res = await this.post<
-      EncodedAwaitCanisterCallRequest,
-      EncodedAwaitCanisterCallResponse
-    >('/update/await_ingress_message', encodeAwaitCanisterCallRequest(req));
+    try {
+      const res = await this.post<
+        EncodedAwaitCanisterCallRequest,
+        EncodedAwaitCanisterCallResponse
+      >('/update/await_ingress_message', encodeAwaitCanisterCallRequest(req));
 
-    return decodeAwaitCanisterCallResponse(res);
+      return decodeAwaitCanisterCallResponse(res);
+    } catch (err) {
+      if (err instanceof ServerRequestTimeoutError) {
+        throw new Error(
+          `awaitCall timed out while waiting for canister response. ` +
+            `If your update call can take longer than ${PROCESSING_TIME_VALUE_MS}ms, ` +
+            `increase the ` +
+            '`processingTimeoutMs` option when creating the PocketIC client.',
+        );
+      }
+      throw err;
+    }
   }
 
   public async autoProgress(): Promise<void> {
