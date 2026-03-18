@@ -6,6 +6,10 @@
 
 - **pic**: add IC spec drift detection and update canister settings (#255)
 
+### Fix
+
+- **pic**: use await_ingress_message endpoint to fix update call performance (#257)
+
 ## 0.20.0 (2026-03-12)
 
 ### Feat
