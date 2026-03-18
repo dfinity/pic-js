@@ -1,5 +1,240 @@
 # Changelog
 
+## Unreleased
+
+### Feat
+
+- **pic**: add IC spec drift detection and update canister settings (#255)
+
+### Fix
+
+- **pic**: use await_ingress_message endpoint to fix update call performance (#257)
+
+## 0.20.0 (2026-03-12)
+
+### Feat
+
+- update canister settings to match spec (#251)
+
+### Fix
+
+- **pic**: include request path in PocketIC server error messages (#70) (#249)
+
+## 0.19.0 (2026-03-10)
+
+### Feat
+
+- **pic**: add chunked WASM upload and canisterStatus method (#239)
+- add http gateway support (#233)
+- bump PocketIC server to v12.0.0 (#231)
+
+### Fix
+
+- **pic**: fail immediately on non-retryable PocketIC server errors (#242)
+
+## 0.18.0 (2026-01-21)
+
+### Feat
+
+- Length of wait for ingress status configurable. (#227)
+
+## 0.17.2 (2026-01-08)
+
+### Feat
+
+- revert and add rounds as request parameter of awaitCall (#223)
+- `awaitCallWithRounds` method on `PocketIcClient` (#220)
+
+## 0.17.1 (2025-12-15)
+
+## 0.17.0 (2025-12-11)
+
+### Feat
+
+- replace `@dfinity/*` deps with `@icp-sdk/core` (#199)
+- `getDefaultEffectiveCanisterId` method in `PocketIc` class (#209)
+- switch to `Uint8Array` for all buffers (#202)
+- bump PocketIC server to v11.0.0 (#196)
+
+### Fix
+
+- use bigint for `addCycles` and `getCyclesBalance` (#208)
+
+## 0.16.1 (2025-09-22)
+
+### Fix
+
+- docs typos and exports (#183)
+
+## 0.16.0 (2025-09-17)
+
+### Feat
+
+- upgrade options on install canister code (#173)
+
+### Fix
+
+- increase poll timeout (#175)
+
+## 0.15.0 (2025-09-16)
+
+### Feat
+
+- add `icpFeatures` field (#167)
+
+## 0.14.1 (2025-09-12)
+
+### Fix
+
+- readme links and install instructions (#164)
+
+## 0.14.0 (2025-09-12)
+
+### BREAKING CHANGE
+
+- Moves `@dfinity/agent`, `@dfinity/candid`,
+`@dfinity/identity` and `@dfinity/principal` from `peerDependencies` to
+`dependencies`
+- `nonmainnetFeatures` in `CreateInstanceRequest` is
+renamed to `icpConfig` and is now a record with multiple configuration
+options to override
+
+### Feat
+
+- bump agent-js deps to v3 (#158)
+- make pic-js compatible with server v10.0.0 (#147)
+
+### Fix
+
+- set the create-prs environment (#149)
+- state copy to not include parent folder (#134)
+
+### Refactor
+
+- poll ingress messages instead of awaiting them (#137)
+
+## 0.13.1 (2025-05-07)
+
+## 0.13.0 (2025-04-29)
+
+### BREAKING CHANGE
+
+- `FromPathSubnetStateConfig` and the `FromPath` variant
+of `state_config` in `EncodedSubnetConfig` no longer take a `subnet_id`.
+
+### Feat
+
+- update to PocketIC server v9.0.0 (#120)
+
+## 0.12.0 (2025-04-07)
+
+### Feat
+
+- add support for certified time endpoint (#109)
+- update dependencies (#106)
+- upgrade to pocketic version 8.0.0 (#96)
+- add support get controllers and get topology endpoints
+- update dependencies
+
+### Fix
+
+- **pocket-ic-server.ts**: switch from --pid to --port-file for pic server
+
+## 0.10.0 (2024-11-27)
+
+### Feat
+
+- add support for mocking https outcalls
+- upgrade to server v6
+- upgrade pic server to v5
+
+## 0.9.0 (2024-07-01)
+
+### Feat
+
+- upgrade to pic server v4
+
+## 0.8.1 (2024-04-27)
+
+### Fix
+
+- pipe unwanted logs to /dev/null
+
+## 0.8.0 (2024-04-27)
+
+### Feat
+
+- add http2 support
+- add logging support
+- separate pic server management from instance management
+
+## 0.7.0 (2024-03-17)
+
+### Feat
+
+- enable direct canister calls
+
+## 0.6.1 (2024-03-15)
+
+### Fix
+
+- get pub key endpoint params encoded incorrectly
+- unable to start picjs server on macos
+- build docs only when release_latest is successful
+- move docs build and deployment to release workflow
+- removed fetchRootKey in favor of getPubKey, which accepts a subnet Id
+
+## 0.6.0 (2024-03-03)
+
+### Feat
+
+- add support for nns subnet init
+
+## 0.5.0 (2024-02-24)
+
+### Feat
+
+- update agent-js and pocket-ic dependencies
+
+## 0.4.0 (2024-02-19)
+
+### Feat
+
+- add canister stop and start methods
+
+## 0.3.0 (2024-02-12)
+
+### Feat
+
+- add update canister settings method
+- upgrade to pocket-ic v3
+- upgrade to pic server 2.0.1
+- accept ArrayBufferLike instead of Uint8Array to be more compatible with agent-js & co libraries
+- throw a more helpful error is devs interact with a pic instance after tearing it down
+- add ability to tick multiple times
+
+### Fix
+
+- canister settings encoding
+- propogate sender principal correctly when setting up canister
+- updated dependencies on dfinity packages
+- updated dependencies on dfinity packages
+
+### Refactor
+
+- use auto-generated idl for management canister
+
+## 0.2.1 (2024-01-21)
+
+### Feat
+
+- update versions of @dfinity dependencies
+
+### Fix
+
+- update file permission for pocket-ic executable in case package manager has moved it
+- client refuses to start on MacOS ARM chips that are also running NodeJS on ARM architecture
+
 ## 0.21.0 (2026-03-18)
 
 ### Feat
