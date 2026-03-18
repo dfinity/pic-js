@@ -1,5 +1,6 @@
 import { JSONParse } from 'json-with-bigint';
-import { Http2Client, ServerRequestTimeoutError } from './http2-client';
+import { Http2Client } from './http2-client';
+import { ServerRequestTimeoutError } from './error';
 import {
   EncodedAddCyclesRequest,
   EncodedAddCyclesResponse,
