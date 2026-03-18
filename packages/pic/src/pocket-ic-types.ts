@@ -71,6 +71,8 @@ export interface CreateInstanceOptions {
   /**
    * @deprecated This option is no longer used. The PocketIC server now handles
    * ingress message processing internally via the `await_ingress_message` endpoint.
+   * Use {@link CreateInstanceOptions.processingTimeoutMs} to control how long update
+   * calls can wait for ingress processing to complete.
    */
   ingressMaxRetries?: number;
   /**
