@@ -1163,6 +1163,14 @@ export function encodeAwaitCanisterCallRequest(
 
 export type AwaitCanisterCallResponse = CanisterCallResponse;
 
+export type EncodedAwaitCanisterCallResponse = EncodedCanisterCallResponse;
+
+export function decodeAwaitCanisterCallResponse(
+  res: EncodedAwaitCanisterCallResponse,
+): AwaitCanisterCallResponse {
+  return decodeCanisterCallResponse(res);
+}
+
 //#endregion AwaitCanisterCall
 
 //#region LiveMode

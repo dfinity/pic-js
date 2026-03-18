@@ -73,7 +73,10 @@ import {
   decodeIngressStatusResponse,
   encodeAwaitCanisterCallRequest,
   AwaitCanisterCallRequest,
+  EncodedAwaitCanisterCallRequest,
   AwaitCanisterCallResponse,
+  EncodedAwaitCanisterCallResponse,
+  decodeAwaitCanisterCallResponse,
   EncodedGetTopologyResponse,
   EncodedGetControllersRequest,
   EncodedGetControllersResponse,
@@ -85,11 +88,10 @@ import {
   EncodedHttpGatewayRequest,
   EncodedHttpGatewayResponse,
 } from './pocket-ic-client-types';
-import { base64DecodePrincipal, isNil, isNotNil } from './util';
+import { base64DecodePrincipal, isNil } from './util';
 import { Principal } from '@icp-sdk/core/principal';
 
 const PROCESSING_TIME_VALUE_MS = 30_000;
-const AWAIT_INGRESS_STATUS_ROUNDS = 100;
 
 export class PocketIcClient {
   private isInstanceDeleted = false;
@@ -99,7 +101,6 @@ export class PocketIcClient {
     private readonly serverClient: Http2Client,
     private readonly instancePath: string,
     private readonly instanceId: number,
-    private readonly ingressMaxRetries: number,
   ) {}
 
   public static async create(
@@ -126,14 +127,10 @@ export class PocketIcClient {
 
     const instanceId = res.Created.instance_id;
 
-    const ingressMaxRetries =
-      req?.ingressMaxRetries ?? AWAIT_INGRESS_STATUS_ROUNDS;
-
     return new PocketIcClient(
       serverClient,
       `/instances/${instanceId}`,
       instanceId,
-      ingressMaxRetries,
     );
   }
 
@@ -368,24 +365,13 @@ export class PocketIcClient {
     req: AwaitCanisterCallRequest,
   ): Promise<AwaitCanisterCallResponse> {
     this.assertInstanceNotDeleted();
-    const encodedReq = {
-      messageId: encodeAwaitCanisterCallRequest(req),
-      // since this is always called immediately after making a call, there is no need to check the caller
-      // the `ingressStatus` method is not exposed publicly, so it is safe to assume that the caller is the same as the one who made the call
-      caller: undefined,
-    };
 
-    for (let i = 0; i < this.ingressMaxRetries; i++) {
-      await this.tick();
-      const result = await this.ingressStatus(encodedReq);
-      if (isNotNil(result)) {
-        return result;
-      }
-    }
+    const res = await this.post<
+      EncodedAwaitCanisterCallRequest,
+      EncodedAwaitCanisterCallResponse
+    >('/update/await_ingress_message', encodeAwaitCanisterCallRequest(req));
 
-    throw new Error(
-      `PocketIC did not complete the update call within ${this.ingressMaxRetries} rounds`,
-    );
+    return decodeAwaitCanisterCallResponse(res);
   }
 
   public async autoProgress(): Promise<void> {
