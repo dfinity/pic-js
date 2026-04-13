@@ -70,6 +70,9 @@ jobs:
         shell: bash
         run: bun i --frozen-lockfile
 
+      - name: Setup
+        run: bun run setup
+
       - name: Setup Canister Toolchain
         uses: ./.github/actions/setup-canister-toolchain
         with:
