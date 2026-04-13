@@ -9,7 +9,7 @@ overrides:
   picomatch@>=4.0.0 <4.0.4: 4.0.4
   brace-expansion@>=1.0.0 <2.0.0: ^1.1.13
   brace-expansion@>=2.0.0 <2.0.3: ^2.0.3
-  yaml@>=2.0.0 <2.8.3: ^2.8.3
+  yaml@>=2.0.0 <2.8.3: 2.8.3
 
 importers:
 
@@ -2532,7 +2532,7 @@ packages:
       sugarss: ^5.0.0
       terser: ^5.16.0
       tsx: ^4.8.1
-      yaml: ^2.8.3
+      yaml: 2.8.3
     peerDependenciesMeta:
       '@types/node':
         optional: true
