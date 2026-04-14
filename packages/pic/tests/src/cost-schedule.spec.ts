@@ -56,6 +56,8 @@ describe('ApplicationSubnetConfig.costSchedule', () => {
 
       const balanceBefore = await pic.getCyclesBalance(canisterId);
 
+      // Advance 30 days so idle resource costs (memory, compute allocation)
+      // accrue under the Normal schedule and drain the balance.
       await pic.advanceTime(30 * 24 * 60 * 60 * 1000);
       await pic.tick(5);
       await actor.get_time();
