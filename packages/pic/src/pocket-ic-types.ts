@@ -114,6 +114,22 @@ export interface SubnetConfig<
 }
 
 /**
+ * The canister cycles cost schedule for a subnet.
+ * See the `SubnetSpec.cost_schedule` field in the PocketIC server.
+ */
+export enum CanisterCyclesCostSchedule {
+  /**
+   * Canisters are charged cycles as on the ICP mainnet.
+   */
+  Normal = 'Normal',
+
+  /**
+   * Canisters are not charged cycles. Only supported on application subnets.
+   */
+  Free = 'Free',
+}
+
+/**
  * Options for creating an NNS subnet.
  */
 export type NnsSubnetConfig = SubnetConfig<NnsSubnetStateConfig>;
@@ -179,7 +195,16 @@ export type SystemSubnetStateConfig = NewSubnetStateConfig;
  * Options for creating an application subnet.
  */
 export type ApplicationSubnetConfig =
-  SubnetConfig<ApplicationSubnetStateConfig>;
+  SubnetConfig<ApplicationSubnetStateConfig> & {
+    /**
+     * The canister cycles cost schedule for the subnet.
+     * Defaults to {@link CanisterCyclesCostSchedule.Normal}.
+     *
+     * Only supported on application subnets. The PocketIC server will reject
+     * non-default values on other subnet kinds.
+     */
+    costSchedule?: CanisterCyclesCostSchedule;
+  };
 
 /**
  * Options for an application subnet's state.

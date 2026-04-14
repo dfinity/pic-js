@@ -9,6 +9,9 @@ import {
   isNotNil,
 } from './util';
 import { TopologyValidationError } from './error';
+import { CanisterCyclesCostSchedule } from './pocket-ic-types';
+
+export { CanisterCyclesCostSchedule };
 
 const NANOS_PER_MILLISECOND = BigInt(1_000_000);
 
@@ -60,7 +63,9 @@ export type SystemSubnetConfig = SubnetConfig<SystemSubnetStateConfig>;
 export type SystemSubnetStateConfig = NewSubnetStateConfig;
 
 export type ApplicationSubnetConfig =
-  SubnetConfig<ApplicationSubnetStateConfig>;
+  SubnetConfig<ApplicationSubnetStateConfig> & {
+    costSchedule?: CanisterCyclesCostSchedule;
+  };
 export type ApplicationSubnetStateConfig = NewSubnetStateConfig;
 
 export type VerifiedApplicationSubnetConfig =
@@ -122,6 +127,7 @@ export interface EncodedCreateInstanceSubnetConfig {
   bitcoin?: EncodedSubnetConfig;
   system: EncodedSubnetConfig[];
   application: EncodedSubnetConfig[];
+  cloud_engine: EncodedSubnetConfig[];
   verified_application: EncodedSubnetConfig[];
 }
 
@@ -155,17 +161,27 @@ export interface EncodedIcpFeatures {
 export interface EncodedSubnetConfig {
   dts_flag: 'Enabled' | 'Disabled';
   instruction_config: 'Production' | 'Benchmarking';
+  cost_schedule: 'Normal' | 'Free';
   state_config: 'New' | { FromPath: string };
 }
 
 function encodeManySubnetConfigs<T extends SubnetConfig>(
   configs: T[] = [],
 ): EncodedSubnetConfig[] {
-  return configs.map(encodeSubnetConfig).filter(isNotNil);
+  return configs.map(config => encodeSubnetConfig(config)).filter(isNotNil);
+}
+
+function encodeManyApplicationSubnetConfigs(
+  configs: ApplicationSubnetConfig[] = [],
+): EncodedSubnetConfig[] {
+  return configs
+    .map(config => encodeSubnetConfig(config, config.costSchedule))
+    .filter(isNotNil);
 }
 
 function encodeSubnetConfig<T extends SubnetConfig>(
   config?: T,
+  costSchedule?: CanisterCyclesCostSchedule,
 ): EncodedSubnetConfig | undefined {
   if (isNil(config)) {
     return undefined;
@@ -182,6 +198,7 @@ function encodeSubnetConfig<T extends SubnetConfig>(
         instruction_config: encodeInstructionConfig(
           config.enableBenchmarkingInstructionLimits,
         ),
+        cost_schedule: encodeCostSchedule(costSchedule),
         state_config: 'New',
       };
     }
@@ -192,6 +209,7 @@ function encodeSubnetConfig<T extends SubnetConfig>(
         instruction_config: encodeInstructionConfig(
           config.enableBenchmarkingInstructionLimits,
         ),
+        cost_schedule: encodeCostSchedule(costSchedule),
         state_config: {
           FromPath: config.state.path,
         },
@@ -212,6 +230,12 @@ function encodeInstructionConfig(
   return enableBenchmarkingInstructionLimits === true
     ? 'Benchmarking'
     : 'Production';
+}
+
+function encodeCostSchedule(
+  costSchedule?: CanisterCyclesCostSchedule,
+): EncodedSubnetConfig['cost_schedule'] {
+  return costSchedule ?? 'Normal';
 }
 
 function encodeIcpConfigFlag(
@@ -292,9 +316,11 @@ export function encodeCreateInstanceRequest(
       fiduciary: encodeSubnetConfig(defaultOptions.fiduciary),
       bitcoin: encodeSubnetConfig(defaultOptions.bitcoin),
       system: encodeManySubnetConfigs(defaultOptions.system),
-      application: encodeManySubnetConfigs(
+      application: encodeManyApplicationSubnetConfigs(
         defaultOptions.application ?? [defaultApplicationSubnet],
       ),
+      // Required by the PocketIC v13 server contract; not user-configurable.
+      cloud_engine: [],
       verified_application: encodeManySubnetConfigs(
         defaultOptions.verifiedApplication,
       ),
