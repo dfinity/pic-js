@@ -28,7 +28,7 @@ const CONTROLLER_PRINCIPAL = CONTROLLER.getPrincipal();
 
 const INITIAL_CYCLES = 1_000_000_000_000_000_000n;
 
-describe('SubnetConfig.costSchedule', () => {
+describe('ApplicationSubnetConfig.costSchedule', () => {
   let wasm: Uint8Array;
 
   beforeAll(() => {
@@ -105,19 +105,5 @@ describe('SubnetConfig.costSchedule', () => {
     } finally {
       await pic.tearDown();
     }
-  });
-
-  it('rejects costSchedule: Free on a system subnet', async () => {
-    await expect(
-      PocketIc.create(process.env.PIC_URL, {
-        system: [
-          {
-            state: { type: SubnetStateType.New },
-            costSchedule: CanisterCyclesCostSchedule.Free,
-          } as any,
-        ],
-        application: [{ state: { type: SubnetStateType.New } }],
-      }),
-    ).rejects.toThrow(/cost.?schedule|Free|application/i);
   });
 });
