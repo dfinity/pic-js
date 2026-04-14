@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Feat
+
+- **pic**: add `costSchedule` option to `ApplicationSubnetConfig` for `Free` cycles cost schedule on application subnets
+
+### Chore
+
+- **pic**: bump PocketIC server to v13.0.0 (major server version bump; downloaded automatically on install)
+
 ## 0.21.0 (2026-03-18)
 
 ### Feat

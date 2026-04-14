@@ -9,6 +9,9 @@ import {
   isNotNil,
 } from './util';
 import { TopologyValidationError } from './error';
+import { CanisterCyclesCostSchedule } from './pocket-ic-types';
+
+export { CanisterCyclesCostSchedule };
 
 const NANOS_PER_MILLISECOND = BigInt(1_000_000);
 
@@ -36,6 +39,7 @@ export interface SubnetConfig<
 > {
   enableDeterministicTimeSlicing?: boolean;
   enableBenchmarkingInstructionLimits?: boolean;
+  costSchedule?: CanisterCyclesCostSchedule;
   state: T;
 }
 
@@ -122,6 +126,7 @@ export interface EncodedCreateInstanceSubnetConfig {
   bitcoin?: EncodedSubnetConfig;
   system: EncodedSubnetConfig[];
   application: EncodedSubnetConfig[];
+  cloud_engine: EncodedSubnetConfig[];
   verified_application: EncodedSubnetConfig[];
 }
 
@@ -155,6 +160,7 @@ export interface EncodedIcpFeatures {
 export interface EncodedSubnetConfig {
   dts_flag: 'Enabled' | 'Disabled';
   instruction_config: 'Production' | 'Benchmarking';
+  cost_schedule: 'Normal' | 'Free';
   state_config: 'New' | { FromPath: string };
 }
 
@@ -182,6 +188,7 @@ function encodeSubnetConfig<T extends SubnetConfig>(
         instruction_config: encodeInstructionConfig(
           config.enableBenchmarkingInstructionLimits,
         ),
+        cost_schedule: encodeCostSchedule(config.costSchedule),
         state_config: 'New',
       };
     }
@@ -192,6 +199,7 @@ function encodeSubnetConfig<T extends SubnetConfig>(
         instruction_config: encodeInstructionConfig(
           config.enableBenchmarkingInstructionLimits,
         ),
+        cost_schedule: encodeCostSchedule(config.costSchedule),
         state_config: {
           FromPath: config.state.path,
         },
@@ -212,6 +220,12 @@ function encodeInstructionConfig(
   return enableBenchmarkingInstructionLimits === true
     ? 'Benchmarking'
     : 'Production';
+}
+
+function encodeCostSchedule(
+  costSchedule?: CanisterCyclesCostSchedule,
+): EncodedSubnetConfig['cost_schedule'] {
+  return costSchedule ?? 'Normal';
 }
 
 function encodeIcpConfigFlag(
@@ -295,6 +309,8 @@ export function encodeCreateInstanceRequest(
       application: encodeManySubnetConfigs(
         defaultOptions.application ?? [defaultApplicationSubnet],
       ),
+      // Required by the PocketIC v13 server contract; not user-configurable.
+      cloud_engine: [],
       verified_application: encodeManySubnetConfigs(
         defaultOptions.verifiedApplication,
       ),
