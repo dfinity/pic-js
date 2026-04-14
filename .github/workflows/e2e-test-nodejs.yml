@@ -15,6 +15,9 @@ jobs:
       - name: Setup PNPM
         uses: dfinity/ci-tools/actions/setup-pnpm@afeee4fbdc0683a88ec5a74ed7f59a2ce0e833ad # main
 
+      - name: Setup
+        run: pnpm run setup
+
       - name: Test
         run: pnpm test:pic
 
@@ -30,6 +33,9 @@ jobs:
 
       - name: Setup PNPM
         uses: dfinity/ci-tools/actions/setup-pnpm@afeee4fbdc0683a88ec5a74ed7f59a2ce0e833ad # main
+
+      - name: Setup
+        run: pnpm run setup
 
       - name: Setup Canister Toolchain
         uses: ./.github/actions/setup-canister-toolchain
@@ -63,6 +69,9 @@ jobs:
       - name: Install Dependencies
         shell: bash
         run: bun i --frozen-lockfile
+
+      - name: Setup
+        run: bun run setup
 
       - name: Setup Canister Toolchain
         uses: ./.github/actions/setup-canister-toolchain
