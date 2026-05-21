@@ -54,6 +54,18 @@ async function downloadPicBinary() {
   const downloadUrl = resolveDownloadUrl();
   const response = await fetch(downloadUrl);
 
+  if (!response.ok) {
+    throw new Error(
+      `Failed to download pocket-ic from ${downloadUrl}: HTTP ${response.status} ${response.statusText}`,
+    );
+  }
+
+  if (!response.body) {
+    throw new Error(
+      `Failed to download pocket-ic from ${downloadUrl}: response body is empty`,
+    );
+  }
+
   await pipeline(response.body, createGunzip(), createWriteStream(TARGET_PATH));
 
   chmodSync(TARGET_PATH, 0o700);
