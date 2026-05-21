@@ -22,7 +22,10 @@ function resolveDownloadUrl() {
   let versionSpec = DEFAULT_VERSION;
   try {
     versionSpec = readFileSync(versionFilePath, 'utf8').trim();
-  } catch {
+  } catch (error) {
+    if (error?.code !== 'ENOENT') {
+      throw error;
+    }
     // No version file; use default.
   }
 
