@@ -37,7 +37,13 @@ function resolveDownloadUrl() {
   }
 
   const source = versionSpec.slice(0, colonIdx);
-  const version = versionSpec.slice(colonIdx + 1);
+  const version = versionSpec.slice(colonIdx + 1).trim();
+
+  if (!version) {
+    throw new Error(
+      `.pocket-ic-version: missing version in "${versionSpec}". Expected "package:<version>" or "ic:<version>".`,
+    );
+  }
 
   if (source === 'package') {
     return `https://github.com/dfinity/pocketic/releases/download/${version}/pocket-ic-${PLATFORM}.gz`;
