@@ -1,5 +1,4 @@
 import { Cbor } from '@icp-sdk/core/agent';
-import { Principal } from '@icp-sdk/core/principal';
 import { PocketIc, SubnetStateType, generateRandomIdentity } from '../../src';
 
 // A minimal Candid-encoded empty argument tuple (`DIDL` magic + 0 type/arg counts).

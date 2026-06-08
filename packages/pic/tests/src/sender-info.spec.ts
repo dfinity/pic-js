@@ -3,10 +3,6 @@ import { gunzipSync } from 'node:zlib';
 import path from 'node:path';
 import { IDL } from '@icp-sdk/core/candid';
 import { PocketIc, SubnetStateType, generateRandomIdentity } from '../../src';
-import {
-  _SERVICE as TestCanister,
-  idlFactory,
-} from '../test-canister/declarations/test_canister.did';
 
 const WASM_PATH = path.resolve(
   __dirname,
