@@ -10,7 +10,9 @@ const __dirname = dirname(__filename);
 const IS_LINUX = process.platform === 'linux';
 const IS_DARWIN = process.platform === 'darwin';
 if (!IS_LINUX && !IS_DARWIN) {
-  throw new Error(`Unsupported platform: ${process.platform}. Only linux and darwin are supported.`);
+  throw new Error(
+    `Unsupported platform: ${process.platform}. Only linux and darwin are supported.`,
+  );
 }
 const IS_ARM = process.arch === 'arm64' || process.arch === 'aarch64';
 const ARCH = IS_ARM ? 'arm64' : 'x86_64';
