@@ -17,7 +17,7 @@ if (!IS_LINUX && !IS_DARWIN) {
 const IS_ARM = process.arch === 'arm64' || process.arch === 'aarch64';
 const ARCH = IS_ARM ? 'arm64' : 'x86_64';
 const PLATFORM = IS_LINUX ? `${ARCH}-linux` : `${ARCH}-darwin`;
-const DEFAULT_VERSION = 'package:13.0.0';
+const DEFAULT_VERSION = 'package:14.0.0';
 
 const TARGET_PATH = resolve(__dirname, 'pocket-ic');
 
