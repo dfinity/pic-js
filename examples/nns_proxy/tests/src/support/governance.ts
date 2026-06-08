@@ -63,7 +63,7 @@ export class Governance {
     const ownerPrincipal = identity.getPrincipal();
     const governanceSubAccount = getNeuronSubaccount(ownerPrincipal, nonce);
 
-    // Mint more than the stake to ensure the controller has enough balance to cover ledger transfer fees (and any follow-up test actions).
+    // Mint 10x the stake so the controller has ample balance for the staking transfer fee plus any follow-up test actions (proposals, additional neurons, etc.).
     await this.ledger.mint(icpToE8s(stakeIcp * 10), ownerPrincipal);
     await this.ledger.transfer(
       identity,
