@@ -54,16 +54,20 @@ export class Governance {
     this.ledger = new Ledger(pic);
   }
 
-  public async createNeuron(identity: Identity): Promise<bigint> {
+  public async createNeuron(
+    identity: Identity,
+    stakeIcp: number = 1_000,
+  ): Promise<bigint> {
     const nonce = generateNonce();
 
     const ownerPrincipal = identity.getPrincipal();
     const governanceSubAccount = getNeuronSubaccount(ownerPrincipal, nonce);
 
-    await this.ledger.mint(icpToE8s(100), ownerPrincipal);
+    // Mint 10x the stake so the controller has ample balance for the staking transfer fee plus any follow-up test actions (proposals, additional neurons, etc.).
+    await this.ledger.mint(icpToE8s(stakeIcp * 10), ownerPrincipal);
     await this.ledger.transfer(
       identity,
-      icpToE8s(10),
+      icpToE8s(stakeIcp),
       GOVERNANCE_CANISTER_ID,
       governanceSubAccount,
       bigEndianU64(nonce),

@@ -8,7 +8,15 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const IS_LINUX = process.platform === 'linux';
-const PLATFORM = IS_LINUX ? 'x86_64-linux' : 'x86_64-darwin';
+const IS_DARWIN = process.platform === 'darwin';
+if (!IS_LINUX && !IS_DARWIN) {
+  throw new Error(
+    `Unsupported platform: ${process.platform}. Only linux and darwin are supported.`,
+  );
+}
+const IS_ARM = process.arch === 'arm64' || process.arch === 'aarch64';
+const ARCH = IS_ARM ? 'arm64' : 'x86_64';
+const PLATFORM = IS_LINUX ? `${ARCH}-linux` : `${ARCH}-darwin`;
 const DEFAULT_VERSION = 'package:13.0.0';
 
 const TARGET_PATH = resolve(__dirname, 'pocket-ic');

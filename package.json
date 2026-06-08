@@ -31,8 +31,7 @@
     "generate:test-canister": "icp-bindgen --did-file packages/pic/tests/test-canister/test_canister.did --out-dir packages/pic/tests/test-canister --actor-disabled --force",
     "build:examples": "./scripts/build-examples.sh",
     "test:examples": "./scripts/test-examples.sh",
-    "postinstall": "tar -xvf examples/nns_proxy/tests/state/nns_state.tar.xz -C examples/nns_proxy/tests/state",
-    "setup": "node packages/pic/postinstall.mjs && pnpm run postinstall"
+    "setup": "node packages/pic/postinstall.mjs"
   },
   "devDependencies": {
     "@icp-sdk/bindgen": "^0.2.3",
