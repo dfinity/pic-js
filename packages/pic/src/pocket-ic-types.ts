@@ -908,12 +908,12 @@ export interface CanisterStatusResult {
 //#region CanisterCall
 
 /**
- * Signed sender information attached to a canister call.
+ * Sender information attached to a canister call.
  *
  * This is passed through to the canister, which can inspect it via the
  * `msg_caller_info_data` and `msg_caller_info_signer` system APIs. PocketIC
- * does not validate the signature over `info`, but preserves both fields for
- * canister inspection.
+ * does not validate or verify anything; it simply forwards both fields for
+ * canister inspection, mocking the signer's signature.
  *
  * @category Types
  * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
@@ -925,7 +925,7 @@ export interface SenderInfo {
   info: Uint8Array;
 
   /**
-   * The Principal of the signer of {@link info}.
+   * The Principal of the canister whose signature will be mocked.
    */
   signer: Principal;
 }
@@ -965,7 +965,7 @@ export interface QueryCallOptions {
   targetSubnetId?: Principal;
 
   /**
-   * Signed sender information to attach to the call, see {@link SenderInfo}.
+   * Sender information to attach to the call, see {@link SenderInfo}.
    */
   senderInfo?: SenderInfo;
 }
@@ -1006,7 +1006,7 @@ export interface UpdateCallOptions {
   targetSubnetId?: Principal;
 
   /**
-   * Signed sender information to attach to the call, see {@link SenderInfo}.
+   * Sender information to attach to the call, see {@link SenderInfo}.
    */
   senderInfo?: SenderInfo;
 }
