@@ -1,12 +1,14 @@
 # Changelog
 
+## Unreleased
+
 ## 0.22.0 (2026-06-09)
 
 ### Feat
 
-- Update to v14, support disableIngressValidation and senderInfo (#271)
-- Allow specifying PIC version (#266)
-- Use arm64 pic binaries (#268)
+- **pic**: Update to v14, support disableIngressValidation and senderInfo (#271)
+- **pic**: Allow specifying PIC version (#266)
+- **pic**: Use arm64 pic binaries (#268)
 - **pic**: add costSchedule option and bump PocketIC to v13 (#264)
 
 ## 0.21.0 (2026-03-18)
