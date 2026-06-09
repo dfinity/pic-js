@@ -9,7 +9,7 @@ import {
   isNotNil,
 } from './util';
 import { TopologyValidationError } from './error';
-import { CanisterCyclesCostSchedule } from './pocket-ic-types';
+import { CanisterCyclesCostSchedule, SenderInfo } from './pocket-ic-types';
 
 export { CanisterCyclesCostSchedule };
 
@@ -30,6 +30,7 @@ export interface CreateInstanceRequest {
   ingressMaxRetries?: number;
   icpConfig?: IcpConfig;
   icpFeatures?: IcpFeatures;
+  disableIngressValidation?: boolean;
 }
 
 export interface SubnetConfig<
@@ -117,6 +118,7 @@ export interface EncodedCreateInstanceRequest {
   subnet_config_set: EncodedCreateInstanceSubnetConfig;
   icp_config?: EncodedIcpConfig;
   icp_features?: EncodedIcpFeatures;
+  disable_ingress_validation?: boolean;
 }
 
 export interface EncodedCreateInstanceSubnetConfig {
@@ -331,6 +333,7 @@ export function encodeCreateInstanceRequest(
     icp_features: defaultOptions.icpFeatures
       ? encodeIcpFeatures(defaultOptions.icpFeatures)
       : undefined,
+    disable_ingress_validation: defaultOptions.disableIngressValidation,
   };
 
   if (
@@ -981,6 +984,7 @@ export interface CanisterCallRequest {
   method: string;
   payload: Uint8Array;
   effectivePrincipal?: EffectivePrincipal;
+  senderInfo?: SenderInfo;
 }
 
 export type EffectivePrincipal =
@@ -997,6 +1001,12 @@ export interface EncodedCanisterCallRequest {
   method: string;
   payload: string;
   effective_principal?: EncodedEffectivePrincipal;
+  sender_info?: EncodedSenderInfo;
+}
+
+export interface EncodedSenderInfo {
+  info: string;
+  signer: string;
 }
 
 export type EncodedEffectivePrincipal =
@@ -1051,6 +1061,14 @@ export function encodeCanisterCallRequest(
     method: req.method,
     payload: base64Encode(req.payload),
     effective_principal: encodeEffectivePrincipal(req.effectivePrincipal),
+    sender_info: req.senderInfo ? encodeSenderInfo(req.senderInfo) : undefined,
+  };
+}
+
+function encodeSenderInfo(senderInfo: SenderInfo): EncodedSenderInfo {
+  return {
+    info: base64Encode(senderInfo.info),
+    signer: base64EncodePrincipal(senderInfo.signer),
   };
 }
 

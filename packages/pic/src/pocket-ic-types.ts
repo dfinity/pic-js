@@ -85,6 +85,18 @@ export interface CreateInstanceOptions {
    * Determines what ICP features should be enabled for the PocketIC instance.
    */
   icpFeatures?: IcpFeatures;
+
+  /**
+   * Disables ingress message validation on the PocketIC instance.
+   *
+   * When enabled, the PocketIC server skips the validation that would normally
+   * reject malformed or otherwise invalid ingress messages. This is useful for
+   * testing canister behavior against ingress messages that the replica would
+   * ordinarily refuse to process.
+   *
+   * Defaults to `false`.
+   */
+  disableIngressValidation?: boolean;
 }
 
 /**
@@ -896,6 +908,29 @@ export interface CanisterStatusResult {
 //#region CanisterCall
 
 /**
+ * Sender information attached to a canister call.
+ *
+ * This is passed through to the canister, which can inspect it via the
+ * `msg_caller_info_data` and `msg_caller_info_signer` system APIs. PocketIC
+ * does not validate or verify anything; it simply forwards both fields for
+ * canister inspection, mocking the signer's signature.
+ *
+ * @category Types
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ */
+export interface SenderInfo {
+  /**
+   * An arbitrary binary blob of sender information.
+   */
+  info: Uint8Array;
+
+  /**
+   * The Principal of the canister whose signature will be mocked.
+   */
+  signer: Principal;
+}
+
+/**
  * Options for making a query call to a given canister.
  *
  * @category Types
@@ -928,6 +963,11 @@ export interface QueryCallOptions {
    * The ID of the subnet that the canister resides on.
    */
   targetSubnetId?: Principal;
+
+  /**
+   * Sender information to attach to the call, see {@link SenderInfo}.
+   */
+  senderInfo?: SenderInfo;
 }
 
 /**
@@ -964,6 +1004,11 @@ export interface UpdateCallOptions {
    * The ID of the subnet that the canister resides on.
    */
   targetSubnetId?: Principal;
+
+  /**
+   * Sender information to attach to the call, see {@link SenderInfo}.
+   */
+  senderInfo?: SenderInfo;
 }
 
 //#endregion CanisterCall

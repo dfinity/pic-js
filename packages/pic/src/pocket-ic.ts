@@ -843,6 +843,7 @@ export class PocketIc {
     arg = new Uint8Array(),
     sender = Principal.anonymous(),
     targetSubnetId,
+    senderInfo,
   }: QueryCallOptions): Promise<Uint8Array> {
     const res = await this.client.queryCall({
       canisterId,
@@ -854,6 +855,7 @@ export class PocketIc {
             subnetId: targetSubnetId,
           }
         : undefined,
+      senderInfo,
     });
 
     return res.body;
@@ -896,6 +898,7 @@ export class PocketIc {
     arg = new Uint8Array(),
     sender = Principal.anonymous(),
     targetSubnetId,
+    senderInfo,
   }: UpdateCallOptions): Promise<Uint8Array> {
     const res = await this.client.updateCall({
       canisterId,
@@ -907,6 +910,7 @@ export class PocketIc {
             subnetId: targetSubnetId,
           }
         : undefined,
+      senderInfo,
     });
 
     return res.body;
