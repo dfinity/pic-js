@@ -18,4 +18,11 @@ export interface StartServerOptions {
    * otherwise the binary downloaded by this package's install script.
    */
   binPath?: string;
+
+  /**
+   * Time to live of the server in seconds since the last completed operation,
+   * after which the server shuts down gracefully.
+   * If not provided, the server's default time to live is used.
+   */
+  ttl?: number;
 }
