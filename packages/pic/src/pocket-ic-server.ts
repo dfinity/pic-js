@@ -63,7 +63,7 @@ export class PocketIcServer {
   public static async start(
     options: StartServerOptions = {},
   ): Promise<PocketIcServer> {
-    const binPath = this.getBinPath();
+    const binPath = this.getBinPath(options);
     await this.assertBinExists(binPath);
 
     const pid = process.ppid;
@@ -145,8 +145,12 @@ export class PocketIcServer {
     });
   }
 
-  private static getBinPath(): string {
-    return resolve(__dirname, '..', 'pocket-ic');
+  private static getBinPath(options: StartServerOptions): string {
+    return (
+      options.binPath ||
+      process.env.POCKET_IC_BIN ||
+      resolve(__dirname, '..', 'pocket-ic')
+    );
   }
 
   private static async assertBinExists(binPath: string): Promise<void> {
