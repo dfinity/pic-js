@@ -85,10 +85,4 @@ async function downloadPicBinary() {
   chmodSync(TARGET_PATH, 0o700);
 }
 
-if (process.env.POCKET_IC_BIN) {
-  console.log(
-    `POCKET_IC_BIN is set to ${process.env.POCKET_IC_BIN}, skipping pocket-ic download.`,
-  );
-} else {
-  await downloadPicBinary();
-}
+await downloadPicBinary();
