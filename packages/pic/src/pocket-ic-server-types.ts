@@ -16,6 +16,9 @@ export interface StartServerOptions {
    * Path to the PocketIC server binary.
    * Defaults to the `POCKET_IC_BIN` environment variable if set,
    * otherwise the binary downloaded by this package's install script.
+   * Note that the install script skips the download when `POCKET_IC_BIN`
+   * is set at install time, so there is no downloaded binary to fall
+   * back to in that case.
    */
   binPath?: string;
 }
