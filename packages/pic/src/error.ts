@@ -34,7 +34,7 @@ export class BinNotFoundError extends Error {
 
   constructor(picBinPath: string) {
     super(
-      `Could not find the PocketIC binary. The PocketIC binary could not be found at ${picBinPath}. Please try installing @dfinity/pic again.`,
+      `Could not find the PocketIC binary at ${picBinPath}. If the path was provided via the binPath option or the POCKET_IC_BIN environment variable, please check that it points to an existing binary. Otherwise, please try installing @dfinity/pic again.`,
     );
   }
 }

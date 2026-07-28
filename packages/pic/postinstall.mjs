@@ -85,4 +85,4 @@ async function downloadPicBinary() {
   chmodSync(TARGET_PATH, 0o700);
 }
 
-downloadPicBinary();
+await downloadPicBinary();

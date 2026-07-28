@@ -4,6 +4,24 @@ sidebar:
   order: 5
 ---
 
+## Configuring the server binary
+
+By default, the PocketIC server binary downloaded when installing `@dfinity/pic` is used. A different binary can be provided using the `binPath` option, for example:
+
+```ts
+const pic = await PocketIcServer.start({
+  binPath: '/path/to/pocket-ic',
+});
+```
+
+Alternatively, the `POCKET_IC_BIN` environment variable can be set to the path of the binary, for example:
+
+```shell
+POCKET_IC_BIN=/path/to/pocket-ic npm test
+```
+
+The `binPath` option takes precedence over the `POCKET_IC_BIN` environment variable.
+
 ## Configuring logging
 
 ### Canister logs
