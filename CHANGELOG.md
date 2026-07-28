@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Feat
+
+- **pic**: support overriding the PocketIC binary path (#276)
+
 ## 0.22.0 (2026-06-09)
 
 ### Feat
