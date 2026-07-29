@@ -1,0 +1,7 @@
+name: clock
+recipe:
+  type: '@dfinity/motoko@v4.1.0'
+  configuration:
+    main: src/main.mo
+    candid: clock.did
+    compress: true

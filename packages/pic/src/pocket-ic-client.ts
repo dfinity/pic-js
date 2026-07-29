@@ -1,5 +1,6 @@
 import { JSONParse } from 'json-with-bigint';
 import { Http2Client } from './http2-client';
+import { ServerRequestTimeoutError } from './error';
 import {
   EncodedAddCyclesRequest,
   EncodedAddCyclesResponse,
@@ -73,7 +74,10 @@ import {
   decodeIngressStatusResponse,
   encodeAwaitCanisterCallRequest,
   AwaitCanisterCallRequest,
+  EncodedAwaitCanisterCallRequest,
   AwaitCanisterCallResponse,
+  EncodedAwaitCanisterCallResponse,
+  decodeAwaitCanisterCallResponse,
   EncodedGetTopologyResponse,
   EncodedGetControllersRequest,
   EncodedGetControllersResponse,
@@ -81,20 +85,23 @@ import {
   GetControllersResponse,
   decodeGetControllersResponse,
   encodeGetControllersRequest,
+  EncodedAutoProgressRequest,
+  EncodedHttpGatewayRequest,
+  EncodedHttpGatewayResponse,
 } from './pocket-ic-client-types';
-import { base64DecodePrincipal, isNotNil } from './util';
+import { base64DecodePrincipal, isNil } from './util';
 import { Principal } from '@icp-sdk/core/principal';
 
 const PROCESSING_TIME_VALUE_MS = 30_000;
-const AWAIT_INGRESS_STATUS_ROUNDS = 100;
 
 export class PocketIcClient {
   private isInstanceDeleted = false;
+  private httpGatewayInstanceId: number | null = null;
 
   private constructor(
     private readonly serverClient: Http2Client,
     private readonly instancePath: string,
-    private readonly ingressMaxRetries: number,
+    private readonly instanceId: number,
   ) {}
 
   public static async create(
@@ -121,13 +128,10 @@ export class PocketIcClient {
 
     const instanceId = res.Created.instance_id;
 
-    const ingressMaxRetries =
-      req?.ingressMaxRetries ?? AWAIT_INGRESS_STATUS_ROUNDS;
-
     return new PocketIcClient(
       serverClient,
       `/instances/${instanceId}`,
-      ingressMaxRetries,
+      instanceId,
     );
   }
 
@@ -362,24 +366,67 @@ export class PocketIcClient {
     req: AwaitCanisterCallRequest,
   ): Promise<AwaitCanisterCallResponse> {
     this.assertInstanceNotDeleted();
-    const encodedReq = {
-      messageId: encodeAwaitCanisterCallRequest(req),
-      // since this is always called immediately after making a call, there is no need to check the caller
-      // the `ingressStatus` method is not exposed publicly, so it is safe to assume that the caller is the same as the one who made the call
-      caller: undefined,
-    };
 
-    for (let i = 0; i < this.ingressMaxRetries; i++) {
-      await this.tick();
-      const result = await this.ingressStatus(encodedReq);
-      if (isNotNil(result)) {
-        return result;
+    try {
+      const res = await this.post<
+        EncodedAwaitCanisterCallRequest,
+        EncodedAwaitCanisterCallResponse
+      >('/update/await_ingress_message', encodeAwaitCanisterCallRequest(req));
+
+      return decodeAwaitCanisterCallResponse(res);
+    } catch (err) {
+      if (err instanceof ServerRequestTimeoutError) {
+        throw new Error(
+          `awaitCall timed out while waiting for canister response. ` +
+            `If your update call can take longer than ${PROCESSING_TIME_VALUE_MS}ms, ` +
+            `increase the ` +
+            '`processingTimeoutMs` option when creating the PocketIC client.',
+        );
       }
+      throw err;
+    }
+  }
+
+  public async autoProgress(): Promise<void> {
+    await this.post<EncodedAutoProgressRequest, {}>('/auto_progress', {
+      artificial_delay_ms: 0,
+    });
+  }
+
+  public async autoProgressEnabled(): Promise<boolean> {
+    return await this.get<boolean>('/auto_progress');
+  }
+
+  public async stopProgress(): Promise<void> {
+    await this.post<{}, {}>('/stop_progress', {});
+  }
+
+  public async startHttpGateway(): Promise<number> {
+    const res = await this.serverClient.jsonPost<
+      EncodedHttpGatewayRequest,
+      EncodedHttpGatewayResponse
+    >({
+      path: '/http_gateway',
+      body: { forward_to: { PocketIcInstance: this.instanceId } },
+    });
+
+    if ('Error' in res) {
+      throw new Error(res.Error.message);
     }
 
-    throw new Error(
-      `PocketIC did not complete the update call within ${this.ingressMaxRetries} rounds`,
-    );
+    this.httpGatewayInstanceId = res.Created.instance_id;
+    return res.Created.port;
+  }
+
+  public async stopHttpGateway(): Promise<void> {
+    if (isNil(this.httpGatewayInstanceId)) {
+      return;
+    }
+
+    await this.serverClient.jsonPost<{}, {}>({
+      path: `/http_gateway/${this.httpGatewayInstanceId}/stop`,
+    });
+    this.httpGatewayInstanceId = null;
   }
 
   private async post<B, R extends {}>(

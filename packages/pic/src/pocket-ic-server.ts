@@ -63,7 +63,7 @@ export class PocketIcServer {
   public static async start(
     options: StartServerOptions = {},
   ): Promise<PocketIcServer> {
-    const binPath = this.getBinPath();
+    const binPath = this.getBinPath(options);
     await this.assertBinExists(binPath);
 
     const pid = process.ppid;
@@ -94,7 +94,18 @@ export class PocketIcServer {
 
     return await poll(
       async () => {
-        const portString = await readFileAsString(portFilePath);
+        const portString = await readFileAsString(portFilePath).catch(
+          (err: unknown) => {
+            if (
+              err instanceof Error &&
+              (err as NodeJS.ErrnoException).code === 'ENOENT'
+            ) {
+              throw new BinTimeoutError();
+            }
+            throw err;
+          },
+        );
+
         const port = parseInt(portString);
         if (isNaN(port)) {
           throw new BinTimeoutError();
@@ -134,8 +145,12 @@ export class PocketIcServer {
     });
   }
 
-  private static getBinPath(): string {
-    return resolve(__dirname, '..', 'pocket-ic');
+  private static getBinPath(options: StartServerOptions): string {
+    return (
+      options.binPath ||
+      process.env.POCKET_IC_BIN ||
+      resolve(__dirname, '..', 'pocket-ic')
+    );
   }
 
   private static async assertBinExists(binPath: string): Promise<void> {
@@ -153,7 +168,7 @@ const POLL_INTERVAL_MS = 100;
 const POLL_TIMEOUT_MS = 90_000;
 
 class NullStream extends Writable {
-  _write(
+  override _write(
     _chunk: any,
     _encoding: BufferEncoding,
     callback: (error?: Error | null) => void,

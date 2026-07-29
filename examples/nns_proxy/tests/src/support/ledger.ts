@@ -6,7 +6,6 @@ import {
   SubAccount,
   idlFactory as ledgerIdlFactory,
 } from '../canisters/ledger';
-import { minterIdentity } from './identity';
 
 const ICP_LEDGER_CANISTER_ID = Principal.fromText(
   'ryjl3-tyaaa-aaaaa-aaaba-cai',
@@ -35,8 +34,9 @@ export class Ledger {
     toSubAccount?: SubAccount,
     memo?: Uint8Array | number[],
   ): Promise<void> {
+    // icpToken seeds 1B ICP to the anonymous principal; use it as the source for minting.
     return await this.transfer(
-      minterIdentity,
+      new AnonymousIdentity(),
       amountE8s,
       toAccount,
       toSubAccount,

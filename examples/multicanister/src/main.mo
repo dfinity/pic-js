@@ -1,5 +1,5 @@
-import PhoneBook "../declarations/phonebook/phonebook";
-import SuperHeroes "../declarations/superheroes/superheroes";
+import PhoneBook "../interfaces/phonebook";
+import SuperHeroes "../interfaces/superheroes";
 
 persistent actor class KeyValue(phonebook : PhoneBook.Self, superheroes : SuperHeroes.Self) {
   public func insert_phone_book_entry(name : Text, entry : PhoneBook.PhoneBookEntry) : async () {

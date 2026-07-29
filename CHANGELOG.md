@@ -1,8 +1,51 @@
+# Changelog
+
 ## Unreleased
+
+## 0.22.0 (2026-06-09)
+
+### Feat
+
+- **pic**: Update to v14, support disableIngressValidation and senderInfo (#271)
+- **pic**: Allow specifying PIC version (#266)
+- **pic**: Use arm64 pic binaries (#268)
+- **pic**: add costSchedule option and bump PocketIC to v13 (#264)
+
+## 0.21.0 (2026-03-18)
+
+### Feat
+
+- **pic**: add IC spec drift detection and update canister settings (#255)
+
+### Fix
+
+- **pic**: use await_ingress_message endpoint to fix update call performance (#257)
+
+## 0.20.0 (2026-03-12)
+
+### Feat
+
+- update canister settings to match spec (#251)
+
+### Fix
+
+- **pic**: include request path in PocketIC server error messages (#70) (#249)
+
+## 0.19.0 (2026-03-10)
+
+### Feat
+
+- **pic**: add chunked WASM upload and canisterStatus method (#239)
+- add http gateway support (#233)
+- bump PocketIC server to v12.0.0 (#231)
+
+### Fix
+
+- **pic**: fail immediately on non-retryable PocketIC server errors (#242)
 
 ## 0.18.0 (2026-01-21)
 
-### BREAKING CHANCE
+### BREAKING CHANGE
 
 - Reverts "introduce a new `rounds` option for `awaitCall` method on `PocketIcClient` (#223)"
 

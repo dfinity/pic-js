@@ -1,5 +1,5 @@
-import Time "mo:base/Time";
-import Debug "mo:base/Debug";
+import Time "mo:core/Time";
+import Debug "mo:core/Debug";
 
 persistent actor TestCanister {
   public query func get_time() : async Time.Time {

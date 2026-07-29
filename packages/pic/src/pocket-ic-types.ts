@@ -69,7 +69,10 @@ export interface CreateInstanceOptions {
   processingTimeoutMs?: number;
 
   /**
-   * How many IngressStatusRounds all IC update calls should wait, till we get a timeout.
+   * @deprecated This option is no longer used. The PocketIC server now handles
+   * ingress message processing internally via the `await_ingress_message` endpoint.
+   * Use {@link CreateInstanceOptions.processingTimeoutMs} to control how long update
+   * calls can wait for ingress processing to complete.
    */
   ingressMaxRetries?: number;
   /**
@@ -82,6 +85,18 @@ export interface CreateInstanceOptions {
    * Determines what ICP features should be enabled for the PocketIC instance.
    */
   icpFeatures?: IcpFeatures;
+
+  /**
+   * Disables ingress message validation on the PocketIC instance.
+   *
+   * When enabled, the PocketIC server skips the validation that would normally
+   * reject malformed or otherwise invalid ingress messages. This is useful for
+   * testing canister behavior against ingress messages that the replica would
+   * ordinarily refuse to process.
+   *
+   * Defaults to `false`.
+   */
+  disableIngressValidation?: boolean;
 }
 
 /**
@@ -108,6 +123,22 @@ export interface SubnetConfig<
    * The state configuration for the subnet.
    */
   state: T;
+}
+
+/**
+ * The canister cycles cost schedule for a subnet.
+ * See the `SubnetSpec.cost_schedule` field in the PocketIC server.
+ */
+export enum CanisterCyclesCostSchedule {
+  /**
+   * Canisters are charged cycles as on the ICP mainnet.
+   */
+  Normal = 'Normal',
+
+  /**
+   * Canisters are not charged cycles. Only supported on application subnets.
+   */
+  Free = 'Free',
 }
 
 /**
@@ -176,7 +207,16 @@ export type SystemSubnetStateConfig = NewSubnetStateConfig;
  * Options for creating an application subnet.
  */
 export type ApplicationSubnetConfig =
-  SubnetConfig<ApplicationSubnetStateConfig>;
+  SubnetConfig<ApplicationSubnetStateConfig> & {
+    /**
+     * The canister cycles cost schedule for the subnet.
+     * Defaults to {@link CanisterCyclesCostSchedule.Normal}.
+     *
+     * Only supported on application subnets. The PocketIC server will reject
+     * non-default values on other subnet kinds.
+     */
+    costSchedule?: CanisterCyclesCostSchedule;
+  };
 
 /**
  * Options for an application subnet's state.
@@ -457,6 +497,38 @@ export interface CanisterFixture<T extends ActorInterface<T> = ActorInterface> {
 }
 
 /**
+ * Environment variable for canister settings.
+ *
+ * @category Types
+ */
+export interface EnvironmentVariable {
+  name: string;
+  value: string;
+}
+
+/**
+ * Log visibility for canister settings.
+ *
+ * @category Types
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ */
+export type LogVisibility =
+  | { controllers: null }
+  | { public: null }
+  | { allowedViewers: Principal[] };
+
+/**
+ * Snapshot visibility for canister settings.
+ *
+ * @category Types
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ */
+export type SnapshotVisibility =
+  | { controllers: null }
+  | { public: null }
+  | { allowedViewers: Principal[] };
+
+/**
  * Canister settings.
  *
  * @category Types
@@ -488,6 +560,37 @@ export interface CanisterSettings {
    * The reserved cycles limit of the canister.
    */
   reservedCyclesLimit?: bigint;
+
+  /**
+   * The log visibility of the canister.
+   */
+  logVisibility?: LogVisibility;
+
+  /**
+   * The snapshot visibility of the canister.
+   */
+  snapshotVisibility?: SnapshotVisibility;
+
+  /**
+   * The log memory limit of the canister in bytes.
+   */
+  logMemoryLimit?: bigint;
+
+  /**
+   * The WASM memory limit of the canister in bytes.
+   */
+  wasmMemoryLimit?: bigint;
+
+  /**
+   * The WASM memory threshold of the canister in bytes.
+   * The canister_on_low_wasm_memory function will be called when the canister's remaining wasm memory is below this threshold.
+   */
+  wasmMemoryThreshold?: bigint;
+
+  /**
+   * Environment variables exposed to the canister.
+   */
+  environmentVariables?: EnvironmentVariable[];
 }
 
 /**
@@ -685,8 +788,7 @@ export interface UpgradeCanisterOptions {
  * @category Types
  * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
  */
-export interface UpdateCanisterSettingsOptions
-  extends Partial<CanisterSettings> {
+export interface UpdateCanisterSettingsOptions extends Partial<CanisterSettings> {
   /**
    * The Principal of the canister to update the settings for.
    */
@@ -699,9 +801,134 @@ export interface UpdateCanisterSettingsOptions
   sender?: Principal;
 }
 
+/**
+ * Options for querying the status of a given canister.
+ *
+ * @category Types
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ */
+export interface CanisterStatusOptions {
+  /**
+   * The Principal of the canister to query the status of.
+   */
+  canisterId: Principal;
+
+  /**
+   * The Principal to send the request as.
+   * Defaults to the anonymous principal.
+   */
+  sender?: Principal;
+}
+
+/**
+ * The status of a canister.
+ *
+ * @category Types
+ */
+export type CanisterStatus =
+  | { running: null }
+  | { stopping: null }
+  | { stopped: null };
+
+/**
+ * Query statistics for a canister.
+ *
+ * @category Types
+ */
+export interface CanisterQueryStats {
+  numCallsTotal: bigint;
+  numInstructionsTotal: bigint;
+  requestPayloadBytesTotal: bigint;
+  responsePayloadBytesTotal: bigint;
+}
+
+/**
+ * The result of querying the status of a canister.
+ * This is a subset of the IC management canister `canister_status` response.
+ * Some fields (e.g. `snapshotVisibility`, `logMemoryLimit`, `memoryMetrics`)
+ * are not yet included because the PocketIC server does not return them.
+ *
+ * @category Types
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ */
+export interface CanisterStatusResult {
+  /**
+   * The current status of the canister.
+   */
+  status: CanisterStatus;
+
+  /**
+   * The definite settings of the canister.
+   */
+  settings: {
+    controllers: Principal[];
+    computeAllocation: bigint;
+    memoryAllocation: bigint;
+    freezingThreshold: bigint;
+    reservedCyclesLimit: bigint;
+    logVisibility: LogVisibility;
+    wasmMemoryLimit: bigint;
+    wasmMemoryThreshold: bigint;
+    environmentVariables: EnvironmentVariable[];
+  };
+
+  /**
+   * The SHA-256 hash of the installed WASM module, if any.
+   */
+  moduleHash: Uint8Array | null;
+
+  /**
+   * The total memory size of the canister in bytes.
+   */
+  memorySize: bigint;
+
+  /**
+   * The current cycle balance of the canister.
+   */
+  cycles: bigint;
+
+  /**
+   * The reserved cycles of the canister.
+   */
+  reservedCycles: bigint;
+
+  /**
+   * The amount of cycles burned per day when idle.
+   */
+  idleCyclesBurnedPerDay: bigint;
+
+  /**
+   * Query call statistics for the canister.
+   */
+  queryStats: CanisterQueryStats;
+}
+
 //#endregion CanisterLifecycle
 
 //#region CanisterCall
+
+/**
+ * Sender information attached to a canister call.
+ *
+ * This is passed through to the canister, which can inspect it via the
+ * `msg_caller_info_data` and `msg_caller_info_signer` system APIs. PocketIC
+ * does not validate or verify anything; it simply forwards both fields for
+ * canister inspection, mocking the signer's signature.
+ *
+ * @category Types
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ */
+export interface SenderInfo {
+  /**
+   * An arbitrary binary blob of sender information.
+   */
+  info: Uint8Array;
+
+  /**
+   * The Principal of the canister whose signature will be mocked.
+   */
+  signer: Principal;
+}
 
 /**
  * Options for making a query call to a given canister.
@@ -736,6 +963,11 @@ export interface QueryCallOptions {
    * The ID of the subnet that the canister resides on.
    */
   targetSubnetId?: Principal;
+
+  /**
+   * Sender information to attach to the call, see {@link SenderInfo}.
+   */
+  senderInfo?: SenderInfo;
 }
 
 /**
@@ -772,6 +1004,11 @@ export interface UpdateCallOptions {
    * The ID of the subnet that the canister resides on.
    */
   targetSubnetId?: Principal;
+
+  /**
+   * Sender information to attach to the call, see {@link SenderInfo}.
+   */
+  senderInfo?: SenderInfo;
 }
 
 //#endregion CanisterCall

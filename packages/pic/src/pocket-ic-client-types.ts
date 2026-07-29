@@ -9,6 +9,9 @@ import {
   isNotNil,
 } from './util';
 import { TopologyValidationError } from './error';
+import { CanisterCyclesCostSchedule, SenderInfo } from './pocket-ic-types';
+
+export { CanisterCyclesCostSchedule };
 
 const NANOS_PER_MILLISECOND = BigInt(1_000_000);
 
@@ -27,6 +30,7 @@ export interface CreateInstanceRequest {
   ingressMaxRetries?: number;
   icpConfig?: IcpConfig;
   icpFeatures?: IcpFeatures;
+  disableIngressValidation?: boolean;
 }
 
 export interface SubnetConfig<
@@ -60,7 +64,9 @@ export type SystemSubnetConfig = SubnetConfig<SystemSubnetStateConfig>;
 export type SystemSubnetStateConfig = NewSubnetStateConfig;
 
 export type ApplicationSubnetConfig =
-  SubnetConfig<ApplicationSubnetStateConfig>;
+  SubnetConfig<ApplicationSubnetStateConfig> & {
+    costSchedule?: CanisterCyclesCostSchedule;
+  };
 export type ApplicationSubnetStateConfig = NewSubnetStateConfig;
 
 export type VerifiedApplicationSubnetConfig =
@@ -112,6 +118,7 @@ export interface EncodedCreateInstanceRequest {
   subnet_config_set: EncodedCreateInstanceSubnetConfig;
   icp_config?: EncodedIcpConfig;
   icp_features?: EncodedIcpFeatures;
+  disable_ingress_validation?: boolean;
 }
 
 export interface EncodedCreateInstanceSubnetConfig {
@@ -122,6 +129,7 @@ export interface EncodedCreateInstanceSubnetConfig {
   bitcoin?: EncodedSubnetConfig;
   system: EncodedSubnetConfig[];
   application: EncodedSubnetConfig[];
+  cloud_engine: EncodedSubnetConfig[];
   verified_application: EncodedSubnetConfig[];
 }
 
@@ -155,17 +163,27 @@ export interface EncodedIcpFeatures {
 export interface EncodedSubnetConfig {
   dts_flag: 'Enabled' | 'Disabled';
   instruction_config: 'Production' | 'Benchmarking';
+  cost_schedule: 'Normal' | 'Free';
   state_config: 'New' | { FromPath: string };
 }
 
 function encodeManySubnetConfigs<T extends SubnetConfig>(
   configs: T[] = [],
 ): EncodedSubnetConfig[] {
-  return configs.map(encodeSubnetConfig).filter(isNotNil);
+  return configs.map(config => encodeSubnetConfig(config)).filter(isNotNil);
+}
+
+function encodeManyApplicationSubnetConfigs(
+  configs: ApplicationSubnetConfig[] = [],
+): EncodedSubnetConfig[] {
+  return configs
+    .map(config => encodeSubnetConfig(config, config.costSchedule))
+    .filter(isNotNil);
 }
 
 function encodeSubnetConfig<T extends SubnetConfig>(
   config?: T,
+  costSchedule?: CanisterCyclesCostSchedule,
 ): EncodedSubnetConfig | undefined {
   if (isNil(config)) {
     return undefined;
@@ -182,6 +200,7 @@ function encodeSubnetConfig<T extends SubnetConfig>(
         instruction_config: encodeInstructionConfig(
           config.enableBenchmarkingInstructionLimits,
         ),
+        cost_schedule: encodeCostSchedule(costSchedule),
         state_config: 'New',
       };
     }
@@ -192,6 +211,7 @@ function encodeSubnetConfig<T extends SubnetConfig>(
         instruction_config: encodeInstructionConfig(
           config.enableBenchmarkingInstructionLimits,
         ),
+        cost_schedule: encodeCostSchedule(costSchedule),
         state_config: {
           FromPath: config.state.path,
         },
@@ -212,6 +232,12 @@ function encodeInstructionConfig(
   return enableBenchmarkingInstructionLimits === true
     ? 'Benchmarking'
     : 'Production';
+}
+
+function encodeCostSchedule(
+  costSchedule?: CanisterCyclesCostSchedule,
+): EncodedSubnetConfig['cost_schedule'] {
+  return costSchedule ?? 'Normal';
 }
 
 function encodeIcpConfigFlag(
@@ -292,9 +318,11 @@ export function encodeCreateInstanceRequest(
       fiduciary: encodeSubnetConfig(defaultOptions.fiduciary),
       bitcoin: encodeSubnetConfig(defaultOptions.bitcoin),
       system: encodeManySubnetConfigs(defaultOptions.system),
-      application: encodeManySubnetConfigs(
+      application: encodeManyApplicationSubnetConfigs(
         defaultOptions.application ?? [defaultApplicationSubnet],
       ),
+      // Required by the PocketIC v13 server contract; not user-configurable.
+      cloud_engine: [],
       verified_application: encodeManySubnetConfigs(
         defaultOptions.verifiedApplication,
       ),
@@ -305,6 +333,7 @@ export function encodeCreateInstanceRequest(
     icp_features: defaultOptions.icpFeatures
       ? encodeIcpFeatures(defaultOptions.icpFeatures)
       : undefined,
+    disable_ingress_validation: defaultOptions.disableIngressValidation,
   };
 
   if (
@@ -955,6 +984,7 @@ export interface CanisterCallRequest {
   method: string;
   payload: Uint8Array;
   effectivePrincipal?: EffectivePrincipal;
+  senderInfo?: SenderInfo;
 }
 
 export type EffectivePrincipal =
@@ -971,6 +1001,12 @@ export interface EncodedCanisterCallRequest {
   method: string;
   payload: string;
   effective_principal?: EncodedEffectivePrincipal;
+  sender_info?: EncodedSenderInfo;
+}
+
+export interface EncodedSenderInfo {
+  info: string;
+  signer: string;
 }
 
 export type EncodedEffectivePrincipal =
@@ -1025,6 +1061,14 @@ export function encodeCanisterCallRequest(
     method: req.method,
     payload: base64Encode(req.payload),
     effective_principal: encodeEffectivePrincipal(req.effectivePrincipal),
+    sender_info: req.senderInfo ? encodeSenderInfo(req.senderInfo) : undefined,
+  };
+}
+
+function encodeSenderInfo(senderInfo: SenderInfo): EncodedSenderInfo {
+  return {
+    info: base64Encode(senderInfo.info),
+    signer: base64EncodePrincipal(senderInfo.signer),
   };
 }
 
@@ -1163,4 +1207,40 @@ export function encodeAwaitCanisterCallRequest(
 
 export type AwaitCanisterCallResponse = CanisterCallResponse;
 
+export type EncodedAwaitCanisterCallResponse = EncodedCanisterCallResponse;
+
+export function decodeAwaitCanisterCallResponse(
+  res: EncodedAwaitCanisterCallResponse,
+): AwaitCanisterCallResponse {
+  return decodeCanisterCallResponse(res);
+}
+
 //#endregion AwaitCanisterCall
+
+//#region LiveMode
+export type EncodedAutoProgressRequest = {
+  artificial_delay_ms?: number;
+};
+
+export type EncodedHttpGatewayRequest = {
+  ip_addr?: string;
+  port?: number;
+  forward_to: { Replica: string } | { PocketIcInstance: number };
+  domains?: string[];
+  https_config?: {
+    cert_path: string;
+    key_path: string;
+  };
+};
+
+export type EncodedHttpGatewayResponse =
+  | {
+      Error: { message: string };
+    }
+  | {
+      Created: {
+        instance_id: number;
+        port: number;
+      };
+    };
+//#endregion LiveMode

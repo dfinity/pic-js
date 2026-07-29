@@ -1,0 +1,7 @@
+name: icp_features
+recipe:
+  type: '@dfinity/rust@v3.2.0'
+  configuration:
+    package: icp_features
+    candid: icp_features.did
+    compress: true

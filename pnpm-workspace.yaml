@@ -2,6 +2,7 @@ packages:
   - examples/clock/tests
   - examples/counter/tests
   - examples/google_search/tests
+  - examples/http/tests
   - examples/icp_features/tests
   - examples/multicanister/tests
   - examples/nns_proxy/tests
@@ -15,7 +16,6 @@ onlyBuiltDependencies:
   - esbuild
   - unrs-resolver
 
-overrides:
-  esbuild@<=0.24.2: '>=0.25.0'
-  path-to-regexp@<0.1.12: '>=0.1.12'
-  path-to-regexp@>=2.0.0 <3.3.0: '>=3.3.0'
+minimumReleaseAge: 10080 # ignore dependency updates released less than 7 days ago
+minimumReleaseAgeExclude:
+  - vite # pinned to >=7.3.2 for security fixes (GHSA-p9ff-h696-f583, GHSA-v2wj-q39q-566r, GHSA-4w7w-66w2-5vf9)

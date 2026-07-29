@@ -1,21 +1,15 @@
 # NNS Proxy
 
-## NNS State Directory
+Build the canister:
 
-This example project leverages an NNS state directory to provide the initial state for the NNS subnet. To learn more about how this state directory was created, check out the guide on [working with the NNS](https://js.icp.build/pic-js/latest/guides/working-with-the-nns).
-
-The state folder is gitignored, but it is compressed and the archive is committed to the repository.
-
-The state folder is compressed with:
-
-```bash
-tar -Jcvf examples/nns_proxy/tests/state/nns_state.tar.xz examples/nns_proxy/tests/state/nns_state/
+```shell
+bun build:examples -- nns_proxy
 ```
 
-The archive is decompressed with:
+Run the tests:
 
-```bash
-tar -xvf examples/nns_proxy/tests/state/nns_state.tar.xz
+```shell
+bun test:examples -- nns_proxy
 ```
 
 ## Bindings

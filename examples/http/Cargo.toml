@@ -1,0 +1,13 @@
+[package]
+name = "http-canister"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+candid = "0.10"
+ic-cdk = "0.18"
+ic-http-certification = "3"
+ic-asset-certification = "3"

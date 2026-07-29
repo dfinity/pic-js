@@ -8,7 +8,7 @@ import {
   _SERVICE,
   idlFactory,
   init,
-} from '../../declarations/multicanister/multicanister.did';
+} from '../../declarations/multicanister.did';
 
 const MAIN_WASM_PATH = resolve(
   __dirname,
@@ -16,11 +16,10 @@ const MAIN_WASM_PATH = resolve(
   '..',
   '..',
   '..',
-  '.dfx',
-  'local',
-  'canisters',
+  '.icp',
+  'cache',
+  'artifacts',
   'multicanister',
-  'multicanister.wasm.gz',
 );
 
 const PHONEBOOK_WASM_PATH = resolve(
@@ -29,11 +28,10 @@ const PHONEBOOK_WASM_PATH = resolve(
   '..',
   '..',
   '..',
-  '.dfx',
-  'local',
-  'canisters',
+  '.icp',
+  'cache',
+  'artifacts',
   'phonebook',
-  'phonebook.wasm.gz',
 );
 
 const SUPERHEROES_WASM_PATH = resolve(
@@ -42,11 +40,10 @@ const SUPERHEROES_WASM_PATH = resolve(
   '..',
   '..',
   '..',
-  '.dfx',
-  'local',
-  'canisters',
+  '.icp',
+  'cache',
+  'artifacts',
   'superheroes',
-  'superheroes.wasm.gz',
 );
 
 describe('Multicanister', () => {
@@ -116,7 +113,7 @@ describe('Multicanister', () => {
       const name = 'Superman';
       const superHero: SuperHero = {
         name,
-        superpowers: [['flight', [['super strength', [['heat vision', []]]]]]],
+        superpowers: ['flight', 'super strength', 'heat vision'],
       };
 
       const id = await actor.insert_super_hero(superHero);

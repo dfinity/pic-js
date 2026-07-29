@@ -144,4 +144,16 @@ describe('time', () => {
     // Time should not go backwards
     expect(finalTime).toEqual(initialTime);
   });
+
+  // Previous versions used to retry until poll timeout.
+  it('should not get close to hitting timeout on non-retryable error', async () => {
+    const farPast = new Date('2000-01-01T00:00:00Z');
+    const POLL_TIMEOUT_MS = 90_000; // PocketIC polling timeout in milliseconds
+
+    const startTime = Date.now();
+    await expect(fixture.pic.setTime(farPast)).rejects.toThrow(
+      /PocketIC server error/,
+    );
+    expect(Date.now() - startTime).toBeLessThan(POLL_TIMEOUT_MS / 10);
+  });
 });

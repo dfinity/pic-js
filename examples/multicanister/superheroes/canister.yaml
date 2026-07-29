@@ -1,0 +1,7 @@
+name: superheroes
+recipe:
+  type: '@dfinity/motoko@v4.1.0'
+  configuration:
+    main: superheroes.mo
+    candid: superheroes.did
+    compress: true

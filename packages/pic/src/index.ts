@@ -9,3 +9,4 @@ export * from './pocket-ic-server-types';
 export * from './pocket-ic-server';
 export * from './pocket-ic-types';
 export * from './pocket-ic';
+export { ServerError } from './error';

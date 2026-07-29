@@ -1,0 +1,9 @@
+type SuperHero = record {
+  name : text;
+  superpowers : vec text;
+};
+
+service : {
+  insert : (SuperHero) -> (nat32);
+  lookup : (nat32) -> (opt SuperHero) query;
+}

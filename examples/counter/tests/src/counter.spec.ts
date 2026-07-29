@@ -12,11 +12,10 @@ const WASM_PATH = resolve(
   '..',
   '..',
   '..',
-  '.dfx',
-  'local',
-  'canisters',
+  '.icp',
+  'cache',
+  'artifacts',
   'counter',
-  'counter.wasm.gz',
 );
 
 describe('Counter', () => {

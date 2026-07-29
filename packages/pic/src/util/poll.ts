@@ -1,3 +1,5 @@
+import { RetryableError } from '../error';
+
 export interface PollOptions {
   intervalMs: number;
   timeoutMs: number;
@@ -11,13 +13,15 @@ export async function poll<T extends (...args: any) => any>(
 
   return new Promise((resolve, reject) => {
     async function runPoll(): Promise<void> {
-      const currentTimeMs = Date.now();
-
       try {
         const result = await cb();
         return resolve(result);
       } catch (e) {
-        if (currentTimeMs - startTimeMs >= timeoutMs) {
+        if (!(e instanceof RetryableError)) {
+          return reject(e);
+        }
+
+        if (Date.now() - startTimeMs >= timeoutMs) {
           return reject(e);
         }
 
