@@ -67,6 +67,16 @@ export class TopologyValidationError extends Error {
   }
 }
 
+export class InvalidTtlError extends Error {
+  override name = 'InvalidTtlError';
+
+  constructor(ttl: number) {
+    super(
+      `Invalid ttl value ${ttl}. The ttl must be a non-negative integer representing seconds.`,
+    );
+  }
+}
+
 export class RetryableError extends Error {
   override name: string = 'RetryableError';
 }
