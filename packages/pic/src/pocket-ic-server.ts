@@ -6,6 +6,7 @@ import {
   BinStartError,
   BinStartMacOSArmError,
   BinTimeoutError,
+  InvalidTtlError,
 } from './error';
 import {
   exists,
@@ -72,6 +73,10 @@ export class PocketIcServer {
 
     const serverArgs = ['--port-file', portFilePath];
     if (options.ttl !== undefined) {
+      if (!Number.isInteger(options.ttl) || options.ttl < 0) {
+        throw new InvalidTtlError(options.ttl);
+      }
+
       serverArgs.push('--ttl', options.ttl.toString());
     }
 
