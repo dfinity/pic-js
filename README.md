@@ -3,8 +3,7 @@
 [![NPM](https://badge.fury.io/js/@dfinity%2Fpic.svg)](https://badge.fury.io/js/@dfinity%2Fpic)
 ![Dependencies](https://img.shields.io/librariesio/release/npm/%40dfinity/pic)
 
-[![Test (NodeJS)](https://github.com/dfinity/pic-js/actions/workflows/test-nodejs.yml/badge.svg)](https://github.com/dfinity/pic-js/actions/workflows/test-nodejs.yml)
-[![Test (Bun)](https://github.com/dfinity/pic-js/actions/workflows/test-bun.yml/badge.svg)](https://github.com/dfinity/pic-js/actions/workflows/test-bun.yml)
+[![Test](https://github.com/dfinity/pic-js/actions/workflows/e2e-test-nodejs.yml/badge.svg)](https://github.com/dfinity/pic-js/actions/workflows/e2e-test-nodejs.yml)
 [![Lint](https://github.com/dfinity/pic-js/actions/workflows/lint.yml/badge.svg)](https://github.com/dfinity/pic-js/actions/workflows/lint.yml)
 
 Pic JS is a library for interacting with a local instance of `pocket-ic` from TypeScript.
@@ -27,10 +26,17 @@ Check out the [contribution guidelines](./.github/CONTRIBUTING.md).
 
 ### Setup
 
-- Install [bun](https://bun.sh/)
+- Install [pnpm](https://pnpm.io/installation)
 - Install [commitizen](https://commitizen-tools.github.io/commitizen/)
 - Install [pre-commit](https://pre-commit.com/)
 - Install dependencies:
   ```bash
-  bun i
+  pnpm i
   ```
+
+Dependencies are always installed with pnpm. The Bun test suite runs against that
+same install, so [bun](https://bun.sh/) is only needed to run it locally:
+
+```bash
+bun run build && bun test:examples
+```
