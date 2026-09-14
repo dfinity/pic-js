@@ -33,6 +33,11 @@ Check out the [contribution guidelines](./.github/CONTRIBUTING.md).
   ```bash
   pnpm i
   ```
+- Download the `pocket-ic` binary. `.npmrc` sets `ignore-scripts=true`, so the
+  `postinstall` step that fetches it does not run on its own:
+  ```bash
+  pnpm run setup
+  ```
 
 Dependencies are always installed with pnpm. The Bun test suite runs against that
 same install, so [bun](https://bun.sh/) is only needed to run it locally:

@@ -5,32 +5,42 @@ but `@dfinity/pic` can be used with JavaScript and any other testing runner, suc
 
 ## Setup
 
-- Install [bun](https://bun.sh/) OR install [pnpm](https://pnpm.io/installation)
-  - Replace `bun` with `pnpm` in any subsequent commands if you choose to use `pnpm`.
+- Install [pnpm](https://pnpm.io/installation)
 - Install dependencies:
 
   ```bash
-  bun i
+  pnpm i
+  ```
+
+- Download the `pocket-ic` binary. `.npmrc` sets `ignore-scripts=true`, so the
+  `postinstall` step that fetches it does not run on its own:
+
+  ```bash
+  pnpm run setup
   ```
 
 - Build all examples:
 
   ```bash
-  bun build:examples
+  pnpm build:examples
   ```
 
 - Test all examples:
 
   ```bash
-  bun test:examples
+  pnpm test:examples
   ```
 
 - Build or test a single example:
 
   ```bash
-  bun build:examples -- counter
-  bun test:examples -- counter
+  pnpm build:examples -- counter
+  pnpm test:examples -- counter
   ```
+
+Dependencies are always installed with pnpm so that `pnpm.overrides` and the
+release-age policy apply. To run the suites with [bun](https://bun.sh/) instead,
+keep the `pnpm i` above and replace `pnpm` with `bun` in the commands that follow.
 
 ## Examples
 
