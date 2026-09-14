@@ -19,7 +19,11 @@ but `@dfinity/pic` can be used with JavaScript and any other testing runner, suc
   pnpm run setup
   ```
 
-- Build all examples:
+- Build all examples. This needs the ICP CLI toolchain on your `PATH` — the same
+  tools CI installs in [`setup-canister-toolchain`](../.github/actions/setup-canister-toolchain/action.yml)
+  (`@icp-sdk/icp-cli`, `@icp-sdk/ic-wasm`, `ic-mops`). It compiles the canisters
+  and generates the `declarations/` that the tests import, so it must run before
+  the tests:
 
   ```bash
   pnpm build:examples

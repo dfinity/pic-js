@@ -39,9 +39,6 @@ Check out the [contribution guidelines](./.github/CONTRIBUTING.md).
   pnpm run setup
   ```
 
-Dependencies are always installed with pnpm. The Bun test suite runs against that
-same install, so [bun](https://bun.sh/) is only needed to run it locally:
-
-```bash
-bun run build && bun test:examples
-```
+Dependencies are always installed with pnpm. The Bun suite runs against that same
+install, so [bun](https://bun.sh/) is only needed to run it locally — see the
+[examples setup guide](./examples/README.md) for the build and test commands.
