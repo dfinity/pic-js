@@ -27,10 +27,10 @@ Check out the [contribution guidelines](./.github/CONTRIBUTING.md).
 
 ### Setup
 
-- Install [bun](https://bun.sh/)
+- Install [pnpm](https://pnpm.io/installation)
 - Install [commitizen](https://commitizen-tools.github.io/commitizen/)
 - Install [pre-commit](https://pre-commit.com/)
 - Install dependencies:
   ```bash
-  bun i
+  pnpm i
   ```

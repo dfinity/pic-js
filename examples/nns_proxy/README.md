@@ -3,13 +3,13 @@
 Build the canister:
 
 ```shell
-bun build:examples -- nns_proxy
+pnpm build:examples -- nns_proxy
 ```
 
 Run the tests:
 
 ```shell
-bun test:examples -- nns_proxy
+pnpm test:examples -- nns_proxy
 ```
 
 ## Bindings

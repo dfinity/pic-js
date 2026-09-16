@@ -5,11 +5,11 @@ This example demonstrates how to work with a simple canister as well as init arg
 Build the canister:
 
 ```shell
-bun build:examples -- counter
+pnpm build:examples -- counter
 ```
 
 Run the tests:
 
 ```shell
-bun test:examples -- counter
+pnpm test:examples -- counter
 ```
