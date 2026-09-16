@@ -3,8 +3,7 @@
 [![NPM](https://badge.fury.io/js/@dfinity%2Fpic.svg)](https://badge.fury.io/js/@dfinity%2Fpic)
 ![Dependencies](https://img.shields.io/librariesio/release/npm/%40dfinity/pic)
 
-[![Test (NodeJS)](https://github.com/dfinity/pic-js/actions/workflows/test-nodejs.yml/badge.svg)](https://github.com/dfinity/pic-js/actions/workflows/test-nodejs.yml)
-[![Test (Bun)](https://github.com/dfinity/pic-js/actions/workflows/test-bun.yml/badge.svg)](https://github.com/dfinity/pic-js/actions/workflows/test-bun.yml)
+[![Test](https://github.com/dfinity/pic-js/actions/workflows/e2e-test-nodejs.yml/badge.svg)](https://github.com/dfinity/pic-js/actions/workflows/e2e-test-nodejs.yml)
 [![Lint](https://github.com/dfinity/pic-js/actions/workflows/lint.yml/badge.svg)](https://github.com/dfinity/pic-js/actions/workflows/lint.yml)
 
 Pic JS is a library for interacting with a local instance of `pocket-ic` from TypeScript.
@@ -33,4 +32,9 @@ Check out the [contribution guidelines](./.github/CONTRIBUTING.md).
 - Install dependencies:
   ```bash
   pnpm i
+  ```
+- Download the `pocket-ic` binary. `.npmrc` sets `ignore-scripts=true`, so the
+  `postinstall` step that fetches it does not run on its own:
+  ```bash
+  pnpm run setup
   ```

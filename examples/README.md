@@ -12,7 +12,35 @@ but `@dfinity/pic` can be used with JavaScript and any other testing runner, suc
   pnpm i
   ```
 
-- Build all examples:
+- Download the `pocket-ic` binary. `.npmrc` sets `ignore-scripts=true`, so the
+  `postinstall` step that fetches it does not run on its own:
+
+  ```bash
+  pnpm run setup
+  ```
+
+- Install the canister toolchain. `build:examples` shells out to `icp` and
+  `mops`, and the Rust examples compile to WebAssembly, so all three are
+  needed. These mirror
+  [`setup-canister-toolchain`](../.github/actions/setup-canister-toolchain/action.yml),
+  which CI runs for the same reason:
+
+  ```bash
+  pnpm add -g @icp-sdk/icp-cli @icp-sdk/ic-wasm
+  pnpm add -g ic-mops
+  mops install
+  rustup target add wasm32-unknown-unknown
+  ```
+
+- Build `@dfinity/pic`. The examples resolve it through the workspace and load
+  its `dist/` output, which is not checked in:
+
+  ```bash
+  pnpm build
+  ```
+
+- Build all examples. This compiles the canisters and generates the
+  `declarations/` that the tests import, so it must run before the tests:
 
   ```bash
   pnpm build:examples
