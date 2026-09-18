@@ -1,5 +1,7 @@
 # Changelog
 
+## Unreleased
+
 ## 0.23.0 (2026-08-03)
 
 ### Feat
