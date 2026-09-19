@@ -13,11 +13,11 @@ The multicanister canister receives the other canisters' IDs as init args, demon
 Build all three canisters:
 
 ```shell
-bun build:examples -- phonebook superheroes multicanister
+pnpm build:examples -- phonebook superheroes multicanister
 ```
 
 Run the tests:
 
 ```shell
-bun test:examples -- multicanister
+pnpm test:examples -- multicanister
 ```
