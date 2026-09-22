@@ -5,11 +5,11 @@ This example demonstrates how to work with more complex canisters, identities, c
 Build the canister:
 
 ```shell
-bun build:examples -- todo
+pnpm build:examples -- todo
 ```
 
 Run the tests:
 
 ```shell
-bun test:examples -- todo
+pnpm test:examples -- todo
 ```

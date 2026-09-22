@@ -5,31 +5,30 @@ but `@dfinity/pic` can be used with JavaScript and any other testing runner, suc
 
 ## Setup
 
-- Install [bun](https://bun.sh/) OR install [pnpm](https://pnpm.io/installation)
-  - Replace `bun` with `pnpm` in any subsequent commands if you choose to use `pnpm`.
+- Install [pnpm](https://pnpm.io/installation)
 - Install dependencies:
 
   ```bash
-  bun i
+  pnpm i
   ```
 
 - Build all examples:
 
   ```bash
-  bun build:examples
+  pnpm build:examples
   ```
 
 - Test all examples:
 
   ```bash
-  bun test:examples
+  pnpm test:examples
   ```
 
 - Build or test a single example:
 
   ```bash
-  bun build:examples -- counter
-  bun test:examples -- counter
+  pnpm build:examples -- counter
+  pnpm test:examples -- counter
   ```
 
 ## Examples

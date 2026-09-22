@@ -5,11 +5,11 @@ This example demonstrates how to work with the replica's system time, canister t
 Build the canister:
 
 ```shell
-bun build:examples -- clock
+pnpm build:examples -- clock
 ```
 
 Run the tests:
 
 ```shell
-bun test:examples -- clock
+pnpm test:examples -- clock
 ```
