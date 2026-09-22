@@ -8,19 +8,6 @@
   },
   "type": "module",
   "packageManager": "pnpm@10.28.2+sha512.41872f037ad22f7348e3b1debbaf7e867cfd448f2726d9cf74c08f19507c31d2c8e7a11525b983febc2df640b5438dee6023ebb1f84ed43cc2d654d2bc326264",
-  "workspaces": [
-    "examples/clock/tests",
-    "examples/counter/tests",
-    "examples/google_search/tests",
-    "examples/icp_features/tests",
-    "examples/multicanister/tests",
-    "examples/nns_proxy/tests",
-    "examples/todo/tests",
-    "examples/http/tests",
-    "packages/pic",
-    "packages/pic-server",
-    "docs"
-  ],
   "scripts": {
     "format": "prettier --write .",
     "format:check": "prettier --check .",
