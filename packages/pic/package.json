@@ -32,7 +32,7 @@
     "postinstall": "node ./postinstall.mjs"
   },
   "dependencies": {
-    "@icp-sdk/core": "^6.1.0",
+    "@icp-sdk/core": "^6",
     "bip39": "^3.1.0",
     "json-with-bigint": "3.5.7"
   }

@@ -140,7 +140,7 @@ importers:
   packages/pic:
     dependencies:
       '@icp-sdk/core':
-        specifier: ^6.1.0
+        specifier: ^6
         version: 6.1.0
       bip39:
         specifier: ^3.1.0
