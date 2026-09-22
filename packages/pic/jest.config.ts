@@ -8,7 +8,12 @@ const config: Config = {
   // core's CJS build, so these have to be transformed rather than ignored.
   // The pattern has to match them at any depth: package managers nest them
   // under the dependent when versions conflict.
-  transformIgnorePatterns: ['node_modules/(?!.*(@noble|@scure))'],
+  transformIgnorePatterns: [
+    'node_modules/(?!.*(@noble|@scure))',
+    // Jest's default second entry, kept because a user-supplied array replaces
+    // the default wholesale: Yarn PnP manifests must not be transformed.
+    '\\.pnp\\.[^\\\\/]+$',
+  ],
   watch: false,
   testEnvironment: 'node',
   globalSetup: '<rootDir>/tests/global-setup.ts',

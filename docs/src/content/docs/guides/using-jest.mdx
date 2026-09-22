@@ -88,7 +88,10 @@ const config: Config = {
   transform: {
     '^.+\\.(t|j)sx?$': '@swc/jest',
   },
-  transformIgnorePatterns: ['node_modules/(?!.*(@noble|@scure))'],
+  transformIgnorePatterns: [
+    'node_modules/(?!.*(@noble|@scure))',
+    '\\.pnp\\.[^\\\\/]+$',
+  ],
   testEnvironment: 'node',
   globalSetup: '<rootDir>/global-setup.ts',
   globalTeardown: '<rootDir>/global-teardown.ts',
@@ -104,7 +107,7 @@ The `transformIgnorePatterns` entry is required. PicJS depends on [`@icp-sdk/cor
 SyntaxError: Cannot use import statement outside a module
 ```
 
-The pattern matches those packages at any depth, which matters because package managers place them differently: pnpm resolves them inside its virtual store, while npm and Yarn nest them under the dependent when another package pins an incompatible version. A narrower pattern that only expects them at the top of `node_modules` silently fails in the nested case. [Vitest](/guides/using-vitest/) loads ES modules natively and needs no equivalent setting.
+The pattern matches those packages at any depth, which matters because package managers place them differently: pnpm resolves them inside its virtual store, while npm and Yarn nest them under the dependent when another package pins an incompatible version. A narrower pattern that only expects them at the top of `node_modules` silently fails in the nested case. The second entry is Jest's own default, repeated here because supplying `transformIgnorePatterns` replaces the default array rather than extending it; without it, Yarn PnP projects send their `.pnp.cjs` manifest through the transform. [Vitest](./using-vitest) loads ES modules natively and needs no equivalent setting.
 
 You can also check out the official the [`@swc/jest` documentation](https://swc.rs/docs/usage/jest) for more information on configuring this file.
 

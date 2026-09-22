@@ -58,6 +58,30 @@ Install `@dfinity/pic` as a development dependency:
   </TabItem>
 </Tabs>
 
+### Upgrading `@icp-sdk/core` alongside it
+
+`Principal` and `Identity` from [`@icp-sdk/core`](https://www.npmjs.com/package/@icp-sdk/core) cross the
+`@dfinity/pic` API, and core is a regular dependency rather than a peer dependency. If your project depends on
+`@icp-sdk/core` directly, it has to be on v6 as well:
+
+<Tabs>
+  <TabItem label="npm" icon="npm">
+    <Code lang="shell" code="npm i @icp-sdk/core@^6" />
+  </TabItem>
+  <TabItem label="pnpm" icon="pnpm">
+    <Code lang="shell" code="pnpm i @icp-sdk/core@^6" />
+  </TabItem>
+  <TabItem label="bun" icon="bun">
+    <Code lang="shell" code="bun add @icp-sdk/core@^6" />
+  </TabItem>
+  <TabItem label="yarn" icon="seti:yarn">
+    <Code lang="shell" code="yarn add @icp-sdk/core@^6" />
+  </TabItem>
+</Tabs>
+
+On an older range the two copies coexist, and a `Principal` created by your code fails an `instanceof` check
+inside PicJS (or the reverse) — a confusing failure with no obvious connection to the version mismatch.
+
 ### Allowing the install script
 
 PicJS downloads the `pocket-ic` binary from a [`postinstall`](https://docs.npmjs.com/cli/v9/using-npm/scripts#npm-install) script rather than bundling it with the library. npm, pnpm and [Bun](https://bun.sh/) all block install scripts by default, so this one has to be permitted or the binary will be missing and tests will fail to start a server.
