@@ -4,6 +4,9 @@
   "version": "0.23.0",
   "author": "DFINITY Stiftung",
   "license": "Apache-2.0",
+  "engines": {
+    "node": ">=22.12"
+  },
   "repository": "github:dfinity/pic-js",
   "bugs": "https://github.com/dfinity/pic-js/issues",
   "homepage": "https://js.icp.build/pic-js/",
@@ -29,7 +32,7 @@
     "postinstall": "node ./postinstall.mjs"
   },
   "dependencies": {
-    "@icp-sdk/core": "^5.0.0",
+    "@icp-sdk/core": "^6.1.0",
     "bip39": "^3.1.0",
     "json-with-bigint": "3.5.7"
   }

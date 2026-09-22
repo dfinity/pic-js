@@ -88,6 +88,7 @@ const config: Config = {
   transform: {
     '^.+\\.(t|j)sx?$': '@swc/jest',
   },
+  transformIgnorePatterns: ['node_modules/(?!.*(@noble|@scure))'],
   testEnvironment: 'node',
   globalSetup: '<rootDir>/global-setup.ts',
   globalTeardown: '<rootDir>/global-teardown.ts',
@@ -96,6 +97,14 @@ const config: Config = {
 
 export default config;
 ```
+
+The `transformIgnorePatterns` entry is required. PicJS depends on [`@icp-sdk/core`](https://www.npmjs.com/package/@icp-sdk/core), which in turn depends on `@noble/hashes` and `@noble/curves`. Those packages ship ES modules only, and Jest resolves the CommonJS build of `@icp-sdk/core`, so they have to be transformed instead of ignored along with the rest of `node_modules`. Without it, tests fail to load with:
+
+```text
+SyntaxError: Cannot use import statement outside a module
+```
+
+The pattern matches those packages at any depth, which matters because package managers place them differently: pnpm resolves them inside its virtual store, while npm and Yarn nest them under the dependent when another package pins an incompatible version. A narrower pattern that only expects them at the top of `node_modules` silently fails in the nested case. [Vitest](/guides/using-vitest/) loads ES modules natively and needs no equivalent setting.
 
 You can also check out the official the [`@swc/jest` documentation](https://swc.rs/docs/usage/jest) for more information on configuring this file.
 
