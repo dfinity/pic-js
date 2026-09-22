@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "@icp-sdk/bindgen": "^0.4.0",
-    "@icp-sdk/core": "^6.1.0",
+    "@icp-sdk/core": "^6",
     "@swc/core": "^1.15.18",
     "@swc/jest": "^0.2.39",
     "@tsconfig/node24": "^24.0.4",
