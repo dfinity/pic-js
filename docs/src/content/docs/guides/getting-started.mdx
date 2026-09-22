@@ -62,20 +62,21 @@ Install `@dfinity/pic` as a development dependency:
 
 `Principal` and `Identity` from [`@icp-sdk/core`](https://www.npmjs.com/package/@icp-sdk/core) cross the
 `@dfinity/pic` API, and core is a regular dependency rather than a peer dependency. If your project depends on
-`@icp-sdk/core` directly, it has to be on v6 as well:
+`@icp-sdk/core` directly, it has to be on v6.1 or later as well — the version `@dfinity/pic` itself
+requires. An earlier v6 resolves to a second, nested copy of core and hits the same failure:
 
 <Tabs>
   <TabItem label="npm" icon="npm">
-    <Code lang="shell" code="npm i @icp-sdk/core@^6" />
+    <Code lang="shell" code="npm i @icp-sdk/core@^6.1" />
   </TabItem>
   <TabItem label="pnpm" icon="pnpm">
-    <Code lang="shell" code="pnpm i @icp-sdk/core@^6" />
+    <Code lang="shell" code="pnpm i @icp-sdk/core@^6.1" />
   </TabItem>
   <TabItem label="bun" icon="bun">
-    <Code lang="shell" code="bun add @icp-sdk/core@^6" />
+    <Code lang="shell" code="bun add @icp-sdk/core@^6.1" />
   </TabItem>
   <TabItem label="yarn" icon="seti:yarn">
-    <Code lang="shell" code="yarn add @icp-sdk/core@^6" />
+    <Code lang="shell" code="yarn add @icp-sdk/core@^6.1" />
   </TabItem>
 </Tabs>
 
