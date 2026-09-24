@@ -14,10 +14,12 @@ npm i -D @dfinity/pic
 
 PicJS requires NodeJS 22.12 or newer.
 
-`Principal` and `Identity` from [`@icp-sdk/core`](https://www.npmjs.com/package/@icp-sdk/core) cross the
-`@dfinity/pic` API, and core is a regular dependency rather than a peer dependency. Projects that depend on
-`@icp-sdk/core` themselves must therefore be on v6: an older range resolves to a second copy, and values
-passed between the two fail `instanceof` checks.
+`@dfinity/pic` has [`@icp-sdk/core`](https://www.npmjs.com/package/@icp-sdk/core) v6 as a peer dependency, so your
+project needs it as well:
+
+```shell
+npm i @icp-sdk/core@^6
+```
 
 ## Usage
 

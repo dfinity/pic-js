@@ -58,13 +58,12 @@ Install `@dfinity/pic` as a development dependency:
   </TabItem>
 </Tabs>
 
-### Upgrading `@icp-sdk/core` alongside it
+### Installing `@icp-sdk/core`
 
-`Principal` and `Identity` from [`@icp-sdk/core`](https://www.npmjs.com/package/@icp-sdk/core) cross the
-`@dfinity/pic` API, and core is a regular dependency rather than a peer dependency. If your project depends on
-`@icp-sdk/core` directly, it has to be on v6 as well. A version outside the range `@dfinity/pic`
-requires resolves to a second, nested copy of core, and the two copies fail `instanceof` across the
-API boundary:
+`@dfinity/pic` has [`@icp-sdk/core`](https://www.npmjs.com/package/@icp-sdk/core) v6 as a peer dependency. `Principal`,
+`Identity` and your canister's `idlFactory` all cross the PicJS API, so PicJS uses your project's copy of core rather than
+bringing its own. Your generated canister declarations import it already; if your project does not depend on it yet, or
+depends on an older major, install v6:
 
 <Tabs>
   <TabItem label="npm" icon="npm">
@@ -81,8 +80,8 @@ API boundary:
   </TabItem>
 </Tabs>
 
-On an older range the two copies coexist, and a `Principal` created by your code fails an `instanceof` check
-inside PicJS (or the reverse) — a confusing failure with no obvious connection to the version mismatch.
+npm, pnpm and Bun install a missing peer dependency automatically; Yarn does not. If your project is on an older major,
+npm fails the install with `ERESOLVE`, while pnpm, Bun and Yarn warn about the unmet peer dependency.
 
 ### Allowing the install script
 
