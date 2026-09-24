@@ -101,13 +101,13 @@ const config: Config = {
 export default config;
 ```
 
-The `transformIgnorePatterns` entry is required. PicJS depends on [`@icp-sdk/core`](https://www.npmjs.com/package/@icp-sdk/core), which in turn depends on `@noble/hashes` and `@noble/curves`. Those packages ship ES modules only, and Jest resolves the CommonJS build of `@icp-sdk/core`, so they have to be transformed instead of ignored along with the rest of `node_modules`. Without it, tests fail to load with:
+The `transformIgnorePatterns` entry is required. PicJS depends on [`@icp-sdk/core`](https://www.npmjs.com/package/@icp-sdk/core), which in turn depends on `@noble/hashes` and `@noble/curves`. Those packages ship ES modules only, and Jest resolves the CommonJS build of `@icp-sdk/core`, so they have to be transformed instead of ignored along with the rest of `node_modules`. This also requires a `transform` that handles `.js` files, such as the one above. Without it, tests fail to load with:
 
 ```text
 SyntaxError: Cannot use import statement outside a module
 ```
 
-The pattern matches those packages at any depth, which matters because package managers place them differently: pnpm resolves them inside its virtual store, while npm and Yarn nest them under the dependent when another package pins an incompatible version. A narrower pattern that only expects them at the top of `node_modules` silently fails in the nested case. The second entry is Jest's own default, repeated here because supplying `transformIgnorePatterns` replaces the default array rather than extending it; without it, Yarn PnP projects send their `.pnp.cjs` manifest through the transform. [Vitest](./using-vitest) loads ES modules natively and needs no equivalent setting.
+The pattern matches these packages at any depth, since npm and Yarn may nest them under a dependent. The second entry repeats Jest's default, which a custom `transformIgnorePatterns` replaces rather than extends. [Vitest](./using-vitest) loads ES modules natively and needs no equivalent setting.
 
 You can also check out the official the [`@swc/jest` documentation](https://swc.rs/docs/usage/jest) for more information on configuring this file.
 

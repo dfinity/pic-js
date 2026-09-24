@@ -16,7 +16,7 @@ Tests written with PicJS are executed in a JavaScript runtime environment, such 
 
 To get started with PicJS, you will need to have a JavaScript runtime environment installed on your system. If you're new to JavaScript, then [NodeJS](https://nodejs.org/en) is the recommended choice.
 
-PicJS requires **NodeJS 22.12 or newer**. It depends on [`@icp-sdk/core`](https://www.npmjs.com/package/@icp-sdk/core), which reaches ES-module-only packages from a CommonJS build, so it needs a NodeJS version where `require()` of an ES module is supported. On older versions, loading PicJS fails with `require() of ES Module ... not supported`.
+PicJS requires **NodeJS 22.12 or newer**. On older versions, loading PicJS fails with `require() of ES Module ... not supported`.
 
 [Bun](https://bun.sh/) is an alternative JavaScript runtime environment that is compatible with PicJS. Bun has several features that make it a great choice for running PicJS tests, such as a built-in test runner and assertion library in addition to being much more performant than [NodeJS](https://nodejs.org/en). Bun is not very widely used yet, so it is not recommended for beginners.
 
