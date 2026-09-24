@@ -40,7 +40,7 @@ export type Actor<T extends ActorInterface<T> = ActorInterface> = T & {
    *
    * @param principal The Principal to set.
    *
-   * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+   * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
    *
    * @example
    * ```ts
@@ -66,8 +66,8 @@ export type Actor<T extends ActorInterface<T> = ActorInterface> = T & {
    *
    * @param identity The identity to set.
    *
-   * @see [Identity](https://js.icp.build/core/latest/libs/agent/api/interfaces/identity/)
-   * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+   * @see [Identity](https://js.icp.build/core/latest/libs/agent/api/)
+   * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
    *
    * @example
    * ```ts

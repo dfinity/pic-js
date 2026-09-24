@@ -12,7 +12,7 @@ persistent actor {
     };
 
     let http_request : Types.HttpRequestArgs = {
-      url = "https://https://www.google.ch/search?q=icp";
+      url = "https://www.google.ch/search?q=icp";
       max_response_bytes = null;
       headers = [];
       body = null;
