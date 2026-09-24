@@ -63,6 +63,6 @@ but `@dfinity/pic` can be used with JavaScript and any other testing runner, suc
 - The [Clock](https://github.com/dfinity/pic-js/tree/main/examples/clock/README.md) example demonstrates how to work with the replica's system time, canister timers as well as checking for canister existence and cycle management.
 - The [Todo](https://github.com/dfinity/pic-js/tree/main/examples/todo/README.md) example demonstrates how to work with more complex canisters, identities, canister upgrades, and stable memory management.
 - The [Multicanister](https://github.com/dfinity/pic-js/tree/main/examples/multicanister/README.md) example demonstrates how to work with multiple canisters and multiple subnets.
-- The [NNS Proxy](https://github.com/dfinity/pic-js/tree/main/examples/nns_proxy/README.md) example demonstrates how to work with an NNS state directory.
+- The [NNS Proxy](https://github.com/dfinity/pic-js/tree/main/examples/nns_proxy/README.md) example demonstrates how to deploy the NNS canisters with `icpFeatures` and create neurons and proposals.
 - [Google Search](https://github.com/dfinity/pic-js/tree/main/examples/google_search/README.md) example demonstrates how to mock HTTPS Outcalls.
 - [ICP Features](https://github.com/dfinity/pic-js/tree/main/examples/icp_features/README.md) example demonstrates how to work with PocketIC's ICP features.

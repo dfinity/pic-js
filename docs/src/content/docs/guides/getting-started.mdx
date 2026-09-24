@@ -71,19 +71,11 @@ Add the entry for your package manager to `package.json`, then install:
 
 If you installed before adding this, run the install command again to fetch the binary.
 
-## DFX
+## icp-cli
 
-DFX is a command-line tool for managing Internet Computer projects. It is used to create, build, and deploy projects to the Internet Computer.
+PicJS tests run against your canister's compiled WASM module, so any build tool works. The examples in this repository build their canisters with [icp-cli](https://cli.internetcomputer.org), the command-line tool for building and deploying Internet Computer projects. See its [documentation](https://cli.internetcomputer.org) for installation.
 
-DFX can be installed by running the following command:
-
-```shell
-sh -ci "$(curl -fsSL https://internetcomputer.org/install.sh)"
-```
-
-You can also check out the official [DFX installation documentation](https://internetcomputer.org/docs/current/developer-docs/getting-started/install) for more information.
-
-DFX version 0.16.0 or later is recommended when writing PicJS tests. If you are on an earlier version then make sure to check out the [Canister declarations guide](./canister-declarations) to see how declarations should be used with older versions with DFX.
+PicJS also needs your canister's Candid declarations; see the [Canister declarations guide](./canister-declarations) for how to generate them.
 
 ## Test runner
 
