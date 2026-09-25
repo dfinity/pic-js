@@ -23,6 +23,7 @@ export interface CreateInstanceRequest {
   ii?: IiSubnetConfig;
   fiduciary?: FiduciarySubnetConfig;
   bitcoin?: BitcoinSubnetConfig;
+  testThresholdKeys?: TestThresholdKeysSubnetConfig;
   system?: SystemSubnetConfig[];
   application?: ApplicationSubnetConfig[];
   verifiedApplication?: VerifiedApplicationSubnetConfig[];
@@ -60,6 +61,10 @@ export type FiduciarySubnetStateConfig = NewSubnetStateConfig;
 
 export type BitcoinSubnetConfig = SubnetConfig<BitcoinSubnetStateConfig>;
 export type BitcoinSubnetStateConfig = NewSubnetStateConfig;
+
+export type TestThresholdKeysSubnetConfig =
+  SubnetConfig<TestThresholdKeysSubnetStateConfig>;
+export type TestThresholdKeysSubnetStateConfig = NewSubnetStateConfig;
 
 export type SystemSubnetConfig = SubnetConfig<SystemSubnetStateConfig>;
 export type SystemSubnetStateConfig = NewSubnetStateConfig;
@@ -149,6 +154,7 @@ export interface EncodedCreateInstanceSubnetConfig {
   ii?: EncodedSubnetConfig;
   fiduciary?: EncodedSubnetConfig;
   bitcoin?: EncodedSubnetConfig;
+  test_threshold_keys?: EncodedSubnetConfig;
   system: EncodedSubnetConfig[];
   application: EncodedSubnetConfig[];
   cloud_engine: EncodedSubnetConfig[];
@@ -357,6 +363,7 @@ export function encodeCreateInstanceRequest(
       ii: encodeSubnetConfig(defaultOptions.ii),
       fiduciary: encodeSubnetConfig(defaultOptions.fiduciary),
       bitcoin: encodeSubnetConfig(defaultOptions.bitcoin),
+      test_threshold_keys: encodeSubnetConfig(defaultOptions.testThresholdKeys),
       system: encodeManySubnetConfigs(defaultOptions.system),
       application: encodeManyApplicationSubnetConfigs(
         defaultOptions.application ?? [defaultApplicationSubnet],
@@ -390,6 +397,7 @@ export function encodeCreateInstanceRequest(
       isNil(options.subnet_config_set.ii) &&
       isNil(options.subnet_config_set.fiduciary) &&
       isNil(options.subnet_config_set.bitcoin) &&
+      isNil(options.subnet_config_set.test_threshold_keys) &&
       options.subnet_config_set.system.length === 0 &&
       options.subnet_config_set.application.length === 0) ||
     options.subnet_config_set.system.length < 0 ||
@@ -441,6 +449,7 @@ export enum SubnetType {
   Application = 'Application',
   Bitcoin = 'Bitcoin',
   Fiduciary = 'Fiduciary',
+  TestThresholdKeys = 'TestThresholdKeys',
   InternetIdentity = 'II',
   NNS = 'NNS',
   SNS = 'SNS',
@@ -471,6 +480,7 @@ export type EncodedSubnetKind =
   | 'Application'
   | 'Bitcoin'
   | 'Fiduciary'
+  | 'TestThresholdKeys'
   | 'II'
   | 'NNS'
   | 'SNS'
@@ -510,6 +520,8 @@ export function decodeSubnetKind(kind: EncodedSubnetKind): SubnetType {
       return SubnetType.Bitcoin;
     case 'Fiduciary':
       return SubnetType.Fiduciary;
+    case 'TestThresholdKeys':
+      return SubnetType.TestThresholdKeys;
     case 'II':
       return SubnetType.InternetIdentity;
     case 'NNS':

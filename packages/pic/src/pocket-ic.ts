@@ -1401,6 +1401,23 @@ export class PocketIc {
   }
 
   /**
+   * Get the test threshold keys subnet topology for this instance's network.
+   * The instance network topology is configured via the {@link create} method.
+   *
+   * @returns The subnet topology for the test threshold keys subnet,
+   * if it exists on this instance's network.
+   */
+  public async getTestThresholdKeysSubnet(): Promise<
+    SubnetTopology | undefined
+  > {
+    const topology = await this.getTopology();
+
+    return topology.find(
+      subnet => subnet.type === SubnetType.TestThresholdKeys,
+    );
+  }
+
+  /**
    * Get the Internet Identity subnet topology for this instance's network.
    * The instance network topology is configured via the {@link create} method.
    *
