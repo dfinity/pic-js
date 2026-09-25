@@ -8,7 +8,7 @@ import {
   isNil,
   isNotNil,
 } from './util';
-import { TopologyValidationError } from './error';
+import { HttpGatewayRequiredError, TopologyValidationError } from './error';
 import { CanisterCyclesCostSchedule, SenderInfo } from './pocket-ic-types';
 
 export { CanisterCyclesCostSchedule };
@@ -31,6 +31,7 @@ export interface CreateInstanceRequest {
   icpConfig?: IcpConfig;
   icpFeatures?: IcpFeatures;
   disableIngressValidation?: boolean;
+  httpGateway?: HttpGatewayConfig;
 }
 
 export interface SubnetConfig<
@@ -114,11 +115,32 @@ export interface IcpFeatures {
   nnsUi?: IcpFeaturesConfig;
 }
 
+export interface HttpGatewayConfig {
+  ipAddr?: string;
+  port?: number;
+  domains?: string[];
+  httpsConfig?: {
+    certPath: string;
+    keyPath: string;
+  };
+}
+
 export interface EncodedCreateInstanceRequest {
   subnet_config_set: EncodedCreateInstanceSubnetConfig;
   icp_config?: EncodedIcpConfig;
   icp_features?: EncodedIcpFeatures;
   disable_ingress_validation?: boolean;
+  http_gateway_config?: EncodedInstanceHttpGatewayConfig;
+}
+
+export interface EncodedInstanceHttpGatewayConfig {
+  ip_addr?: string;
+  port?: number;
+  domains?: string[];
+  https_config?: {
+    cert_path: string;
+    key_path: string;
+  };
 }
 
 export interface EncodedCreateInstanceSubnetConfig {
@@ -296,7 +318,25 @@ function encodeIcpFeatures(icpFeatures: IcpFeatures): EncodedIcpFeatures {
       : undefined,
     sns: icpFeatures.sns ? encodeIcpFeaturesConfig(icpFeatures.sns) : undefined,
     ii: icpFeatures.ii ? encodeIcpFeaturesConfig(icpFeatures.ii) : undefined,
-    nns_ui: undefined, // Currently not supported.
+    nns_ui: icpFeatures.nnsUi
+      ? encodeIcpFeaturesConfig(icpFeatures.nnsUi)
+      : undefined,
+  };
+}
+
+function encodeHttpGatewayConfig(
+  config: HttpGatewayConfig,
+): EncodedInstanceHttpGatewayConfig {
+  return {
+    ip_addr: config.ipAddr,
+    port: config.port,
+    domains: config.domains,
+    https_config: config.httpsConfig
+      ? {
+          cert_path: config.httpsConfig.certPath,
+          key_path: config.httpsConfig.keyPath,
+        }
+      : undefined,
   };
 }
 
@@ -334,7 +374,15 @@ export function encodeCreateInstanceRequest(
       ? encodeIcpFeatures(defaultOptions.icpFeatures)
       : undefined,
     disable_ingress_validation: defaultOptions.disableIngressValidation,
+    http_gateway_config: defaultOptions.httpGateway
+      ? encodeHttpGatewayConfig(defaultOptions.httpGateway)
+      : undefined,
   };
+
+  const { ii, nnsUi } = defaultOptions.icpFeatures ?? {};
+  if ((ii || nnsUi) && isNil(defaultOptions.httpGateway)) {
+    throw new HttpGatewayRequiredError(ii ? 'ii' : 'nnsUi');
+  }
 
   if (
     (isNil(options.subnet_config_set.nns) &&
@@ -479,6 +527,10 @@ export interface CreateInstanceSuccessResponse {
   Created: {
     instance_id: number;
     topology: EncodedGetTopologyResponse;
+    http_gateway_info?: {
+      instance_id: number;
+      port: number;
+    } | null;
   };
 }
 export interface CreateInstanceErrorResponse {

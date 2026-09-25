@@ -1646,8 +1646,9 @@ export class PocketIc {
   }
 
   /**
-   * Make the PocketIC instance live by enabling auto progress and starting the HTTP Gateway.
-   * If the server is already live, this method will return the HTTP Gateway URL.
+   * Make the PocketIC instance live by enabling auto progress and starting an HTTP gateway.
+   * If the instance was created with {@link CreateInstanceOptions.httpGateway}, that gateway is used instead.
+   * If the instance is already live, this method returns the port of its HTTP gateway.
    * The PocketIC instance must be created with at least an NNS subnet in
    * order for `fetchRootKey` to work correctly.
    *
@@ -1669,9 +1670,9 @@ export class PocketIc {
    * const canister = await pic.installCode({ canisterId, wasm });
    * await pic.installCode({ canisterId, wasm });
    *
-   * const httpGatewayUrl = await pic.makeLive();
+   * const httpGatewayPort = await pic.makeLive();
    * const agent = await HttpAgent.create({
-   *   host: httpGatewayUrl,
+   *   host: `http://localhost:${httpGatewayPort}`,
    *   shouldFetchRootKey: true,
    * });
    * const actor = Actor.createActor(idlFactory, { agent, canisterId });
@@ -1696,13 +1697,16 @@ export class PocketIc {
     }
 
     await this.client.autoProgress();
-    this.httpGatewayPort = await this.client.startHttpGateway();
+    this.httpGatewayPort =
+      this.client.instanceHttpGatewayPort ??
+      (await this.client.startHttpGateway());
 
     return this.httpGatewayPort;
   }
 
   /**
-   * Disables auto progress and stops the HTTP Gateway for the PocketIC instance.
+   * Disables auto progress and stops the HTTP gateway started by {@link makeLive}.
+   * A gateway created with {@link CreateInstanceOptions.httpGateway} keeps running until the instance is torn down.
    *
    *
    * @example
@@ -1723,9 +1727,9 @@ export class PocketIc {
    * const canister = await pic.installCode({ canisterId, wasm });
    * await pic.installCode({ canisterId, wasm });
    *
-   * const httpGatewayUrl = await pic.makeLive();
+   * const httpGatewayPort = await pic.makeLive();
    * const agent = await HttpAgent.create({
-   *   host: httpGatewayUrl,
+   *   host: `http://localhost:${httpGatewayPort}`,
    *   shouldFetchRootKey: true,
    * });
    * const actor = Actor.createActor(idlFactory, { agent, canisterId });

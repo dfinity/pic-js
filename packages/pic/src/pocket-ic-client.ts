@@ -102,6 +102,7 @@ export class PocketIcClient {
     private readonly serverClient: Http2Client,
     private readonly instancePath: string,
     private readonly instanceId: number,
+    public readonly instanceHttpGatewayPort: number | null,
   ) {}
 
   public static async create(
@@ -132,6 +133,7 @@ export class PocketIcClient {
       serverClient,
       `/instances/${instanceId}`,
       instanceId,
+      res.Created.http_gateway_info?.port ?? null,
     );
   }
 
