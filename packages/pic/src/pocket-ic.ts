@@ -33,7 +33,7 @@ import {
   CanisterStatusOptions,
   CanisterStatusResult,
   FetchCanisterLogsOptions,
-  CanisterLogRecord as CanisterLogRecordPublic,
+  CanisterLogRecord,
 } from './pocket-ic-types';
 import {
   MANAGEMENT_CANISTER_ID,
@@ -903,7 +903,7 @@ export class PocketIc {
     canisterId,
     sender,
     filter,
-  }: FetchCanisterLogsOptions): Promise<CanisterLogRecordPublic[]> {
+  }: FetchCanisterLogsOptions): Promise<CanisterLogRecord[]> {
     const payload = encodeFetchCanisterLogsRequest({
       canister_id: canisterId,
       filter: optCanisterLogFilterToIDL(filter),
