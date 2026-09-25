@@ -22,10 +22,10 @@ export class Ledger {
   private readonly defaultIdentity = new AnonymousIdentity();
 
   constructor(pic: PocketIc) {
-    this.actor = pic.createActor<LedgerService>(
-      ledgerIdlFactory,
-      ICP_LEDGER_CANISTER_ID,
-    );
+    this.actor = pic.createActor<LedgerService>({
+      idlFactory: ledgerIdlFactory,
+      canisterId: ICP_LEDGER_CANISTER_ID,
+    });
   }
 
   public async mint(
