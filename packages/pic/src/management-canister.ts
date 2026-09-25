@@ -371,3 +371,73 @@ export function encodeInstallChunkedCodeRequest(
 ): Uint8Array {
   return new Uint8Array(IDL.encode([InstallChunkedCodeRequest], [arg]));
 }
+
+const CanisterLogRecord = IDL.Record({
+  idx: IDL.Nat64,
+  timestamp_nanos: IDL.Nat64,
+  content: IDL.Vec(IDL.Nat8),
+});
+
+export interface CanisterLogRecord {
+  idx: bigint;
+  timestamp_nanos: bigint;
+  content: Uint8Array;
+}
+
+const CanisterLogRange = IDL.Record({
+  start: IDL.Nat64,
+  end: IDL.Nat64,
+});
+
+const CanisterLogFilter = IDL.Variant({
+  by_idx: CanisterLogRange,
+  by_timestamp_nanos: CanisterLogRange,
+});
+
+export interface CanisterLogRange {
+  start: bigint;
+  end: bigint;
+}
+
+export type CanisterLogFilter =
+  | { by_idx: CanisterLogRange }
+  | { by_timestamp_nanos: CanisterLogRange };
+
+const FetchCanisterLogsRequest = IDL.Record({
+  canister_id: IDL.Principal,
+  filter: IDL.Opt(CanisterLogFilter),
+});
+
+export interface FetchCanisterLogsRequest {
+  canister_id: Principal;
+  filter: [] | [CanisterLogFilter];
+}
+
+export function encodeFetchCanisterLogsRequest(
+  arg: FetchCanisterLogsRequest,
+): Uint8Array {
+  return new Uint8Array(IDL.encode([FetchCanisterLogsRequest], [arg]));
+}
+
+const FetchCanisterLogsResponse = IDL.Record({
+  canister_log_records: IDL.Vec(CanisterLogRecord),
+});
+
+export interface FetchCanisterLogsResponse {
+  canister_log_records: CanisterLogRecord[];
+}
+
+export function decodeFetchCanisterLogsResponse(
+  arg: Uint8Array,
+): FetchCanisterLogsResponse {
+  const payload = decodeCandid<FetchCanisterLogsResponse>(
+    [FetchCanisterLogsResponse],
+    arg,
+  );
+
+  if (isNil(payload)) {
+    throw new Error('Failed to decode FetchCanisterLogsResponse');
+  }
+
+  return payload;
+}

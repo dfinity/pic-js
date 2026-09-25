@@ -3,6 +3,7 @@ import { IDL } from '@icp-sdk/core/candid';
 import {
   isNil,
   logVisibilityFromIDL,
+  optCanisterLogFilterToIDL,
   optLogVisibilityToIDL,
   optSnapshotVisibilityToIDL,
   optional,
@@ -31,6 +32,8 @@ import {
   MockPendingHttpsOutcallOptions,
   CanisterStatusOptions,
   CanisterStatusResult,
+  FetchCanisterLogsOptions,
+  CanisterLogRecord,
 } from './pocket-ic-types';
 import {
   MANAGEMENT_CANISTER_ID,
@@ -47,6 +50,8 @@ import {
   encodeUploadChunkRequest,
   decodeCanisterStatusResponse,
   encodeCanisterStatusRequest,
+  encodeFetchCanisterLogsRequest,
+  decodeFetchCanisterLogsResponse,
 } from './management-canister';
 import {
   createDeferredActorClass,
@@ -859,6 +864,66 @@ export class PocketIc {
     });
 
     return res.body;
+  }
+
+  /**
+   * Fetches the log records of the given canister, e.g. to inspect traps in
+   * timers or heartbeats. Only controllers can read a canister's logs unless
+   * its log visibility allows otherwise, see {@link FetchCanisterLogsOptions.sender}.
+   *
+   * @param options Options for fetching canister logs, see {@link FetchCanisterLogsOptions}.
+   * @returns The canister's log records, see {@link CanisterLogRecord}.
+   *
+   * @example
+   * ```ts
+   * import { PocketIc, PocketIcServer, generateRandomIdentity } from '@dfinity/pic';
+   *
+   * const controller = generateRandomIdentity();
+   *
+   * const picServer = await PocketIcServer.start();
+   * const pic = await PocketIc.create(picServer.getUrl());
+   *
+   * const canisterId = await pic.createCanister({
+   *   sender: controller.getPrincipal(),
+   *   controllers: [controller.getPrincipal()],
+   * });
+   * // install and call the canister...
+   *
+   * const logs = await pic.fetchCanisterLogs({
+   *   canisterId,
+   *   sender: controller.getPrincipal(),
+   * });
+   * const messages = logs.map(log => new TextDecoder().decode(log.content));
+   *
+   * await pic.tearDown();
+   * await picServer.stop();
+   * ```
+   */
+  public async fetchCanisterLogs({
+    canisterId,
+    sender,
+    filter,
+  }: FetchCanisterLogsOptions): Promise<CanisterLogRecord[]> {
+    const payload = encodeFetchCanisterLogsRequest({
+      canister_id: canisterId,
+      filter: optCanisterLogFilterToIDL(filter),
+    });
+
+    const res = await this.client.queryCall({
+      canisterId: MANAGEMENT_CANISTER_ID,
+      sender,
+      method: 'fetch_canister_logs',
+      payload,
+      effectivePrincipal: { canisterId },
+    });
+
+    const decoded = decodeFetchCanisterLogsResponse(res.body);
+
+    return decoded.canister_log_records.map(record => ({
+      idx: record.idx,
+      timestampNanos: record.timestamp_nanos,
+      content: new Uint8Array(record.content),
+    }));
   }
 
   /**

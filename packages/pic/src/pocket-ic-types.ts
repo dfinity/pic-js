@@ -1202,3 +1202,98 @@ export interface HttpsOutcallRejectResponse {
 }
 
 //#endregion HTTPS Outcalls
+
+//#region FetchCanisterLogs
+
+/**
+ * Options for fetching canister logs.
+ *
+ * @category Types
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
+ */
+export interface FetchCanisterLogsOptions {
+  /**
+   * The Principal of the canister to fetch logs for.
+   */
+  canisterId: Principal;
+
+  /**
+   * The Principal to send the request as.
+   *
+   * By default, only a canister's controllers can read its logs. Other principals,
+   * including the anonymous principal, need the canister's
+   * [log visibility](https://docs.internetcomputer.org/guides/canister-management/settings/#log-visibility)
+   * to allow them, e.g. `logVisibility: { public: null }` or
+   * `logVisibility: { allowedViewers: [principal] }` in {@link PocketIc.updateCanisterSettings}.
+   */
+  sender: Principal;
+
+  /**
+   * Only return the log records in the given range.
+   * Defaults to all log records.
+   */
+  filter?: CanisterLogFilter;
+}
+
+/**
+ * A range of canister log records to fetch, see {@link FetchCanisterLogsOptions.filter}.
+ */
+export type CanisterLogFilter =
+  | CanisterLogIdxFilter
+  | CanisterLogTimestampFilter;
+
+/**
+ * Selects the log records whose index is in the range `[start, end)`.
+ */
+export interface CanisterLogIdxFilter {
+  type: 'byIdx';
+
+  /**
+   * The first index to return (inclusive).
+   */
+  start: bigint;
+
+  /**
+   * The index to stop before (exclusive).
+   */
+  end: bigint;
+}
+
+/**
+ * Selects the log records whose timestamp is in the range `[start, end)`.
+ */
+export interface CanisterLogTimestampFilter {
+  type: 'byTimestampNanos';
+
+  /**
+   * The first timestamp to return, in nanoseconds since epoch (inclusive).
+   */
+  start: bigint;
+
+  /**
+   * The timestamp to stop before, in nanoseconds since epoch (exclusive).
+   */
+  end: bigint;
+}
+
+/**
+ * A canister log record.
+ */
+export interface CanisterLogRecord {
+  /**
+   * The index of the log record.
+   */
+  idx: bigint;
+
+  /**
+   * The timestamp of the log record in nanoseconds since epoch.
+   */
+  timestampNanos: bigint;
+
+  /**
+   * The content of the log record.
+   */
+  content: Uint8Array;
+}
+
+//#endregion FetchCanisterLogs

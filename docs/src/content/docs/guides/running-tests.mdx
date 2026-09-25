@@ -9,7 +9,7 @@ sidebar:
 By default, the PocketIC server binary downloaded by the `@dfinity/pic` install script is used, which requires [allowing the install script](./getting-started#allowing-the-install-script). A different binary can be provided using the `binPath` option, for example:
 
 ```ts
-const pic = await PocketIcServer.start({
+const picServer = await PocketIcServer.start({
   binPath: '/path/to/pocket-ic',
 });
 ```
@@ -29,10 +29,25 @@ The `binPath` option takes precedence over the `POCKET_IC_BIN` environment varia
 Logs for canisters can be configured when running the PocketIC server using the `showCanisterLogs` option, for example:
 
 ```ts
-const pic = await PocketIcServer.start({
+const picServer = await PocketIcServer.start({
   showCanisterLogs: true,
 });
 ```
+
+To assert on a canister's logs in a test, fetch its log records with `fetchCanisterLogs`. By default, only the canister's controllers can read its logs; other principals need the canister's [log visibility](https://docs.internetcomputer.org/guides/canister-management/settings/#log-visibility) to allow them:
+
+```ts
+const pic = await PocketIc.create(picServer.getUrl());
+// set up a canister controlled by `controller`...
+
+const logs = await pic.fetchCanisterLogs({
+  canisterId,
+  sender: controller.getPrincipal(),
+});
+const messages = logs.map(log => new TextDecoder().decode(log.content));
+```
+
+Records can be narrowed to an index or timestamp range with `filter`, for example `filter: { type: 'byIdx', start: 0n, end: 10n }`.
 
 ### Server logs
 
@@ -59,7 +74,7 @@ POCKET_IC_LOG_DIR=./logs POCKET_IC_LOG_DIR_LEVELS=pocket_ic_server=trace,tower_h
 Logs for the IC runtime can be configured when running the PocketIC server using the `showRuntimeLogs` option, for example:
 
 ```ts
-const pic = await PocketIcServer.start({
+const picServer = await PocketIcServer.start({
   showRuntimeLogs: true,
 });
 ```
