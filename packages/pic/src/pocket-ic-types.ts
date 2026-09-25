@@ -33,8 +33,17 @@ export interface CreateInstanceOptions {
   /**
    * Configuration options for creating a Fiduciary subnet.
    * If no config is provided, the Fiduciary subnet is not setup.
+   * Like on mainnet, the II and Fiduciary subnets hold the `key_1` threshold keys.
    */
   fiduciary?: FiduciarySubnetConfig;
+
+  /**
+   * Configuration options for creating a test threshold keys subnet.
+   * If no config is provided, the test threshold keys subnet is not setup.
+   * Like on mainnet, it is the subnet that holds the `test_key_1` threshold keys
+   * for ECDSA, Schnorr and vetKD, so it is required to sign with or derive from them.
+   */
+  testThresholdKeys?: TestThresholdKeysSubnetConfig;
 
   /**
    * Configuration options for creating a Bitcoin subnet.
@@ -224,6 +233,17 @@ export type FiduciarySubnetConfig = SubnetConfig<FiduciarySubnetStateConfig>;
  * Options for a Fiduciary subnet's state.
  */
 export type FiduciarySubnetStateConfig = NewSubnetStateConfig;
+
+/**
+ * Options for creating a test threshold keys subnet.
+ */
+export type TestThresholdKeysSubnetConfig =
+  SubnetConfig<TestThresholdKeysSubnetStateConfig>;
+
+/**
+ * Options for a test threshold keys subnet's state.
+ */
+export type TestThresholdKeysSubnetStateConfig = NewSubnetStateConfig;
 
 /**
  * Options for creating a Bitcoin subnet.
@@ -467,6 +487,11 @@ export enum SubnetType {
    * The subnet is a Fiduciary subnet.
    */
   Fiduciary = 'Fiduciary',
+
+  /**
+   * The subnet is a test threshold keys subnet.
+   */
+  TestThresholdKeys = 'TestThresholdKeys',
 
   /**
    * The subnet is an Internet Identity subnet.

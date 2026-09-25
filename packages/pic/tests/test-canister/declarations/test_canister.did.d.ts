@@ -10,10 +10,15 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export type PublicKeyResult = { 'ok' : bigint } |
+  { 'err' : string };
 export type Time = bigint;
 export interface _SERVICE {
+  'ecdsa_public_key_size' : ActorMethod<[string], PublicKeyResult>,
   'get_time' : ActorMethod<[], Time>,
   'print_log' : ActorMethod<[string], undefined>,
+  'schnorr_public_key_size' : ActorMethod<[string], PublicKeyResult>,
+  'vetkd_public_key_size' : ActorMethod<[string], PublicKeyResult>,
   'whoami' : ActorMethod<[], Principal>,
 }
 export declare const idlFactory: IDL.InterfaceFactory;

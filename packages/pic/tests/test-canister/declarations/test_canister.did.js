@@ -9,11 +9,15 @@
 import { IDL } from '@icp-sdk/core/candid';
 
 export const idlFactory = ({ IDL }) => {
+  const PublicKeyResult = IDL.Variant({ 'ok' : IDL.Nat, 'err' : IDL.Text });
   const Time = IDL.Int;
   
   return IDL.Service({
+    'ecdsa_public_key_size' : IDL.Func([IDL.Text], [PublicKeyResult], []),
     'get_time' : IDL.Func([], [Time], ['query']),
     'print_log' : IDL.Func([IDL.Text], [], []),
+    'schnorr_public_key_size' : IDL.Func([IDL.Text], [PublicKeyResult], []),
+    'vetkd_public_key_size' : IDL.Func([IDL.Text], [PublicKeyResult], []),
     'whoami' : IDL.Func([], [IDL.Principal], ['query']),
   });
 };

@@ -1,7 +1,11 @@
 type Time = int;
+type PublicKeyResult = variant { ok : nat; err : text };
 
 service : {
   get_time : () -> (Time) query;
   print_log : (text) -> ();
+  ecdsa_public_key_size : (text) -> (PublicKeyResult);
+  schnorr_public_key_size : (text) -> (PublicKeyResult);
+  vetkd_public_key_size : (text) -> (PublicKeyResult);
   whoami : () -> (principal) query;
 }
