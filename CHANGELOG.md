@@ -1,5 +1,34 @@
 # Changelog
 
+## Unreleased
+
+### BREAKING CHANGE
+
+- `createActor` and `createDeferredActor` take an options
+object instead of positional arguments. Replace
+`pic.createActor<T>(idlFactory, canisterId)` with `pic.createActor<T>({
+idlFactory, canisterId })`, and likewise for `createDeferredActor`. To
+call as a principal other than anonymous, pass `sender` instead of
+calling `setPrincipal` afterwards.
+- PicJS downloads PocketIC v16 by default. Tests that
+assert specific auto-allocated canister IDs, or cycle balances after
+only a few ticks, may need updating.
+- `@dfinity/pic` now requires `@icp-sdk/core` v6 as a
+peer dependency, and NodeJS >= 22.12. Projects must depend on
+`@icp-sdk/core@^6` directly (Yarn does not install it automatically).
+Consumers testing with Jest must also widen `transformIgnorePatterns` so
+that `@noble`/`@scure` are transformed — see the Jest guide for the
+required config.
+
+### Feat
+
+- **pic**: add the test threshold keys subnet, restoring test_key_1 (#297)
+- **pic**: take an options object in createActor and createDeferredActor (#296)
+- **pic**: add fetchCanisterLogs (#235)
+- **pic**: create the HTTP gateway together with the instance (#295)
+- **pic**: bump PocketIC to v16 (#294)
+- **pic**: require @icp-sdk/core v6 as a peer dependency (#291)
+
 ## 0.23.0 (2026-08-03)
 
 ### Feat
