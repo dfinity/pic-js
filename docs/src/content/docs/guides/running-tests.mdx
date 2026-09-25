@@ -34,6 +34,18 @@ const pic = await PocketIcServer.start({
 });
 ```
 
+To assert on a canister's logs in a test, fetch its log records with `fetchCanisterLogs`. By default, only the canister's controllers can read its logs; other principals need the canister's [log visibility](https://docs.internetcomputer.org/guides/canister-management/settings/#log-visibility) to allow them:
+
+```ts
+const logs = await pic.fetchCanisterLogs({
+  canisterId,
+  sender: controller.getPrincipal(),
+});
+const messages = logs.map(log => new TextDecoder().decode(log.content));
+```
+
+Records can be narrowed to an index or timestamp range with `filter`, for example `filter: { type: 'byIdx', start: 0n, end: 10n }`.
+
 ### Server logs
 
 Logs for the PocketIC server can be configured by setting the `POCKET_IC_LOG_DIR` and `POCKET_IC_LOG_DIR_LEVELS` environment variables.

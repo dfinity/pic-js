@@ -3,6 +3,7 @@ import { IDL } from '@icp-sdk/core/candid';
 import {
   isNil,
   logVisibilityFromIDL,
+  optCanisterLogFilterToIDL,
   optLogVisibilityToIDL,
   optSnapshotVisibilityToIDL,
   optional,
@@ -866,17 +867,46 @@ export class PocketIc {
   }
 
   /**
-   * Fetches the logs for the given canister.
+   * Fetches the log records of the given canister, e.g. to inspect traps in
+   * timers or heartbeats. Only controllers can read a canister's logs unless
+   * its log visibility allows otherwise, see {@link FetchCanisterLogsOptions.sender}.
    *
    * @param options Options for fetching canister logs, see {@link FetchCanisterLogsOptions}.
-   * @returns An array of {@link CanisterLogRecord} entries.
+   * @returns The canister's log records, see {@link CanisterLogRecord}.
+   *
+   * @example
+   * ```ts
+   * import { PocketIc, PocketIcServer, generateRandomIdentity } from '@dfinity/pic';
+   *
+   * const controller = generateRandomIdentity();
+   *
+   * const picServer = await PocketIcServer.start();
+   * const pic = await PocketIc.create(picServer.getUrl());
+   *
+   * const canisterId = await pic.createCanister({
+   *   sender: controller.getPrincipal(),
+   *   controllers: [controller.getPrincipal()],
+   * });
+   * // install and call the canister...
+   *
+   * const logs = await pic.fetchCanisterLogs({
+   *   canisterId,
+   *   sender: controller.getPrincipal(),
+   * });
+   * const messages = logs.map(log => new TextDecoder().decode(log.content));
+   *
+   * await pic.tearDown();
+   * await picServer.stop();
+   * ```
    */
   public async fetchCanisterLogs({
     canisterId,
-    sender = Principal.anonymous(),
+    sender,
+    filter,
   }: FetchCanisterLogsOptions): Promise<CanisterLogRecordPublic[]> {
     const payload = encodeFetchCanisterLogsRequest({
       canister_id: canisterId,
+      filter: optCanisterLogFilterToIDL(filter),
     });
 
     const res = await this.client.queryCall({

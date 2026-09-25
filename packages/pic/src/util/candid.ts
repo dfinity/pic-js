@@ -1,8 +1,10 @@
 import { IDL } from '@icp-sdk/core/candid';
 import type { LogVisibility as LogVisibilityIDL } from '../management-canister';
 import type { SnapshotVisibility as SnapshotVisibilityIDL } from '../management-canister';
+import type { CanisterLogFilter as CanisterLogFilterIDL } from '../management-canister';
 import type { LogVisibility as LogVisibilityPIC } from '../pocket-ic-types';
 import type { SnapshotVisibility as SnapshotVisibilityPIC } from '../pocket-ic-types';
+import type { CanisterLogFilter as CanisterLogFilterPIC } from '../pocket-ic-types';
 import { isNil } from './is-nil';
 
 export function optional<T>(value: T | undefined | null): [] | [T] {
@@ -24,6 +26,15 @@ export function logVisibilityFromIDL(lv: LogVisibilityIDL): LogVisibilityPIC {
   if ('allowed_viewers' in lv) return { allowedViewers: lv.allowed_viewers };
   if ('public' in lv) return { public: null };
   return { controllers: null };
+}
+
+export function optCanisterLogFilterToIDL(
+  filter: CanisterLogFilterPIC | undefined,
+): [] | [CanisterLogFilterIDL] {
+  if (filter === undefined) return [];
+  const range = { start: filter.start, end: filter.end };
+  if (filter.type === 'byIdx') return [{ by_idx: range }];
+  return [{ by_timestamp_nanos: range }];
 }
 
 export function optSnapshotVisibilityToIDL(

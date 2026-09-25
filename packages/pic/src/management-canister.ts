@@ -384,12 +384,33 @@ export interface CanisterLogRecord {
   content: Uint8Array;
 }
 
+const CanisterLogRange = IDL.Record({
+  start: IDL.Nat64,
+  end: IDL.Nat64,
+});
+
+const CanisterLogFilter = IDL.Variant({
+  by_idx: CanisterLogRange,
+  by_timestamp_nanos: CanisterLogRange,
+});
+
+export interface CanisterLogRange {
+  start: bigint;
+  end: bigint;
+}
+
+export type CanisterLogFilter =
+  | { by_idx: CanisterLogRange }
+  | { by_timestamp_nanos: CanisterLogRange };
+
 const FetchCanisterLogsRequest = IDL.Record({
   canister_id: IDL.Principal,
+  filter: IDL.Opt(CanisterLogFilter),
 });
 
 export interface FetchCanisterLogsRequest {
   canister_id: Principal;
+  filter: [] | [CanisterLogFilter];
 }
 
 export function encodeFetchCanisterLogsRequest(
