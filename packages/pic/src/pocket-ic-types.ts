@@ -527,7 +527,7 @@ export interface SetupCanisterOptions extends CreateCanisterOptions {
  * such as an {@link Actor} and CanisterId.
  *
  * @category Types
- * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
  */
 export interface CanisterFixture<T extends ActorInterface<T> = ActorInterface> {
   /**
@@ -555,7 +555,7 @@ export interface EnvironmentVariable {
  * Log visibility for canister settings.
  *
  * @category Types
- * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
  */
 export type LogVisibility =
   | { controllers: null }
@@ -566,7 +566,7 @@ export type LogVisibility =
  * Snapshot visibility for canister settings.
  *
  * @category Types
- * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
  */
 export type SnapshotVisibility =
   | { controllers: null }
@@ -577,7 +577,7 @@ export type SnapshotVisibility =
  * Canister settings.
  *
  * @category Types
- * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
  */
 export interface CanisterSettings {
   /**
@@ -642,7 +642,7 @@ export interface CanisterSettings {
  * Options for creating a canister.
  *
  * @category Types
- * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
  */
 export interface CreateCanisterOptions extends CanisterSettings {
   /**
@@ -677,7 +677,7 @@ export interface CreateCanisterOptions extends CanisterSettings {
  * Options for starting a given canister.
  *
  * @category Types
- * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
  */
 export interface StartCanisterOptions {
   /**
@@ -701,7 +701,7 @@ export interface StartCanisterOptions {
  * Options for stopping a given canister.
  *
  * @category Types
- * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
  */
 export interface StopCanisterOptions {
   /**
@@ -725,7 +725,7 @@ export interface StopCanisterOptions {
  * Options for installing a WASM module to a given canister.
  *
  * @category Types
- * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
  */
 export interface InstallCodeOptions {
   /**
@@ -763,7 +763,7 @@ export interface InstallCodeOptions {
  * This will reset both the canister's heap and its stable memory.
  *
  * @category Types
- * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
  */
 export interface ReinstallCodeOptions {
   /**
@@ -795,7 +795,7 @@ export interface ReinstallCodeOptions {
  * This will reset the canister's heap, but preserve stable memory.
  *
  * @category Types
- * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
  */
 export interface UpgradeCanisterOptions {
   /**
@@ -831,7 +831,7 @@ export interface UpgradeCanisterOptions {
  * Options for updating the settings of a given canister.
  *
  * @category Types
- * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
  */
 export interface UpdateCanisterSettingsOptions extends Partial<CanisterSettings> {
   /**
@@ -850,7 +850,7 @@ export interface UpdateCanisterSettingsOptions extends Partial<CanisterSettings>
  * Options for querying the status of a given canister.
  *
  * @category Types
- * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
  */
 export interface CanisterStatusOptions {
   /**
@@ -894,7 +894,7 @@ export interface CanisterQueryStats {
  * are not yet included because the PocketIC server does not return them.
  *
  * @category Types
- * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
  */
 export interface CanisterStatusResult {
   /**
@@ -961,7 +961,7 @@ export interface CanisterStatusResult {
  * canister inspection, mocking the signer's signature.
  *
  * @category Types
- * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
  */
 export interface SenderInfo {
   /**
@@ -979,7 +979,7 @@ export interface SenderInfo {
  * Options for making a query call to a given canister.
  *
  * @category Types
- * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
  */
 export interface QueryCallOptions {
   /**
@@ -1019,7 +1019,7 @@ export interface QueryCallOptions {
  * Options for making an update call to a given canister.
  *
  * @category Types
- * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
  */
 
 export interface UpdateCallOptions {

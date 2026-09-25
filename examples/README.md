@@ -72,7 +72,7 @@ but `@dfinity/pic` can be used with JavaScript and any other testing runner, suc
 - [ICP Features](./icp_features/README.md)
   This example demonstrates how to enable ICP features when creating a PocketIC instance.
 - [NNS Proxy](./nns_proxy/README.md)
-  This example demonstrates how to work with an NNS state directory.
+  This example demonstrates how to deploy the NNS canisters with `icpFeatures` and create neurons and proposals.
 - [Google Search](./google_search/README.md)
   This example demonstrates how to mock HTTPS Outcalls.
 - [HTTP](./http/README.md)
