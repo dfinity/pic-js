@@ -66,7 +66,7 @@ export type Actor<T extends ActorInterface<T> = ActorInterface> = T & {
    *
    * @param identity The identity to set.
    *
-   * @see [Identity](https://js.icp.build/core/latest/libs/agent/api/)
+   * @see [Identity](https://js.icp.build/core/latest/libs/agent/api/#identity-9)
    * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
    *
    * @example
