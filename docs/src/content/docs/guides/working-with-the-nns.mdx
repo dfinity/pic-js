@@ -27,6 +27,22 @@ const pic = await PocketIc.create(process.env.PIC_URL, {
 | `cyclesToken`   | The cycles ledger and index canisters; the anonymous principal starts with 2^127 - 1 cycles      |
 | `nnsGovernance` | The NNS governance and root canisters, with a 1 ICP neuron controlled by the anonymous principal |
 | `sns`           | The SNS-W and aggregator canisters, with the SNS canister WASMs uploaded                         |
+| `ii`            | The Internet Identity backend and frontend canisters                                             |
+| `nnsUi`         | The NNS dapp; requires `cyclesMinting`, `icpToken`, `nnsGovernance`, `sns` and `ii`              |
+
+`ii` and `nnsUi` also deploy frontends, which PocketIC serves through an HTTP gateway created together with the instance. Set the `httpGateway` option, then make the instance live to serve them:
+
+```ts
+const pic = await PocketIc.create(process.env.PIC_URL, {
+  httpGateway: {},
+  icpFeatures: { ii: IcpFeaturesConfig.DefaultConfig },
+});
+
+const gatewayPort = await pic.makeLive();
+const iiUrl = `http://uqzsh-gqaaa-aaaaq-qaada-cai.localhost:${gatewayPort}`;
+```
+
+Without `httpGateway`, creating an instance with either feature throws an error.
 
 The subnets that host these canisters must be empty: leave them unconfigured or use `SubnetStateType.New`, as PocketIC rejects state loaded with `SubnetStateType.FromPath`. Enabling `cyclesMinting` also moves the instance's default time to 10 May 2021, to match the cycles minting canister's state.
 
