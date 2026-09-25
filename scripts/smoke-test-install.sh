@@ -56,11 +56,13 @@ node -e 'JSON.parse(require("fs").readFileSync("package.json","utf8"))' \
   || { echo "generated package.json is not valid JSON" >&2; exit 1; }
 
 echo "--- installing with $pm"
+# @icp-sdk/core is a peer dependency, installed alongside as the guide says.
+core='@icp-sdk/core@^6'
 case "$pm" in
-  npm)  npm install "$tarball" ;;
-  pnpm) pnpm add "$tarball" ;;
-  yarn) yarn add "file:$tarball" ;;
-  bun)  bun add "$tarball" ;;
+  npm)  npm install "$tarball" "$core" ;;
+  pnpm) pnpm add "$tarball" "$core" ;;
+  yarn) yarn add "file:$tarball" "$core" ;;
+  bun)  bun add "$tarball" "$core" ;;
 esac
 
 binary="node_modules/@dfinity/pic/pocket-ic"

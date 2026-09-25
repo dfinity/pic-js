@@ -16,6 +16,8 @@ Tests written with PicJS are executed in a JavaScript runtime environment, such 
 
 To get started with PicJS, you will need to have a JavaScript runtime environment installed on your system. If you're new to JavaScript, then [NodeJS](https://nodejs.org/en) is the recommended choice.
 
+PicJS requires **NodeJS 22.12 or newer**. On older versions, loading PicJS fails with `require() of ES Module ... not supported`.
+
 [Bun](https://bun.sh/) is an alternative JavaScript runtime environment that is compatible with PicJS. Bun has several features that make it a great choice for running PicJS tests, such as a built-in test runner and assertion library in addition to being much more performant than [NodeJS](https://nodejs.org/en). Bun is not very widely used yet, so it is not recommended for beginners.
 
 [Deno](https://deno.com/) in theory should also work, but it is not officially supported and compatibility is not actively tested. If you choose Deno and run into issues, please open an issue on the [GitHub repository](https://github.com/dfinity/pic-js/issues). Deno is also not widely used, so it is not recommended for developers that are unfamiliar with it.
@@ -55,6 +57,31 @@ Install `@dfinity/pic` as a development dependency:
     <Code lang="shell" code="yarn add -D @dfinity/pic" />
   </TabItem>
 </Tabs>
+
+### Installing `@icp-sdk/core`
+
+`@dfinity/pic` has [`@icp-sdk/core`](https://www.npmjs.com/package/@icp-sdk/core) v6 as a peer dependency. `Principal`,
+`Identity` and your canister's `idlFactory` all cross the PicJS API, so PicJS uses your project's copy of core rather than
+bringing its own. Your generated canister declarations import it already; if your project does not depend on it yet, or
+depends on an older major, install v6:
+
+<Tabs>
+  <TabItem label="npm" icon="npm">
+    <Code lang="shell" code="npm i @icp-sdk/core@^6" />
+  </TabItem>
+  <TabItem label="pnpm" icon="pnpm">
+    <Code lang="shell" code="pnpm i @icp-sdk/core@^6" />
+  </TabItem>
+  <TabItem label="bun" icon="bun">
+    <Code lang="shell" code="bun add @icp-sdk/core@^6" />
+  </TabItem>
+  <TabItem label="yarn" icon="seti:yarn">
+    <Code lang="shell" code="yarn add @icp-sdk/core@^6" />
+  </TabItem>
+</Tabs>
+
+npm, pnpm and Bun install a missing peer dependency automatically; Yarn does not. If your project is on an older major,
+npm fails the install with `ERESOLVE`, while pnpm, Bun and Yarn warn about the unmet peer dependency.
 
 ### Allowing the install script
 

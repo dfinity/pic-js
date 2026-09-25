@@ -21,6 +21,17 @@ jobs:
       - name: Test
         run: pnpm test:pic
 
+      # The lockfile pins a newer @icp-sdk/core, so repeat the build and tests
+      # against the lowest version the peer range admits.
+      - name: Test against the @icp-sdk/core peer floor
+        run: |
+          range=$(node -p "require('./packages/pic/package.json').peerDependencies['@icp-sdk/core']")
+          floor=$(pnpm view "@icp-sdk/core@$range" version --json | node -p '[].concat(JSON.parse(require("fs").readFileSync(0, "utf8")))[0]')
+          echo "Testing against @icp-sdk/core@$floor (peer range $range)"
+          pnpm --filter @dfinity/pic add -D "@icp-sdk/core@$floor"
+          pnpm build
+          pnpm test:pic
+
   e2e_test_nodejs:
     name: e2e_test_nodejs:required
     strategy:
