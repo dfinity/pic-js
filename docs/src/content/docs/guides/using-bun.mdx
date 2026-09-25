@@ -22,20 +22,20 @@ You can also check out the official [Bun installation documentation](https://bun
 
 ### Installation
 
-To get started with [Bun](https://bun.sh) as a test runner, install the `@types/bun` package using your preferred package manager:
+To get started with [Bun](https://bun.sh) as a test runner, install the `@types/bun` and `typescript` packages using your preferred package manager:
 
 <Tabs>
   <TabItem label="npm" icon="npm">
-    <Code lang="shell" code="npm i -D @types/bun" />
+    <Code lang="shell" code="npm i -D @types/bun typescript" />
   </TabItem>
   <TabItem label="pnpm" icon="pnpm">
-    <Code lang="shell" code="pnpm i -D @types/bun" />
+    <Code lang="shell" code="pnpm i -D @types/bun typescript" />
   </TabItem>
   <TabItem label="bun" icon="bun">
-    <Code lang="shell" code="bun add -d @types/bun" />
+    <Code lang="shell" code="bun add -d @types/bun typescript" />
   </TabItem>
   <TabItem label="yarn" icon="seti:yarn">
-    <Code lang="shell" code="yarn add -D @types/bun" />
+    <Code lang="shell" code="yarn add -D @types/bun typescript" />
   </TabItem>
 </Tabs>
 
@@ -50,6 +50,7 @@ Create a `tsconfig.json` file:
     "module": "ESNext",
     "moduleDetection": "force",
     "allowJs": true, // allow importing `.js` from `.ts`
+    "types": ["bun"],
 
     // Bundler mode
     "moduleResolution": "bundler",
@@ -68,7 +69,7 @@ Create a `tsconfig.json` file:
     "useUnknownInCatchVariables": true,
     "noPropertyAccessFromIndexSignature": true
   },
-  "include": ["./src/**/*.ts", "./global-setup.ts", "./types.d.ts"]
+  "include": ["./tests/**/*.ts", "./global-setup.ts", "./types.d.ts"]
 }
 ```
 
@@ -136,30 +137,31 @@ export {};
 The basic skeleton of all PicJS tests written with [Bun](https://bun.sh) will look something like this:
 
 ```ts title="tests/example.spec.ts"
-// Import Bun testing globals
-import { beforeEach, describe, expect, it } from 'bun:test';
+import { resolve } from 'node:path';
+import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
+import { type Actor, PocketIc } from '@dfinity/pic';
 
-// Import generated types for your canister
-import { type _SERVICE } from '../../declarations/backend/backend.did';
+// Import the declarations generated for your canister,
+// see the Canister declarations guide
+import { idlFactory, type _SERVICE } from './declarations/backend.did';
 
-// Define the path to your canister's WASM file
-export const WASM_PATH = resolve(
+// Define the path to your canister's WASM file.
+// icp-cli writes it to `.icp/cache/artifacts/<canister name>`.
+const WASM_PATH = resolve(
   import.meta.dir,
   '..',
-  '..',
-  'target',
-  'wasm32-unknown-unknown',
-  'release',
-  'backend.wasm',
+  '.icp',
+  'cache',
+  'artifacts',
+  'backend',
 );
 
 // The `describe` function is used to group tests together
 // and is completely optional.
-describe('Test suite name', () => {
-  // Define variables to hold our PocketIC instance, canister ID,
+describe('backend', () => {
+  // Define variables to hold our PocketIC instance
   // and an actor to interact with our canister.
   let pic: PocketIc;
-  let canisterId: Principal;
   let actor: Actor<_SERVICE>;
 
   // The `beforeEach` hook runs before each test.
@@ -176,9 +178,8 @@ describe('Test suite name', () => {
       wasm: WASM_PATH,
     });
 
-    // Save the actor and canister ID for use in tests
+    // Save the actor for use in tests
     actor = fixture.actor;
-    canisterId = fixture.canisterId;
   });
 
   // The `afterEach` hook runs after each test.
@@ -191,10 +192,10 @@ describe('Test suite name', () => {
   });
 
   // The `it` function is used to define individual tests
-  it('should do something cool', async () => {
-    const response = await actor.do_something_cool();
+  it('should greet', async () => {
+    const response = await actor.greet('PicJS');
 
-    expect(response).toEqual('cool');
+    expect(response).toEqual('Hello, PicJS!');
   });
 });
 ```

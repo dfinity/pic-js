@@ -57,7 +57,7 @@ Create a `tsconfig.json` file:
     "useUnknownInCatchVariables": true,
     "noPropertyAccessFromIndexSignature": true
   },
-  "include": ["./src/**/*.ts", "./global-setup.ts", "./types.d.ts"]
+  "include": ["./tests/**/*.ts", "./global-setup.ts", "./types.d.ts"]
 }
 ```
 
@@ -98,11 +98,20 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
-    root: 'examples/counter/tests',
     globalSetup: './global-setup.ts',
     testTimeout: 30_000,
   },
 });
+```
+
+Then, add a `test` script to your `package.json`:
+
+```json title="package.json"
+{
+  "scripts": {
+    "test": "vitest run"
+  }
+}
 ```
 
 ## Writing tests
@@ -112,29 +121,31 @@ export default defineConfig({
 The basic skeleton of all PicJS tests written with [Vitest](https://vitest.dev/) will look something like this:
 
 ```ts title="tests/example.spec.ts"
+import { resolve } from 'node:path';
 import { describe, beforeEach, afterEach, it, expect, inject } from 'vitest';
+import { type Actor, PocketIc } from '@dfinity/pic';
 
-// Import generated types for your canister
-import { type _SERVICE } from '../../declarations/backend/backend.did';
+// Import the declarations generated for your canister,
+// see the Canister declarations guide
+import { idlFactory, type _SERVICE } from './declarations/backend.did';
 
-// Define the path to your canister's WASM file
-export const WASM_PATH = resolve(
-  import.meta.dir,
+// Define the path to your canister's WASM file.
+// icp-cli writes it to `.icp/cache/artifacts/<canister name>`.
+const WASM_PATH = resolve(
+  __dirname,
   '..',
-  '..',
-  'target',
-  'wasm32-unknown-unknown',
-  'release',
-  'backend.wasm',
+  '.icp',
+  'cache',
+  'artifacts',
+  'backend',
 );
 
 // The `describe` function is used to group tests together
 // and is completely optional.
-describe('Test suite name', () => {
-  // Define variables to hold our PocketIC instance, canister ID,
+describe('backend', () => {
+  // Define variables to hold our PocketIC instance
   // and an actor to interact with our canister.
   let pic: PocketIc;
-  let canisterId: Principal;
   let actor: Actor<_SERVICE>;
 
   // The `beforeEach` hook runs before each test.
@@ -151,9 +162,8 @@ describe('Test suite name', () => {
       wasm: WASM_PATH,
     });
 
-    // Save the actor and canister ID for use in tests
+    // Save the actor for use in tests
     actor = fixture.actor;
-    canisterId = fixture.canisterId;
   });
 
   // The `afterEach` hook runs after each test.
@@ -166,10 +176,10 @@ describe('Test suite name', () => {
   });
 
   // The `it` function is used to define individual tests
-  it('should do something cool', async () => {
-    const response = await actor.do_something_cool();
+  it('should greet', async () => {
+    const response = await actor.greet('PicJS');
 
-    expect(response).toEqual('cool');
+    expect(response).toEqual('Hello, PicJS!');
   });
 });
 ```
