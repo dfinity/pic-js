@@ -71,6 +71,8 @@ Add the entry for your package manager to `package.json`, then install:
 
 If you installed before adding this, run the install command again to fetch the binary.
 
+If you provide the PocketIC binary yourself, with the [`binPath` option or the `POCKET_IC_BIN` environment variable](./running-tests#configuring-the-server-binary), the install script is not needed and can stay blocked.
+
 ## icp-cli
 
 PicJS tests run against your canister's compiled WASM module, so any build tool works. The examples in this repository build their canisters with [icp-cli](https://cli.internetcomputer.org), the command-line tool for building and deploying Internet Computer projects. See its [documentation](https://cli.internetcomputer.org) for installation.
