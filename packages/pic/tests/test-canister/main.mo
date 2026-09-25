@@ -65,4 +65,8 @@ persistent actor TestCanister {
       #ok(public_key.size());
     } catch (e) { #err(Error.message(e)) };
   };
+
+  public shared query ({ caller }) func whoami() : async Principal {
+    return caller;
+  };
 };

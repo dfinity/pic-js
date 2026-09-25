@@ -7,4 +7,5 @@ service : {
   ecdsa_public_key_size : (text) -> (PublicKeyResult);
   schnorr_public_key_size : (text) -> (PublicKeyResult);
   vetkd_public_key_size : (text) -> (PublicKeyResult);
+  whoami : () -> (principal) query;
 }

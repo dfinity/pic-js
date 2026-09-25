@@ -28,7 +28,7 @@ describe('GoogleSearch', () => {
       wasm: WASM_PATH,
     });
     canisterId = fixture.canisterId;
-    deferredActor = pic.createDeferredActor(idlFactory, canisterId);
+    deferredActor = pic.createDeferredActor({ idlFactory, canisterId });
   });
 
   afterEach(async () => {

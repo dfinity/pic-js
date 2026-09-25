@@ -1,5 +1,4 @@
 import { Principal } from '@icp-sdk/core/principal';
-import { IDL } from '@icp-sdk/core/candid';
 import {
   isNil,
   logVisibilityFromIDL,
@@ -15,6 +14,7 @@ import { PocketIcClient } from './pocket-ic-client';
 import { ActorInterface, Actor, createActorClass } from './pocket-ic-actor';
 import {
   CanisterFixture,
+  CreateActorOptions,
   CreateCanisterOptions,
   CreateInstanceOptions,
   InstallCodeOptions,
@@ -221,7 +221,7 @@ export class PocketIc {
 
     await this.installCode({ canisterId, wasm, arg, sender, targetSubnetId });
 
-    const actor = this.createActor<T>(idlFactory, canisterId);
+    const actor = this.createActor<T>({ idlFactory, canisterId });
 
     return { actor, canisterId };
   }
@@ -737,45 +737,47 @@ export class PocketIc {
    * For a more convenient way of creating a PocketIC instance,
    * creating a canister and installing code, see {@link setupCanister}.
    *
-   * @param interfaceFactory The InterfaceFactory to use for the {@link Actor}.
-   * @param canisterId The Principal of the canister to create the {@link Actor} for.
+   * @param options Options for creating the {@link Actor}, see {@link CreateActorOptions}.
    * @typeParam T The type of the {@link Actor}. Must implement {@link ActorInterface}.
    * @returns The {@link Actor} instance.
    *
-   * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
-   * @see [InterfaceFactory](https://js.icp.build/core/latest/libs/candid/api/namespaces/idl/#interfacefactory)
-   *
    * @example
    * ```ts
-   * import { Principal } from '@icp-sdk/core/principal';
-   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
-   * import { _SERVICE, idlFactory } from '../declarations';
+   * import { resolve } from 'node:path';
+   * import { PocketIc, PocketIcServer, generateRandomIdentity } from '@dfinity/pic';
+   * import { _SERVICE, idlFactory } from '../declarations/backend.did';
    *
-   * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    * const wasm = resolve('..', '..', 'canister.wasm');
+   * const alice = generateRandomIdentity();
    *
    * const picServer = await PocketIcServer.start();
    * const pic = await PocketIc.create(picServer.getUrl());
    *
    * const canisterId = await pic.createCanister();
    * await pic.installCode({ canisterId, wasm });
-   * const actor = pic.createActor<_SERVICE>({ idlFactory, canisterId });
+   * const actor = pic.createActor<_SERVICE>({
+   *   idlFactory,
+   *   canisterId,
+   *   sender: alice.getPrincipal(),
+   * });
    *
    * await pic.tearDown();
    * await picServer.stop();
    * ```
    */
-  public createActor<T extends ActorInterface<T> = ActorInterface>(
-    interfaceFactory: IDL.InterfaceFactory,
-    canisterId: Principal,
-  ): Actor<T> {
-    const Actor = createActorClass<T>(
-      interfaceFactory,
-      canisterId,
-      this.client,
-    );
+  public createActor<T extends ActorInterface<T> = ActorInterface>({
+    idlFactory,
+    canisterId,
+    sender,
+  }: CreateActorOptions): Actor<T> {
+    const Actor = createActorClass<T>(idlFactory, canisterId, this.client);
+    const actor = new Actor();
 
-    return new Actor();
+    if (sender) {
+      actor.setPrincipal(sender);
+    }
+
+    return actor;
   }
 
   /**
@@ -790,25 +792,39 @@ export class PocketIc {
    * For a more convenient way of creating a PocketIC instance,
    * creating a canister and installing code, see {@link setupCanister}.
    *
-   * @param interfaceFactory The InterfaceFactory to use for the {@link DeferredActor}.
-   * @param canisterId The Principal of the canister to create the {@link DeferredActor} for.
+   * @param options Options for creating the {@link DeferredActor}, see {@link CreateActorOptions}.
    * @typeParam T The type of the {@link DeferredActor}. Must implement {@link ActorInterface}.
    * @returns The {@link DeferredActor} instance.
    *
-   * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
-   * @see [InterfaceFactory](https://js.icp.build/core/latest/libs/candid/api/namespaces/idl/#interfacefactory)
+   * @example
+   * ```ts
+   * const deferredActor = pic.createDeferredActor<_SERVICE>({
+   *   idlFactory,
+   *   canisterId,
+   * });
+   *
+   * const executeCall = await deferredActor.greet('PicJS');
+   * // other calls or ticks...
+   * const response = await executeCall();
+   * ```
    */
-  public createDeferredActor<T extends ActorInterface<T> = ActorInterface>(
-    interfaceFactory: IDL.InterfaceFactory,
-    canisterId: Principal,
-  ): DeferredActor<T> {
+  public createDeferredActor<T extends ActorInterface<T> = ActorInterface>({
+    idlFactory,
+    canisterId,
+    sender,
+  }: CreateActorOptions): DeferredActor<T> {
     const DeferredActor = createDeferredActorClass<T>(
-      interfaceFactory,
+      idlFactory,
       canisterId,
       this.client,
     );
+    const deferredActor = new DeferredActor();
 
-    return new DeferredActor();
+    if (sender) {
+      deferredActor.setPrincipal(sender);
+    }
+
+    return deferredActor;
   }
 
   /**

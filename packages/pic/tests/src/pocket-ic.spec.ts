@@ -101,7 +101,7 @@ describe.each(wasmVariants)('PocketIc — %s WASM', (_label, targetSize) => {
       sender: CONTROLLER_PRINCIPAL,
     });
 
-    const actor = pic.createActor<TestCanister>(idlFactory, canisterId);
+    const actor = pic.createActor<TestCanister>({ idlFactory, canisterId });
     const time = await actor.get_time();
     expect(time).toBeGreaterThan(0n);
 
@@ -131,7 +131,7 @@ describe.each(wasmVariants)('PocketIc — %s WASM', (_label, targetSize) => {
       sender: CONTROLLER_PRINCIPAL,
     });
 
-    const actor = pic.createActor<TestCanister>(idlFactory, canisterId);
+    const actor = pic.createActor<TestCanister>({ idlFactory, canisterId });
     const time = await actor.get_time();
     expect(time).toBeGreaterThan(0n);
 
@@ -165,7 +165,7 @@ describe.each(wasmVariants)('PocketIc — %s WASM', (_label, targetSize) => {
       },
     });
 
-    const actor = pic.createActor<TestCanister>(idlFactory, canisterId);
+    const actor = pic.createActor<TestCanister>({ idlFactory, canisterId });
     const time = await actor.get_time();
     expect(time).toBeGreaterThan(0n);
 

@@ -18,6 +18,7 @@ export const idlFactory = ({ IDL }) => {
     'print_log' : IDL.Func([IDL.Text], [], []),
     'schnorr_public_key_size' : IDL.Func([IDL.Text], [PublicKeyResult], []),
     'vetkd_public_key_size' : IDL.Func([IDL.Text], [PublicKeyResult], []),
+    'whoami' : IDL.Func([], [IDL.Principal], ['query']),
   });
 };
 
