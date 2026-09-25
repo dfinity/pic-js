@@ -57,6 +57,16 @@ export class InstanceDeletedError extends Error {
   }
 }
 
+export class HttpGatewayRequiredError extends Error {
+  override name = 'HttpGatewayRequiredError';
+
+  constructor(icpFeature: string) {
+    super(
+      `The \`${icpFeature}\` ICP feature requires an HTTP gateway. Set the \`httpGateway\` option when creating the PocketIC instance.`,
+    );
+  }
+}
+
 export class TopologyValidationError extends Error {
   override name = 'TopologyValidationError';
 

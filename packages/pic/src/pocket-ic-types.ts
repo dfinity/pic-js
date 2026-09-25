@@ -87,6 +87,15 @@ export interface CreateInstanceOptions {
   icpFeatures?: IcpFeatures;
 
   /**
+   * Creates an HTTP gateway together with the PocketIC instance.
+   * Required by the `ii` and `nnsUi` ICP features.
+   *
+   * The gateway serves requests once the instance is live,
+   * see {@link PocketIc.makeLive}, which returns the gateway's port.
+   */
+  httpGateway?: HttpGatewayConfig;
+
+  /**
    * Disables ingress message validation on the PocketIC instance.
    *
    * When enabled, the PocketIC server skips the validation that would normally
@@ -97,6 +106,39 @@ export interface CreateInstanceOptions {
    * Defaults to `false`.
    */
   disableIngressValidation?: boolean;
+}
+
+/**
+ * Options for the HTTP gateway created together with a PocketIC instance.
+ */
+export interface HttpGatewayConfig {
+  /**
+   * The IP address the gateway listens on. Defaults to `127.0.0.1`.
+   */
+  ipAddr?: string;
+
+  /**
+   * The port the gateway listens on. Defaults to a free port.
+   */
+  port?: number;
+
+  /**
+   * The domains the gateway serves canisters on. Defaults to `localhost`.
+   */
+  domains?: string[];
+
+  /**
+   * Serves the gateway over HTTPS with the given certificate and key.
+   */
+  httpsConfig?: HttpsConfig;
+}
+
+/**
+ * Paths to the certificate and key used to serve an HTTP gateway over HTTPS.
+ */
+export interface HttpsConfig {
+  certPath: string;
+  keyPath: string;
 }
 
 /**
@@ -353,12 +395,12 @@ export interface IcpFeatures {
    */
   icpToken?: IcpFeaturesConfig;
   /**
-   * Deploys the cycles ledger and index canisters.
+   * Deploys the cycles ledger and index canisters and initializes the cycles account of the anonymous principal with 2^127 - 1 cycles.
    */
   cyclesToken?: IcpFeaturesConfig;
   /**
    * Deploys the NNS governance and root canisters and sets up an initial NNS neuron with 1 ICP stake.
-   * The initial NNS neuron is controlled by the principal `hpikg-6exdt-jn33w-ndty3-fc7jc-tl2lr-buih3-cs3y7-tftkp-sfp62-gqe`.
+   * The initial NNS neuron is controlled by the anonymous principal.
    */
   nnsGovernance?: IcpFeaturesConfig;
   /**
@@ -367,13 +409,16 @@ export interface IcpFeatures {
    */
   sns?: IcpFeaturesConfig;
   /**
-   * Deploys the Internet Identity canister.
+   * Deploys the Internet Identity backend and frontend canisters.
+   * Requires {@link CreateInstanceOptions.httpGateway}.
    */
   ii?: IcpFeaturesConfig;
   /**
-   * Currently not supported.
+   * Deploys the NNS frontend dapp.
+   * Requires {@link CreateInstanceOptions.httpGateway} and the `cyclesMinting`,
+   * `icpToken`, `nnsGovernance`, `sns` and `ii` features.
    */
-  nnsUi?: never;
+  nnsUi?: IcpFeaturesConfig;
 }
 
 /**
