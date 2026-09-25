@@ -353,12 +353,12 @@ export interface IcpFeatures {
    */
   icpToken?: IcpFeaturesConfig;
   /**
-   * Deploys the cycles ledger and index canisters.
+   * Deploys the cycles ledger and index canisters and initializes the cycles account of the anonymous principal with 2^127 - 1 cycles.
    */
   cyclesToken?: IcpFeaturesConfig;
   /**
    * Deploys the NNS governance and root canisters and sets up an initial NNS neuron with 1 ICP stake.
-   * The initial NNS neuron is controlled by the principal `hpikg-6exdt-jn33w-ndty3-fc7jc-tl2lr-buih3-cs3y7-tftkp-sfp62-gqe`.
+   * The initial NNS neuron is controlled by the anonymous principal.
    */
   nnsGovernance?: IcpFeaturesConfig;
   /**
@@ -368,6 +368,7 @@ export interface IcpFeatures {
   sns?: IcpFeaturesConfig;
   /**
    * Deploys the Internet Identity canister.
+   * Not supported yet: PocketIC requires an HTTP gateway at instance creation, which PicJS does not configure.
    */
   ii?: IcpFeaturesConfig;
   /**
