@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.24.0 (2026-09-25)
 
 ### BREAKING CHANGE
 
@@ -28,6 +28,10 @@ required config.
 - **pic**: create the HTTP gateway together with the instance (#295)
 - **pic**: bump PocketIC to v16 (#294)
 - **pic**: require @icp-sdk/core v6 as a peer dependency (#291)
+
+### Note
+
+- PocketIC simulates mainnet threshold keys: `test_key_1` is held by the test threshold keys subnet (`testThresholdKeys`), and `key_1` by the II and Fiduciary subnets. `dfx_test_key` is no longer needed.
 
 ## 0.23.0 (2026-08-03)
 
