@@ -1,5 +1,4 @@
 .git/
-/.dfx/
 /node_modules/
 /target/
 

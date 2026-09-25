@@ -87,6 +87,15 @@ export interface CreateInstanceOptions {
   icpFeatures?: IcpFeatures;
 
   /**
+   * Creates an HTTP gateway together with the PocketIC instance.
+   * Required by the `ii` and `nnsUi` ICP features.
+   *
+   * The gateway serves requests once the instance is live,
+   * see {@link PocketIc.makeLive}, which returns the gateway's port.
+   */
+  httpGateway?: HttpGatewayConfig;
+
+  /**
    * Disables ingress message validation on the PocketIC instance.
    *
    * When enabled, the PocketIC server skips the validation that would normally
@@ -97,6 +106,39 @@ export interface CreateInstanceOptions {
    * Defaults to `false`.
    */
   disableIngressValidation?: boolean;
+}
+
+/**
+ * Options for the HTTP gateway created together with a PocketIC instance.
+ */
+export interface HttpGatewayConfig {
+  /**
+   * The IP address the gateway listens on. Defaults to `127.0.0.1`.
+   */
+  ipAddr?: string;
+
+  /**
+   * The port the gateway listens on. Defaults to a free port.
+   */
+  port?: number;
+
+  /**
+   * The domains the gateway serves canisters on. Defaults to `localhost`.
+   */
+  domains?: string[];
+
+  /**
+   * Serves the gateway over HTTPS with the given certificate and key.
+   */
+  httpsConfig?: HttpsConfig;
+}
+
+/**
+ * Paths to the certificate and key used to serve an HTTP gateway over HTTPS.
+ */
+export interface HttpsConfig {
+  certPath: string;
+  keyPath: string;
 }
 
 /**
@@ -353,12 +395,12 @@ export interface IcpFeatures {
    */
   icpToken?: IcpFeaturesConfig;
   /**
-   * Deploys the cycles ledger and index canisters.
+   * Deploys the cycles ledger and index canisters and initializes the cycles account of the anonymous principal with 2^127 - 1 cycles.
    */
   cyclesToken?: IcpFeaturesConfig;
   /**
    * Deploys the NNS governance and root canisters and sets up an initial NNS neuron with 1 ICP stake.
-   * The initial NNS neuron is controlled by the principal `hpikg-6exdt-jn33w-ndty3-fc7jc-tl2lr-buih3-cs3y7-tftkp-sfp62-gqe`.
+   * The initial NNS neuron is controlled by the anonymous principal.
    */
   nnsGovernance?: IcpFeaturesConfig;
   /**
@@ -367,13 +409,16 @@ export interface IcpFeatures {
    */
   sns?: IcpFeaturesConfig;
   /**
-   * Deploys the Internet Identity canister.
+   * Deploys the Internet Identity backend and frontend canisters.
+   * Requires {@link CreateInstanceOptions.httpGateway}.
    */
   ii?: IcpFeaturesConfig;
   /**
-   * Currently not supported.
+   * Deploys the NNS frontend dapp.
+   * Requires {@link CreateInstanceOptions.httpGateway} and the `cyclesMinting`,
+   * `icpToken`, `nnsGovernance`, `sns` and `ii` features.
    */
-  nnsUi?: never;
+  nnsUi?: IcpFeaturesConfig;
 }
 
 /**
@@ -482,7 +527,7 @@ export interface SetupCanisterOptions extends CreateCanisterOptions {
  * such as an {@link Actor} and CanisterId.
  *
  * @category Types
- * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
  */
 export interface CanisterFixture<T extends ActorInterface<T> = ActorInterface> {
   /**
@@ -510,7 +555,7 @@ export interface EnvironmentVariable {
  * Log visibility for canister settings.
  *
  * @category Types
- * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
  */
 export type LogVisibility =
   | { controllers: null }
@@ -521,7 +566,7 @@ export type LogVisibility =
  * Snapshot visibility for canister settings.
  *
  * @category Types
- * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
  */
 export type SnapshotVisibility =
   | { controllers: null }
@@ -532,7 +577,7 @@ export type SnapshotVisibility =
  * Canister settings.
  *
  * @category Types
- * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
  */
 export interface CanisterSettings {
   /**
@@ -597,7 +642,7 @@ export interface CanisterSettings {
  * Options for creating a canister.
  *
  * @category Types
- * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
  */
 export interface CreateCanisterOptions extends CanisterSettings {
   /**
@@ -632,7 +677,7 @@ export interface CreateCanisterOptions extends CanisterSettings {
  * Options for starting a given canister.
  *
  * @category Types
- * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
  */
 export interface StartCanisterOptions {
   /**
@@ -656,7 +701,7 @@ export interface StartCanisterOptions {
  * Options for stopping a given canister.
  *
  * @category Types
- * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
  */
 export interface StopCanisterOptions {
   /**
@@ -680,7 +725,7 @@ export interface StopCanisterOptions {
  * Options for installing a WASM module to a given canister.
  *
  * @category Types
- * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
  */
 export interface InstallCodeOptions {
   /**
@@ -718,7 +763,7 @@ export interface InstallCodeOptions {
  * This will reset both the canister's heap and its stable memory.
  *
  * @category Types
- * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
  */
 export interface ReinstallCodeOptions {
   /**
@@ -750,7 +795,7 @@ export interface ReinstallCodeOptions {
  * This will reset the canister's heap, but preserve stable memory.
  *
  * @category Types
- * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
  */
 export interface UpgradeCanisterOptions {
   /**
@@ -786,7 +831,7 @@ export interface UpgradeCanisterOptions {
  * Options for updating the settings of a given canister.
  *
  * @category Types
- * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
  */
 export interface UpdateCanisterSettingsOptions extends Partial<CanisterSettings> {
   /**
@@ -805,7 +850,7 @@ export interface UpdateCanisterSettingsOptions extends Partial<CanisterSettings>
  * Options for querying the status of a given canister.
  *
  * @category Types
- * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
  */
 export interface CanisterStatusOptions {
   /**
@@ -849,7 +894,7 @@ export interface CanisterQueryStats {
  * are not yet included because the PocketIC server does not return them.
  *
  * @category Types
- * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
  */
 export interface CanisterStatusResult {
   /**
@@ -916,7 +961,7 @@ export interface CanisterStatusResult {
  * canister inspection, mocking the signer's signature.
  *
  * @category Types
- * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
  */
 export interface SenderInfo {
   /**
@@ -934,7 +979,7 @@ export interface SenderInfo {
  * Options for making a query call to a given canister.
  *
  * @category Types
- * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
  */
 export interface QueryCallOptions {
   /**
@@ -974,7 +1019,7 @@ export interface QueryCallOptions {
  * Options for making an update call to a given canister.
  *
  * @category Types
- * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/classes/principal/)
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
  */
 
 export interface UpdateCallOptions {

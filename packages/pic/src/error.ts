@@ -57,12 +57,32 @@ export class InstanceDeletedError extends Error {
   }
 }
 
+export class HttpGatewayRequiredError extends Error {
+  override name = 'HttpGatewayRequiredError';
+
+  constructor(icpFeature: string) {
+    super(
+      `The \`${icpFeature}\` ICP feature requires an HTTP gateway. Set the \`httpGateway\` option when creating the PocketIC instance.`,
+    );
+  }
+}
+
 export class TopologyValidationError extends Error {
   override name = 'TopologyValidationError';
 
   constructor() {
     super(
       'The provided subnet configuration is invalid. At least one subnet must be configured and the number of both application and system subnets must be at least 0 (non-negative).',
+    );
+  }
+}
+
+export class InvalidTtlError extends Error {
+  override name = 'InvalidTtlError';
+
+  constructor(ttl: number) {
+    super(
+      `Invalid ttl value ${ttl}. The ttl must be a non-negative integer representing seconds.`,
     );
   }
 }

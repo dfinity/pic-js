@@ -8,19 +8,6 @@
   },
   "type": "module",
   "packageManager": "pnpm@10.28.2+sha512.41872f037ad22f7348e3b1debbaf7e867cfd448f2726d9cf74c08f19507c31d2c8e7a11525b983febc2df640b5438dee6023ebb1f84ed43cc2d654d2bc326264",
-  "workspaces": [
-    "examples/clock/tests",
-    "examples/counter/tests",
-    "examples/google_search/tests",
-    "examples/icp_features/tests",
-    "examples/multicanister/tests",
-    "examples/nns_proxy/tests",
-    "examples/todo/tests",
-    "examples/http/tests",
-    "packages/pic",
-    "packages/pic-server",
-    "docs"
-  ],
   "scripts": {
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -34,8 +21,8 @@
     "setup": "node packages/pic/postinstall.mjs"
   },
   "devDependencies": {
-    "@icp-sdk/bindgen": "^0.2.3",
-    "@icp-sdk/core": "^5.0.0",
+    "@icp-sdk/bindgen": "^0.4.0",
+    "@icp-sdk/core": "^6",
     "@swc/core": "^1.15.18",
     "@swc/jest": "^0.2.39",
     "@tsconfig/node24": "^24.0.4",
@@ -47,16 +34,26 @@
     "prettier": "3.8.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
-    "vite": "^7.3.2",
-    "vitest": "^4.1.0",
+    "vite": "^7.3.5",
+    "vitest": "^4.1.11",
     "yaml": "^2.8.3"
   },
   "pnpm": {
     "overrides": {
+      "@babel/core@>=7.0.0 <7.29.6": "^7.29.6",
+      "baseline-browser-mapping@<2.11.0": "^2.11.0",
+      "brace-expansion@>=1.0.0 <2.0.0": "^1.1.16",
+      "brace-expansion@>=2.0.0 <2.1.2": "^2.1.2",
+      "browserslist@<4.28.7": "^4.28.7",
+      "esbuild@<0.28.1": "^0.28.1",
+      "js-yaml@>=3.0.0 <3.15.2": "^3.15.2",
+      "linkify-it@<5.0.2": "^5.0.2",
+      "markdown-it@<14.2.0": "^14.2.0",
+      "nanoid@>=3.0.0 <3.3.12": "^3.3.12",
       "picomatch@>=2.0.0 <3.0.0": "^2.3.2",
       "picomatch@>=4.0.0 <4.0.4": "4.0.4",
-      "brace-expansion@>=1.0.0 <2.0.0": "^1.1.13",
-      "brace-expansion@>=2.0.0 <2.0.3": "^2.0.3",
+      "postcss@<8.5.23": "^8.5.23",
+      "shell-quote@<1.9.0": "^1.9.0",
       "yaml@>=2.0.0 <2.8.3": "2.8.3"
     }
   }

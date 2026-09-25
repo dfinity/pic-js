@@ -1,35 +1,62 @@
 # Examples
 
 All examples are written in [TypeScript](https://www.typescriptlang.org/) with [Jest](https://jestjs.io/) or [Vitest](https://vitest.dev/) as the test runner,
-but `@dfinity/pic` can be used with JavaScript and any other testing runner, such as [NodeJS](https://nodejs.org/dist/latest-v20.x/docs/api/test.html), [bun](https://bun.sh/docs/cli/test) or [Mocha](https://mochajs.org/).
+but `@dfinity/pic` can be used with JavaScript and any other testing runner, such as [NodeJS](https://nodejs.org/api/test.html), [bun](https://bun.sh/docs/test) or [Mocha](https://mochajs.org/).
 
 ## Setup
 
-- Install [bun](https://bun.sh/) OR install [pnpm](https://pnpm.io/installation)
-  - Replace `bun` with `pnpm` in any subsequent commands if you choose to use `pnpm`.
+- Install [pnpm](https://pnpm.io/installation)
 - Install dependencies:
 
   ```bash
-  bun i
+  pnpm i
   ```
 
-- Build all examples:
+- Download the `pocket-ic` binary. `.npmrc` sets `ignore-scripts=true`, so the
+  `postinstall` step that fetches it does not run on its own:
 
   ```bash
-  bun build:examples
+  pnpm run setup
+  ```
+
+- Install the canister toolchain. `build:examples` shells out to `icp` and
+  `mops`, and the Rust examples compile to WebAssembly, so all three are
+  needed. These mirror
+  [`setup-canister-toolchain`](../.github/actions/setup-canister-toolchain/action.yml),
+  which CI runs for the same reason:
+
+  ```bash
+  pnpm add -g @icp-sdk/icp-cli @icp-sdk/ic-wasm
+  pnpm add -g ic-mops
+  mops install
+  rustup target add wasm32-unknown-unknown
+  ```
+
+- Build `@dfinity/pic`. The examples resolve it through the workspace and load
+  its `dist/` output, which is not checked in:
+
+  ```bash
+  pnpm build
+  ```
+
+- Build all examples. This compiles the canisters and generates the
+  `declarations/` that the tests import, so it must run before the tests:
+
+  ```bash
+  pnpm build:examples
   ```
 
 - Test all examples:
 
   ```bash
-  bun test:examples
+  pnpm test:examples
   ```
 
 - Build or test a single example:
 
   ```bash
-  bun build:examples -- counter
-  bun test:examples -- counter
+  pnpm build:examples -- counter
+  pnpm test:examples -- counter
   ```
 
 ## Examples
@@ -45,7 +72,7 @@ but `@dfinity/pic` can be used with JavaScript and any other testing runner, suc
 - [ICP Features](./icp_features/README.md)
   This example demonstrates how to enable ICP features when creating a PocketIC instance.
 - [NNS Proxy](./nns_proxy/README.md)
-  This example demonstrates how to work with an NNS state directory.
+  This example demonstrates how to deploy the NNS canisters with `icpFeatures` and create neurons and proposals.
 - [Google Search](./google_search/README.md)
   This example demonstrates how to mock HTTPS Outcalls.
 - [HTTP](./http/README.md)

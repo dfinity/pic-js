@@ -1,6 +1,11 @@
 # Changelog
 
-## Unreleased
+## 0.23.0 (2026-08-03)
+
+### Feat
+
+- **pic**: add ttl option to PocketIcServer.start (#278)
+- **pic**: support overriding the PocketIC binary path (#276)
 
 ## 0.22.0 (2026-06-09)
 

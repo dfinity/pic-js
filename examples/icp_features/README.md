@@ -5,11 +5,11 @@ This example demonstrates how to enable ICP features when creating a PocketIC in
 Build the canister:
 
 ```shell
-bun build:examples -- icp_features
+pnpm build:examples -- icp_features
 ```
 
 Run the tests:
 
 ```shell
-bun test:examples -- icp_features
+pnpm test:examples -- icp_features
 ```
