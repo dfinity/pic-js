@@ -47,10 +47,10 @@ export class Governance {
   private readonly defaultIdentity = new AnonymousIdentity();
 
   constructor(pic: PocketIc) {
-    this.actor = pic.createActor<GovernanceService>(
-      governanceIdlFactory,
-      GOVERNANCE_CANISTER_ID,
-    );
+    this.actor = pic.createActor<GovernanceService>({
+      idlFactory: governanceIdlFactory,
+      canisterId: GOVERNANCE_CANISTER_ID,
+    });
     this.ledger = new Ledger(pic);
   }
 

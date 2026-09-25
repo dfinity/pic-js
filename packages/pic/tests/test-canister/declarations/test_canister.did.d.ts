@@ -14,6 +14,7 @@ export type Time = bigint;
 export interface _SERVICE {
   'get_time' : ActorMethod<[], Time>,
   'print_log' : ActorMethod<[string], undefined>,
+  'whoami' : ActorMethod<[], Principal>,
 }
 export declare const idlFactory: IDL.InterfaceFactory;
 export declare const init: (args: { IDL: typeof IDL }) => IDL.Type[];

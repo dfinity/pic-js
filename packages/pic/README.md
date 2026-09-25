@@ -52,7 +52,7 @@ const pic = await PocketIc.create();
 
 const canisterId = await pic.createCanister();
 await pic.installCode(canisterId, wasmPath);
-const actor = pic.createActor<_SERVICE>(idlFactory, canisterId);
+const actor = pic.createActor<_SERVICE>({ idlFactory, canisterId });
 
 // perform tests...
 

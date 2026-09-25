@@ -51,7 +51,7 @@ describe('ApplicationSubnetConfig.costSchedule', () => {
         sender: CONTROLLER_PRINCIPAL,
       });
 
-      const actor = pic.createActor<TestCanister>(idlFactory, canisterId);
+      const actor = pic.createActor<TestCanister>({ idlFactory, canisterId });
       await actor.get_time();
 
       const balanceBefore = await pic.getCyclesBalance(canisterId);
@@ -92,7 +92,7 @@ describe('ApplicationSubnetConfig.costSchedule', () => {
         sender: CONTROLLER_PRINCIPAL,
       });
 
-      const actor = pic.createActor<TestCanister>(idlFactory, canisterId);
+      const actor = pic.createActor<TestCanister>({ idlFactory, canisterId });
       await actor.get_time();
 
       const balanceBefore = await pic.getCyclesBalance(canisterId);

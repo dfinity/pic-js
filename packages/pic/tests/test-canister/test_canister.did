@@ -3,4 +3,5 @@ type Time = int;
 service : {
   get_time : () -> (Time) query;
   print_log : (text) -> ();
+  whoami : () -> (principal) query;
 }

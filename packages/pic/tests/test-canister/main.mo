@@ -9,4 +9,8 @@ persistent actor TestCanister {
   public func print_log(message : Text) : async () {
     Debug.print(message);
   };
+
+  public shared query ({ caller }) func whoami() : async Principal {
+    return caller;
+  };
 };

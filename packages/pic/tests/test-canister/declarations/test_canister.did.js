@@ -14,6 +14,7 @@ export const idlFactory = ({ IDL }) => {
   return IDL.Service({
     'get_time' : IDL.Func([], [Time], ['query']),
     'print_log' : IDL.Func([IDL.Text], [], []),
+    'whoami' : IDL.Func([], [IDL.Principal], ['query']),
   });
 };
 
