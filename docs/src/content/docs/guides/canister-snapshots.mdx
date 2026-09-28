@@ -1,0 +1,58 @@
+---
+title: Canister snapshots
+sidebar:
+  order: 7
+---
+
+A [canister snapshot](https://docs.internetcomputer.org/guides/canister-management/snapshots/) captures a canister's state: its Wasm module, heap and stable memory, and chunk store. All snapshot methods must be called by a controller of the canister.
+
+## Restoring state
+
+Take a snapshot, change the canister's state, and load the snapshot to go back, for example to roll back a failed upgrade:
+
+```ts
+const snapshot = await pic.takeCanisterSnapshot({ canisterId, sender });
+
+await pic.upgradeCanister({ canisterId, wasm, sender });
+// assert on the upgraded canister...
+
+await pic.loadCanisterSnapshot({
+  canisterId,
+  snapshotId: snapshot.id,
+  sender,
+});
+```
+
+Snapshots can also be listed with `listCanisterSnapshots` and deleted with `deleteCanisterSnapshot`. Pass `replaceSnapshot` to `takeCanisterSnapshot` to replace an existing snapshot instead of adding one.
+
+## Testing against real state
+
+Snapshots are not tied to a network, so a snapshot downloaded from mainnet or a local network can be uploaded into PocketIC to test against real state. Download it with [icp-cli](https://cli.internetcomputer.org):
+
+```shell
+icp canister snapshot create <canister> -n ic
+icp canister snapshot download <canister> <snapshot-id> -n ic -o ./snapshot
+```
+
+Then upload it to a canister in PocketIC and load it:
+
+```ts
+const canisterId = await pic.createCanister({ sender });
+
+const snapshotId = await pic.uploadCanisterSnapshot({
+  canisterId,
+  snapshotDir: path.resolve('./snapshot'),
+  sender,
+});
+await pic.loadCanisterSnapshot({ canisterId, snapshotId, sender });
+```
+
+`downloadCanisterSnapshot` writes a snapshot in the same format, which `icp canister snapshot upload` accepts.
+
+`snapshotDir` is a path on the machine running the PocketIC server, and should be absolute.
+
+The snapshot carries state that may depend on where it was taken:
+
+- The canister ID changes, so state that stores the canister's own ID refers to the original canister.
+- Other canisters the state refers to may not exist on PocketIC under the same IDs.
+- Public keys derived from threshold keys (ECDSA, Schnorr, vetKD) differ between networks.
