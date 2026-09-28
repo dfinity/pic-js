@@ -146,7 +146,14 @@ export interface HttpGatewayConfig {
  * Paths to the certificate and key used to serve an HTTP gateway over HTTPS.
  */
 export interface HttpsConfig {
+  /**
+   * The path to the PEM-encoded certificate chain, on the machine running the PocketIC server.
+   */
   certPath: string;
+
+  /**
+   * The path to the PEM-encoded private key, on the machine running the PocketIC server.
+   */
   keyPath: string;
 }
 
@@ -601,7 +608,14 @@ export interface CanisterFixture<T extends ActorInterface<T> = ActorInterface> {
  * @category Types
  */
 export interface EnvironmentVariable {
+  /**
+   * The name of the variable, unique within the canister.
+   */
   name: string;
+
+  /**
+   * The value of the variable.
+   */
   value: string;
 }
 
@@ -959,9 +973,25 @@ export type CanisterStatus =
  * @category Types
  */
 export interface CanisterQueryStats {
+  /**
+   * The total number of query and composite query methods evaluated on the canister.
+   */
   numCallsTotal: bigint;
+
+  /**
+   * The total number of WebAssembly instructions executed by query and composite query methods.
+   */
   numInstructionsTotal: bigint;
+
+  /**
+   * The total number of query and composite query request payload bytes.
+   */
   requestPayloadBytesTotal: bigint;
+
+  /**
+   * The total number of query and composite query response payload bytes,
+   * counting reply data and reject messages.
+   */
   responsePayloadBytesTotal: bigint;
 }
 
@@ -971,15 +1001,124 @@ export interface CanisterQueryStats {
  * @category Types
  */
 export interface CanisterMemoryMetrics {
+  /**
+   * The heap memory used by the canister's WebAssembly code.
+   */
   wasmMemorySize: bigint;
+
+  /**
+   * The stable memory used by the canister.
+   */
   stableMemorySize: bigint;
+
+  /**
+   * The memory used by the canister's global variables.
+   */
   globalMemorySize: bigint;
+
+  /**
+   * The size of the installed WASM module as uploaded, e.g. compressed if it was gzipped.
+   */
   wasmBinarySize: bigint;
+
+  /**
+   * The memory used by the custom sections of the canister's WASM module.
+   */
   customSectionsSize: bigint;
+
+  /**
+   * The memory used to store the canister's history.
+   */
   canisterHistorySize: bigint;
+
+  /**
+   * The memory used by the canister's WASM chunk store.
+   */
   wasmChunkStoreSize: bigint;
+
+  /**
+   * The memory used by all snapshots of the canister.
+   */
   snapshotsSize: bigint;
+
+  /**
+   * The memory used by the canister's logs.
+   */
   logMemoryStoreSize: bigint;
+}
+
+/**
+ * The settings of a canister, with every setting resolved to its current value,
+ * as returned by the management canister's `canister_status` method.
+ *
+ * @category Types
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
+ */
+export interface DefiniteCanisterSettings {
+  /**
+   * The controllers of the canister.
+   */
+  controllers: Principal[];
+
+  /**
+   * The compute allocation of the canister, as a percentage between 0 and 100.
+   */
+  computeAllocation: bigint;
+
+  /**
+   * The memory allocation of the canister in bytes.
+   */
+  memoryAllocation: bigint;
+
+  /**
+   * The freezing threshold of the canister in seconds.
+   */
+  freezingThreshold: bigint;
+
+  /**
+   * The upper limit on the canister's reserved cycles.
+   */
+  reservedCyclesLimit: bigint;
+
+  /**
+   * The minimum cycles that calls from other canisters must attach.
+   */
+  minimumIncomingCanisterCallCycles: bigint;
+
+  /**
+   * Who can read the canister's logs.
+   */
+  logVisibility: LogVisibility;
+
+  /**
+   * The log memory limit of the canister in bytes.
+   */
+  logMemoryLimit: bigint;
+
+  /**
+   * Who can list and read the canister's snapshots.
+   */
+  snapshotVisibility: SnapshotVisibility;
+
+  /**
+   * Who can read the canister's status.
+   */
+  statusVisibility: StatusVisibility;
+
+  /**
+   * The WASM memory limit of the canister in bytes, or 0 for no limit.
+   */
+  wasmMemoryLimit: bigint;
+
+  /**
+   * The WASM memory threshold of the canister in bytes.
+   */
+  wasmMemoryThreshold: bigint;
+
+  /**
+   * The environment variables exposed to the canister.
+   */
+  environmentVariables: EnvironmentVariable[];
 }
 
 /**
@@ -1009,23 +1148,9 @@ export interface CanisterStatusResult {
   version: bigint;
 
   /**
-   * The definite settings of the canister.
+   * The settings of the canister, see {@link DefiniteCanisterSettings}.
    */
-  settings: {
-    controllers: Principal[];
-    computeAllocation: bigint;
-    memoryAllocation: bigint;
-    freezingThreshold: bigint;
-    reservedCyclesLimit: bigint;
-    minimumIncomingCanisterCallCycles: bigint;
-    logVisibility: LogVisibility;
-    logMemoryLimit: bigint;
-    snapshotVisibility: SnapshotVisibility;
-    statusVisibility: StatusVisibility;
-    wasmMemoryLimit: bigint;
-    wasmMemoryThreshold: bigint;
-    environmentVariables: EnvironmentVariable[];
-  };
+  settings: DefiniteCanisterSettings;
 
   /**
    * The SHA-256 hash of the installed WASM module, if any.
@@ -1361,6 +1486,9 @@ export type CanisterLogFilter =
  * Selects the log records whose index is in the range `[start, end)`.
  */
 export interface CanisterLogIdxFilter {
+  /**
+   * Filters by log record index.
+   */
   type: 'byIdx';
 
   /**
@@ -1378,6 +1506,9 @@ export interface CanisterLogIdxFilter {
  * Selects the log records whose timestamp is in the range `[start, end)`.
  */
 export interface CanisterLogTimestampFilter {
+  /**
+   * Filters by log record timestamp.
+   */
   type: 'byTimestampNanos';
 
   /**
