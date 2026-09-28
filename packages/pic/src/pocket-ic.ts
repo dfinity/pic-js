@@ -26,6 +26,11 @@ import {
   UpdateCanisterSettingsOptions,
   StartCanisterOptions,
   StopCanisterOptions,
+  DeleteCanisterOptions,
+  UninstallCodeOptions,
+  SubmittedCall,
+  IngressStatusOptions,
+  VerifyCanisterSignatureOptions,
   QueryCallOptions,
   UpdateCallOptions,
   PendingHttpsOutcall,
@@ -46,6 +51,9 @@ import {
   encodeInstallChunkedCodeRequest,
   encodeInstallCodeRequest,
   encodeStartCanisterRequest,
+  encodeStopCanisterRequest,
+  encodeDeleteCanisterRequest,
+  encodeUninstallCodeRequest,
   encodeUpdateCanisterSettingsRequest,
   encodeUploadChunkRequest,
   decodeCanisterStatusResponse,
@@ -374,7 +382,7 @@ export class PocketIc {
     sender = Principal.anonymous(),
     targetSubnetId,
   }: StopCanisterOptions): Promise<void> {
-    const payload = encodeStartCanisterRequest({
+    const payload = encodeStopCanisterRequest({
       canister_id: canisterId,
     });
 
@@ -382,6 +390,82 @@ export class PocketIc {
       canisterId: MANAGEMENT_CANISTER_ID,
       sender,
       method: 'stop_canister',
+      payload,
+      effectivePrincipal: targetSubnetId
+        ? {
+            subnetId: targetSubnetId,
+          }
+        : undefined,
+    });
+  }
+
+  /**
+   * Deletes the given canister. The canister must be stopped first,
+   * see {@link stopCanister}.
+   *
+   * @param options Options for deleting the canister, see {@link DeleteCanisterOptions}.
+   *
+   * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
+   *
+   * @example
+   * ```ts
+   * await pic.stopCanister({ canisterId, sender });
+   * await pic.deleteCanister({ canisterId, sender });
+   *
+   * const exists = await pic.canisterExists(canisterId); // false
+   * ```
+   */
+  public async deleteCanister({
+    canisterId,
+    sender = Principal.anonymous(),
+    targetSubnetId,
+  }: DeleteCanisterOptions): Promise<void> {
+    const payload = encodeDeleteCanisterRequest({
+      canister_id: canisterId,
+    });
+
+    await this.client.updateCall({
+      canisterId: MANAGEMENT_CANISTER_ID,
+      sender,
+      method: 'delete_canister',
+      payload,
+      effectivePrincipal: targetSubnetId
+        ? {
+            subnetId: targetSubnetId,
+          }
+        : undefined,
+    });
+  }
+
+  /**
+   * Uninstalls the code of the given canister, removing its WASM module and
+   * memory. The canister and its settings are kept.
+   *
+   * @param options Options for uninstalling the code, see {@link UninstallCodeOptions}.
+   *
+   * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
+   *
+   * @example
+   * ```ts
+   * await pic.uninstallCode({ canisterId, sender });
+   *
+   * const { moduleHash } = await pic.canisterStatus({ canisterId, sender }); // null
+   * ```
+   */
+  public async uninstallCode({
+    canisterId,
+    sender = Principal.anonymous(),
+    targetSubnetId,
+  }: UninstallCodeOptions): Promise<void> {
+    const payload = encodeUninstallCodeRequest({
+      canister_id: canisterId,
+      sender_canister_version: [],
+    });
+
+    await this.client.updateCall({
+      canisterId: MANAGEMENT_CANISTER_ID,
+      sender,
+      method: 'uninstall_code',
       payload,
       effectivePrincipal: targetSubnetId
         ? {
@@ -998,6 +1082,76 @@ export class PocketIc {
   }
 
   /**
+   * Submits an update call to the given canister without executing it.
+   * The call is executed by later rounds, e.g. from {@link tick}, and its result is
+   * fetched with {@link awaitCall} or {@link ingressStatus}.
+   *
+   * @param options Options for submitting the update call, see {@link UpdateCallOptions}.
+   * @returns The submitted call, see {@link SubmittedCall}.
+   *
+   * @example
+   * ```ts
+   * const call = await pic.submitCall({ canisterId, method: 'greet' });
+   *
+   * await pic.ingressStatus(call); // null, the call has not been executed yet
+   * await pic.tick();
+   * const res = await pic.ingressStatus(call); // the Candid-encoded response
+   * ```
+   */
+  public async submitCall({
+    canisterId,
+    method,
+    arg = new Uint8Array(),
+    sender = Principal.anonymous(),
+    targetSubnetId,
+    senderInfo,
+  }: UpdateCallOptions): Promise<SubmittedCall> {
+    return await this.client.submitCall({
+      canisterId,
+      method,
+      payload: new Uint8Array(arg),
+      sender,
+      effectivePrincipal: targetSubnetId
+        ? {
+            subnetId: targetSubnetId,
+          }
+        : undefined,
+      senderInfo,
+    });
+  }
+
+  /**
+   * Executes rounds until the given call has finished, see {@link submitCall}.
+   *
+   * @param call The submitted call, see {@link SubmittedCall}.
+   * @returns The Candid-encoded response of the update call.
+   * Throws if the call was rejected.
+   */
+  public async awaitCall(call: SubmittedCall): Promise<Uint8Array> {
+    const res = await this.client.awaitCall(call);
+
+    return res.body;
+  }
+
+  /**
+   * Fetches the status of the given call without executing any rounds,
+   * see {@link submitCall}.
+   *
+   * @param call The submitted call, see {@link SubmittedCall}.
+   * @param options Options for fetching the status, see {@link IngressStatusOptions}.
+   * @returns The Candid-encoded response of the update call if it has finished,
+   * `null` otherwise. Throws if the call was rejected.
+   */
+  public async ingressStatus(
+    call: SubmittedCall,
+    { caller }: IngressStatusOptions = {},
+  ): Promise<Uint8Array | null> {
+    const res = await this.client.ingressStatus({ call, caller });
+
+    return res?.body ?? null;
+  }
+
+  /**
    * Deletes the PocketIC instance.
    *
    * @example
@@ -1314,6 +1468,31 @@ export class PocketIc {
   }
 
   /**
+   * Verifies a canister signature, as issued by canisters like Internet Identity.
+   *
+   * @param options Options for verifying the signature, see {@link VerifyCanisterSignatureOptions}.
+   * Throws if the signature is invalid.
+   *
+   * @example
+   * ```ts
+   * const nnsSubnet = await pic.getNnsSubnet();
+   * const rootKey = await pic.getPubKey(nnsSubnet.id);
+   *
+   * await pic.verifyCanisterSignature({
+   *   message,
+   *   signature,
+   *   publicKey,
+   *   rootKey,
+   * });
+   * ```
+   */
+  public async verifyCanisterSignature(
+    options: VerifyCanisterSignatureOptions,
+  ): Promise<void> {
+    await this.client.verifyCanisterSignature(options);
+  }
+
+  /**
    * Gets the subnet Id of the provided canister Id.
    *
    * @param canisterId The Principal of the canister to get the subnet Id of.
@@ -1342,6 +1521,18 @@ export class PocketIc {
     const { subnetId } = await this.client.getSubnetId({ canisterId });
 
     return subnetId;
+  }
+
+  /**
+   * Checks whether the given canister exists.
+   *
+   * @param canisterId The Principal of the canister to check.
+   * @returns `true` if the canister exists, `false` otherwise.
+   *
+   * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
+   */
+  public async canisterExists(canisterId: Principal): Promise<boolean> {
+    return (await this.getCanisterSubnetId(canisterId)) !== null;
   }
 
   /**

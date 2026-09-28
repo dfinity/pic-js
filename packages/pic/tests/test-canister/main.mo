@@ -1,3 +1,4 @@
+import CertifiedData "mo:core/CertifiedData";
 import Time "mo:core/Time";
 import Debug "mo:core/Debug";
 import Error "mo:core/Error";
@@ -25,6 +26,14 @@ persistent actor TestCanister {
 
   public query func get_time() : async Time.Time {
     return Time.now();
+  };
+
+  public func set_certified_data(data : Blob) : async () {
+    CertifiedData.set(data);
+  };
+
+  public query func get_certificate() : async ?Blob {
+    return CertifiedData.getCertificate();
   };
 
   public func print_log(message : Text) : async () {

@@ -133,6 +133,36 @@ export function encodeStopCanisterRequest(
   return new Uint8Array(IDL.encode([StopCanisterRequest], [arg]));
 }
 
+const DeleteCanisterRequest = IDL.Record({
+  canister_id: IDL.Principal,
+});
+
+export interface DeleteCanisterRequest {
+  canister_id: Principal;
+}
+
+export function encodeDeleteCanisterRequest(
+  arg: DeleteCanisterRequest,
+): Uint8Array {
+  return new Uint8Array(IDL.encode([DeleteCanisterRequest], [arg]));
+}
+
+const UninstallCodeRequest = IDL.Record({
+  canister_id: IDL.Principal,
+  sender_canister_version: IDL.Opt(IDL.Nat64),
+});
+
+export interface UninstallCodeRequest {
+  canister_id: Principal;
+  sender_canister_version: [] | [bigint];
+}
+
+export function encodeUninstallCodeRequest(
+  arg: UninstallCodeRequest,
+): Uint8Array {
+  return new Uint8Array(IDL.encode([UninstallCodeRequest], [arg]));
+}
+
 const CanisterInstallModeUpgradeOptions = IDL.Record({
   skip_pre_upgrade: IDL.Opt(IDL.Bool),
   wasm_memory_persistence: IDL.Opt(

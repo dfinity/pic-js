@@ -15,9 +15,11 @@ export type PublicKeyResult = { 'ok' : bigint } |
 export type Time = bigint;
 export interface _SERVICE {
   'ecdsa_public_key_size' : ActorMethod<[string], PublicKeyResult>,
+  'get_certificate' : ActorMethod<[], [] | [Uint8Array]>,
   'get_time' : ActorMethod<[], Time>,
   'print_log' : ActorMethod<[string], undefined>,
   'schnorr_public_key_size' : ActorMethod<[string], PublicKeyResult>,
+  'set_certified_data' : ActorMethod<[Uint8Array], undefined>,
   'vetkd_public_key_size' : ActorMethod<[string], PublicKeyResult>,
   'whoami' : ActorMethod<[], Principal>,
 }
