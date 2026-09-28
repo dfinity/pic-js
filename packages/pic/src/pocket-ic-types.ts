@@ -628,6 +628,17 @@ export type SnapshotVisibility =
   | { allowedViewers: Principal[] };
 
 /**
+ * Status visibility for canister settings.
+ *
+ * @category Types
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
+ */
+export type StatusVisibility =
+  | { controllers: null }
+  | { public: null }
+  | { allowedViewers: Principal[] };
+
+/**
  * Canister settings.
  *
  * @category Types
@@ -661,19 +672,32 @@ export interface CanisterSettings {
   reservedCyclesLimit?: bigint;
 
   /**
-   * The log visibility of the canister.
+   * The minimum cycles that calls from other canisters must attach.
+   * Calls attaching fewer cycles are rejected and refunded.
+   * Ingress messages and calls from the canister itself are not affected.
    */
-  logVisibility?: LogVisibility;
+  minimumIncomingCanisterCallCycles?: bigint;
 
   /**
-   * The snapshot visibility of the canister.
+   * Who can read the canister's logs. Defaults to its controllers.
    */
-  snapshotVisibility?: SnapshotVisibility;
+  logVisibility?: LogVisibility;
 
   /**
    * The log memory limit of the canister in bytes.
    */
   logMemoryLimit?: bigint;
+
+  /**
+   * Who can list and read the canister's snapshots. Defaults to its controllers.
+   */
+  snapshotVisibility?: SnapshotVisibility;
+
+  /**
+   * Who can read the canister's status. Defaults to its controllers.
+   * The canister itself can always read it.
+   */
+  statusVisibility?: StatusVisibility;
 
   /**
    * The WASM memory limit of the canister in bytes.
@@ -942,10 +966,25 @@ export interface CanisterQueryStats {
 }
 
 /**
- * The result of querying the status of a canister.
- * This is a subset of the IC management canister `canister_status` response.
- * Some fields (e.g. `snapshotVisibility`, `logMemoryLimit`, `memoryMetrics`)
- * are not yet included because the PocketIC server does not return them.
+ * Memory usage of a canister, broken down by kind, in bytes.
+ *
+ * @category Types
+ */
+export interface CanisterMemoryMetrics {
+  wasmMemorySize: bigint;
+  stableMemorySize: bigint;
+  globalMemorySize: bigint;
+  wasmBinarySize: bigint;
+  customSectionsSize: bigint;
+  canisterHistorySize: bigint;
+  wasmChunkStoreSize: bigint;
+  snapshotsSize: bigint;
+  logMemoryStoreSize: bigint;
+}
+
+/**
+ * The result of querying the status of a canister,
+ * as returned by the management canister's `canister_status` method.
  *
  * @category Types
  * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
@@ -957,6 +996,19 @@ export interface CanisterStatusResult {
   status: CanisterStatus;
 
   /**
+   * Whether the canister's queues are empty and its streams flushed.
+   * Only meaningful while the canister is stopped.
+   */
+  readyForMigration: boolean;
+
+  /**
+   * The canister version. It increases with every change to the canister's code,
+   * settings, running status, cycles balance or memory, including every
+   * successful execution of an update method, callback, heartbeat or timer.
+   */
+  version: bigint;
+
+  /**
    * The definite settings of the canister.
    */
   settings: {
@@ -965,7 +1017,11 @@ export interface CanisterStatusResult {
     memoryAllocation: bigint;
     freezingThreshold: bigint;
     reservedCyclesLimit: bigint;
+    minimumIncomingCanisterCallCycles: bigint;
     logVisibility: LogVisibility;
+    logMemoryLimit: bigint;
+    snapshotVisibility: SnapshotVisibility;
+    statusVisibility: StatusVisibility;
     wasmMemoryLimit: bigint;
     wasmMemoryThreshold: bigint;
     environmentVariables: EnvironmentVariable[];
@@ -980,6 +1036,11 @@ export interface CanisterStatusResult {
    * The total memory size of the canister in bytes.
    */
   memorySize: bigint;
+
+  /**
+   * The memory usage of the canister by kind, see {@link CanisterMemoryMetrics}.
+   */
+  memoryMetrics: CanisterMemoryMetrics;
 
   /**
    * The current cycle balance of the canister.
