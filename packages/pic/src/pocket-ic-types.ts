@@ -1004,6 +1004,148 @@ export interface CanisterStatusResult {
 
 //#endregion CanisterLifecycle
 
+//#region CanisterSnapshots
+
+/**
+ * A snapshot of a canister.
+ *
+ * @category Types
+ */
+export interface CanisterSnapshot {
+  /**
+   * The ID of the snapshot.
+   */
+  id: Uint8Array;
+
+  /**
+   * When the snapshot was taken, in nanoseconds since the Unix epoch.
+   */
+  takenAtTimestamp: bigint;
+
+  /**
+   * The size of the snapshot in bytes.
+   */
+  totalSize: bigint;
+}
+
+/**
+ * Options for taking a snapshot of a canister.
+ *
+ * @category Types
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
+ */
+export interface TakeCanisterSnapshotOptions {
+  /**
+   * The Principal of the canister to take a snapshot of.
+   */
+  canisterId: Principal;
+
+  /**
+   * The ID of an existing snapshot to replace with the new one.
+   */
+  replaceSnapshot?: Uint8Array;
+
+  /**
+   * Whether to uninstall the canister's code after taking the snapshot.
+   */
+  uninstallCode?: boolean;
+
+  /**
+   * The Principal to send the request as.
+   * Defaults to the anonymous principal.
+   */
+  sender?: Principal;
+}
+
+/**
+ * Options for loading, or deleting, a snapshot of a canister.
+ *
+ * @category Types
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
+ */
+export interface CanisterSnapshotOptions {
+  /**
+   * The Principal of the canister the snapshot belongs to.
+   */
+  canisterId: Principal;
+
+  /**
+   * The ID of the snapshot.
+   */
+  snapshotId: Uint8Array;
+
+  /**
+   * The Principal to send the request as.
+   * Defaults to the anonymous principal.
+   */
+  sender?: Principal;
+}
+
+/**
+ * Options for listing the snapshots of a canister.
+ *
+ * @category Types
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
+ */
+export interface ListCanisterSnapshotsOptions {
+  /**
+   * The Principal of the canister to list the snapshots of.
+   */
+  canisterId: Principal;
+
+  /**
+   * The Principal to send the request as.
+   * Defaults to the anonymous principal.
+   */
+  sender?: Principal;
+}
+
+/**
+ * Options for downloading a snapshot of a canister to a directory.
+ *
+ * @category Types
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
+ */
+export interface DownloadCanisterSnapshotOptions extends CanisterSnapshotOptions {
+  /**
+   * The directory to download the snapshot to, on the machine running the
+   * PocketIC server. It must be empty or not exist yet.
+   */
+  snapshotDir: string;
+}
+
+/**
+ * Options for uploading a snapshot of a canister from a directory.
+ *
+ * @category Types
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
+ */
+export interface UploadCanisterSnapshotOptions {
+  /**
+   * The Principal of the canister to upload the snapshot to.
+   */
+  canisterId: Principal;
+
+  /**
+   * The directory to upload the snapshot from, on the machine running the
+   * PocketIC server, as written by {@link PocketIc.downloadCanisterSnapshot}.
+   */
+  snapshotDir: string;
+
+  /**
+   * The ID of an existing snapshot to replace with the uploaded one.
+   */
+  replaceSnapshot?: Uint8Array;
+
+  /**
+   * The Principal to send the request as.
+   * Defaults to the anonymous principal.
+   */
+  sender?: Principal;
+}
+
+//#endregion CanisterSnapshots
+
 //#region CanisterCall
 
 /**

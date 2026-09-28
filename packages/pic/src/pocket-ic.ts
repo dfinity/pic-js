@@ -1,5 +1,6 @@
 import { Principal } from '@icp-sdk/core/principal';
 import {
+  canisterSnapshotFromIDL,
   isNil,
   logVisibilityFromIDL,
   optCanisterLogFilterToIDL,
@@ -34,6 +35,12 @@ import {
   CanisterStatusResult,
   FetchCanisterLogsOptions,
   CanisterLogRecord,
+  CanisterSnapshot,
+  CanisterSnapshotOptions,
+  DownloadCanisterSnapshotOptions,
+  ListCanisterSnapshotsOptions,
+  TakeCanisterSnapshotOptions,
+  UploadCanisterSnapshotOptions,
 } from './pocket-ic-types';
 import {
   MANAGEMENT_CANISTER_ID,
@@ -52,6 +59,12 @@ import {
   encodeCanisterStatusRequest,
   encodeFetchCanisterLogsRequest,
   decodeFetchCanisterLogsResponse,
+  decodeListCanisterSnapshotsResponse,
+  decodeTakeCanisterSnapshotResponse,
+  encodeDeleteCanisterSnapshotRequest,
+  encodeListCanisterSnapshotsRequest,
+  encodeLoadCanisterSnapshotRequest,
+  encodeTakeCanisterSnapshotRequest,
 } from './management-canister';
 import {
   createDeferredActorClass,
@@ -728,6 +741,162 @@ export class PocketIc {
           response.query_stats.response_payload_bytes_total,
       },
     };
+  }
+
+  /**
+   * Takes a snapshot of the given canister: its code, memory and settings
+   * needed to restore it with {@link loadCanisterSnapshot}.
+   *
+   * @param options Options for taking the snapshot, see {@link TakeCanisterSnapshotOptions}.
+   * @returns The snapshot, see {@link CanisterSnapshot}.
+   *
+   * @example
+   * ```ts
+   * const snapshot = await pic.takeCanisterSnapshot({ canisterId, sender });
+   *
+   * // change the canister's state...
+   *
+   * await pic.loadCanisterSnapshot({
+   *   canisterId,
+   *   snapshotId: snapshot.id,
+   *   sender,
+   * });
+   * ```
+   */
+  public async takeCanisterSnapshot({
+    canisterId,
+    replaceSnapshot,
+    uninstallCode,
+    sender = Principal.anonymous(),
+  }: TakeCanisterSnapshotOptions): Promise<CanisterSnapshot> {
+    const res = await this.client.updateCall({
+      canisterId: MANAGEMENT_CANISTER_ID,
+      sender,
+      method: 'take_canister_snapshot',
+      payload: encodeTakeCanisterSnapshotRequest({
+        canister_id: canisterId,
+        replace_snapshot: optional(replaceSnapshot),
+        uninstall_code: optional(uninstallCode),
+        sender_canister_version: [],
+      }),
+      effectivePrincipal: { canisterId },
+    });
+
+    return canisterSnapshotFromIDL(
+      decodeTakeCanisterSnapshotResponse(res.body),
+    );
+  }
+
+  /**
+   * Restores the given canister from one of its snapshots,
+   * see {@link takeCanisterSnapshot}.
+   *
+   * @param options Options for loading the snapshot, see {@link CanisterSnapshotOptions}.
+   */
+  public async loadCanisterSnapshot({
+    canisterId,
+    snapshotId,
+    sender = Principal.anonymous(),
+  }: CanisterSnapshotOptions): Promise<void> {
+    await this.client.updateCall({
+      canisterId: MANAGEMENT_CANISTER_ID,
+      sender,
+      method: 'load_canister_snapshot',
+      payload: encodeLoadCanisterSnapshotRequest({
+        canister_id: canisterId,
+        snapshot_id: snapshotId,
+        sender_canister_version: [],
+      }),
+      effectivePrincipal: { canisterId },
+    });
+  }
+
+  /**
+   * Lists the snapshots of the given canister.
+   *
+   * @param options Options for listing the snapshots, see {@link ListCanisterSnapshotsOptions}.
+   * @returns The snapshots, see {@link CanisterSnapshot}.
+   */
+  public async listCanisterSnapshots({
+    canisterId,
+    sender = Principal.anonymous(),
+  }: ListCanisterSnapshotsOptions): Promise<CanisterSnapshot[]> {
+    const res = await this.client.updateCall({
+      canisterId: MANAGEMENT_CANISTER_ID,
+      sender,
+      method: 'list_canister_snapshots',
+      payload: encodeListCanisterSnapshotsRequest({ canister_id: canisterId }),
+      effectivePrincipal: { canisterId },
+    });
+
+    return decodeListCanisterSnapshotsResponse(res.body).map(
+      canisterSnapshotFromIDL,
+    );
+  }
+
+  /**
+   * Deletes a snapshot of the given canister.
+   *
+   * @param options Options for deleting the snapshot, see {@link CanisterSnapshotOptions}.
+   */
+  public async deleteCanisterSnapshot({
+    canisterId,
+    snapshotId,
+    sender = Principal.anonymous(),
+  }: CanisterSnapshotOptions): Promise<void> {
+    await this.client.updateCall({
+      canisterId: MANAGEMENT_CANISTER_ID,
+      sender,
+      method: 'delete_canister_snapshot',
+      payload: encodeDeleteCanisterSnapshotRequest({
+        canister_id: canisterId,
+        snapshot_id: snapshotId,
+      }),
+      effectivePrincipal: { canisterId },
+    });
+  }
+
+  /**
+   * Downloads a snapshot of the given canister to a directory on the machine
+   * running the PocketIC server, e.g. to reuse a canister's state across test runs.
+   * Upload it again with {@link uploadCanisterSnapshot}.
+   *
+   * @param options Options for downloading the snapshot, see {@link DownloadCanisterSnapshotOptions}.
+   */
+  public async downloadCanisterSnapshot({
+    canisterId,
+    snapshotId,
+    snapshotDir,
+    sender = Principal.anonymous(),
+  }: DownloadCanisterSnapshotOptions): Promise<void> {
+    await this.client.canisterSnapshotDownload({
+      sender,
+      canisterId,
+      snapshotId,
+      snapshotDir,
+    });
+  }
+
+  /**
+   * Uploads a snapshot to the given canister from a directory on the machine
+   * running the PocketIC server, as written by {@link downloadCanisterSnapshot}.
+   * Restore the canister from it with {@link loadCanisterSnapshot}.
+   *
+   * @param options Options for uploading the snapshot, see {@link UploadCanisterSnapshotOptions}.
+   * @returns The ID of the uploaded snapshot.
+   */
+  public async uploadCanisterSnapshot({
+    canisterId,
+    snapshotDir,
+    replaceSnapshot,
+    sender = Principal.anonymous(),
+  }: UploadCanisterSnapshotOptions): Promise<Uint8Array> {
+    return await this.client.canisterSnapshotUpload({
+      sender,
+      canisterId,
+      replaceSnapshot,
+      snapshotDir,
+    });
   }
 
   /**

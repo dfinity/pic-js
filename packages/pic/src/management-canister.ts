@@ -441,3 +441,105 @@ export function decodeFetchCanisterLogsResponse(
 
   return payload;
 }
+
+const Snapshot = IDL.Record({
+  id: IDL.Vec(IDL.Nat8),
+  taken_at_timestamp: IDL.Nat64,
+  total_size: IDL.Nat64,
+});
+
+export interface Snapshot {
+  id: Uint8Array;
+  taken_at_timestamp: bigint;
+  total_size: bigint;
+}
+
+const TakeCanisterSnapshotRequest = IDL.Record({
+  canister_id: IDL.Principal,
+  replace_snapshot: IDL.Opt(IDL.Vec(IDL.Nat8)),
+  uninstall_code: IDL.Opt(IDL.Bool),
+  sender_canister_version: IDL.Opt(IDL.Nat64),
+});
+
+export interface TakeCanisterSnapshotRequest {
+  canister_id: Principal;
+  replace_snapshot: [] | [Uint8Array];
+  uninstall_code: [] | [boolean];
+  sender_canister_version: [] | [bigint];
+}
+
+export function encodeTakeCanisterSnapshotRequest(
+  arg: TakeCanisterSnapshotRequest,
+): Uint8Array {
+  return new Uint8Array(IDL.encode([TakeCanisterSnapshotRequest], [arg]));
+}
+
+export function decodeTakeCanisterSnapshotResponse(arg: Uint8Array): Snapshot {
+  const payload = decodeCandid<Snapshot>([Snapshot], arg);
+
+  if (isNil(payload)) {
+    throw new Error('Failed to decode TakeCanisterSnapshotResponse');
+  }
+
+  return payload;
+}
+
+const LoadCanisterSnapshotRequest = IDL.Record({
+  canister_id: IDL.Principal,
+  snapshot_id: IDL.Vec(IDL.Nat8),
+  sender_canister_version: IDL.Opt(IDL.Nat64),
+});
+
+export interface LoadCanisterSnapshotRequest {
+  canister_id: Principal;
+  snapshot_id: Uint8Array;
+  sender_canister_version: [] | [bigint];
+}
+
+export function encodeLoadCanisterSnapshotRequest(
+  arg: LoadCanisterSnapshotRequest,
+): Uint8Array {
+  return new Uint8Array(IDL.encode([LoadCanisterSnapshotRequest], [arg]));
+}
+
+const ListCanisterSnapshotsRequest = IDL.Record({
+  canister_id: IDL.Principal,
+});
+
+export interface ListCanisterSnapshotsRequest {
+  canister_id: Principal;
+}
+
+export function encodeListCanisterSnapshotsRequest(
+  arg: ListCanisterSnapshotsRequest,
+): Uint8Array {
+  return new Uint8Array(IDL.encode([ListCanisterSnapshotsRequest], [arg]));
+}
+
+export function decodeListCanisterSnapshotsResponse(
+  arg: Uint8Array,
+): Snapshot[] {
+  const payload = decodeCandid<Snapshot[]>([IDL.Vec(Snapshot)], arg);
+
+  if (isNil(payload)) {
+    throw new Error('Failed to decode ListCanisterSnapshotsResponse');
+  }
+
+  return payload;
+}
+
+const DeleteCanisterSnapshotRequest = IDL.Record({
+  canister_id: IDL.Principal,
+  snapshot_id: IDL.Vec(IDL.Nat8),
+});
+
+export interface DeleteCanisterSnapshotRequest {
+  canister_id: Principal;
+  snapshot_id: Uint8Array;
+}
+
+export function encodeDeleteCanisterSnapshotRequest(
+  arg: DeleteCanisterSnapshotRequest,
+): Uint8Array {
+  return new Uint8Array(IDL.encode([DeleteCanisterSnapshotRequest], [arg]));
+}

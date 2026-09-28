@@ -16,8 +16,10 @@ export type Time = bigint;
 export interface _SERVICE {
   'ecdsa_public_key_size' : ActorMethod<[string], PublicKeyResult>,
   'get_time' : ActorMethod<[], Time>,
+  'get_value' : ActorMethod<[], bigint>,
   'print_log' : ActorMethod<[string], undefined>,
   'schnorr_public_key_size' : ActorMethod<[string], PublicKeyResult>,
+  'set_value' : ActorMethod<[bigint], undefined>,
   'vetkd_public_key_size' : ActorMethod<[string], PublicKeyResult>,
   'whoami' : ActorMethod<[], Principal>,
 }

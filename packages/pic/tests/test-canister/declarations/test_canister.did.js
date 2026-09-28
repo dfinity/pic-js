@@ -15,8 +15,10 @@ export const idlFactory = ({ IDL }) => {
   return IDL.Service({
     'ecdsa_public_key_size' : IDL.Func([IDL.Text], [PublicKeyResult], []),
     'get_time' : IDL.Func([], [Time], ['query']),
+    'get_value' : IDL.Func([], [IDL.Nat], ['query']),
     'print_log' : IDL.Func([IDL.Text], [], []),
     'schnorr_public_key_size' : IDL.Func([IDL.Text], [PublicKeyResult], []),
+    'set_value' : IDL.Func([IDL.Nat], [], []),
     'vetkd_public_key_size' : IDL.Func([IDL.Text], [PublicKeyResult], []),
     'whoami' : IDL.Func([], [IDL.Principal], ['query']),
   });

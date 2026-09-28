@@ -5,6 +5,8 @@ import type { CanisterLogFilter as CanisterLogFilterIDL } from '../management-ca
 import type { LogVisibility as LogVisibilityPIC } from '../pocket-ic-types';
 import type { SnapshotVisibility as SnapshotVisibilityPIC } from '../pocket-ic-types';
 import type { CanisterLogFilter as CanisterLogFilterPIC } from '../pocket-ic-types';
+import type { Snapshot as SnapshotIDL } from '../management-canister';
+import type { CanisterSnapshot as CanisterSnapshotPIC } from '../pocket-ic-types';
 import { isNil } from './is-nil';
 
 export function optional<T>(value: T | undefined | null): [] | [T] {
@@ -52,6 +54,16 @@ export function snapshotVisibilityFromIDL(
   if ('allowed_viewers' in sv) return { allowedViewers: sv.allowed_viewers };
   if ('public' in sv) return { public: null };
   return { controllers: null };
+}
+
+export function canisterSnapshotFromIDL(
+  snapshot: SnapshotIDL,
+): CanisterSnapshotPIC {
+  return {
+    id: new Uint8Array(snapshot.id),
+    takenAtTimestamp: snapshot.taken_at_timestamp,
+    totalSize: snapshot.total_size,
+  };
 }
 
 export function decodeCandid<T>(types: IDL.Type[], data: Uint8Array): T | null {
