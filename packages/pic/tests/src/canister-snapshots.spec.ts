@@ -114,6 +114,19 @@ describe('canister snapshots', () => {
         sender,
       });
 
+      const replacedId = await pic.uploadCanisterSnapshot({
+        canisterId: otherCanisterId,
+        snapshotDir,
+        replaceSnapshot: uploadedId,
+        sender,
+      });
+      const snapshots = await pic.listCanisterSnapshots({
+        canisterId: otherCanisterId,
+        sender,
+      });
+      expect(snapshots.map(({ id }) => id)).toEqual([replacedId]);
+      expect(replacedId).not.toEqual(uploadedId);
+
       const other = pic.createActor<TestCanister>({
         idlFactory,
         canisterId: otherCanisterId,

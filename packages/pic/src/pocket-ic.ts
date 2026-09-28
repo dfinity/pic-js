@@ -744,8 +744,8 @@ export class PocketIc {
   }
 
   /**
-   * Takes a snapshot of the given canister: its code, memory and settings
-   * needed to restore it with {@link loadCanisterSnapshot}.
+   * Takes a snapshot of the given canister's code and memory,
+   * which {@link loadCanisterSnapshot} restores. Canister settings are not included.
    *
    * @param options Options for taking the snapshot, see {@link TakeCanisterSnapshotOptions}.
    * @returns The snapshot, see {@link CanisterSnapshot}.
