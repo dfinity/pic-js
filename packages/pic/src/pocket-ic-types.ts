@@ -1096,6 +1096,7 @@ export interface ListCanisterSnapshotsOptions {
   /**
    * The Principal to send the request as.
    * Defaults to the anonymous principal.
+   * It must be a controller unless the canister's snapshot visibility allows it.
    */
   sender?: Principal;
 }
@@ -1112,6 +1113,13 @@ export interface DownloadCanisterSnapshotOptions extends CanisterSnapshotOptions
    * PocketIC server. It must be empty or not exist yet.
    */
   snapshotDir: string;
+
+  /**
+   * The Principal to send the request as.
+   * Defaults to the anonymous principal.
+   * It must be a controller unless the canister's snapshot visibility allows it.
+   */
+  sender?: Principal;
 }
 
 /**

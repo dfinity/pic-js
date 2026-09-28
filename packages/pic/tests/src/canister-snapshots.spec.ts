@@ -125,6 +125,46 @@ describe('canister snapshots', () => {
     }
   });
 
+  it('should let viewers list and download snapshots', async () => {
+    const { pic, canisterId } = fixture;
+    const viewer = generateRandomIdentity().getPrincipal();
+    const snapshot = await pic.takeCanisterSnapshot({ canisterId, sender });
+
+    await expect(
+      pic.listCanisterSnapshots({ canisterId, sender: viewer }),
+    ).rejects.toThrow('is not allowed to call list_canister_snapshots');
+
+    await pic.updateCanisterSettings({
+      canisterId,
+      sender,
+      snapshotVisibility: { allowedViewers: [viewer] },
+    });
+    expect(
+      await pic.listCanisterSnapshots({ canisterId, sender: viewer }),
+    ).toEqual([snapshot]);
+
+    const snapshotDir = join(await mkdtemp(join(tmpdir(), 'pic-')), 'snap');
+    try {
+      await pic.downloadCanisterSnapshot({
+        canisterId,
+        snapshotId: snapshot.id,
+        snapshotDir,
+        sender: viewer,
+      });
+      expect((await readdir(snapshotDir)).length).toBeGreaterThan(0);
+    } finally {
+      await rm(join(snapshotDir, '..'), { recursive: true, force: true });
+    }
+
+    await expect(
+      pic.deleteCanisterSnapshot({
+        canisterId,
+        snapshotId: snapshot.id,
+        sender: viewer,
+      }),
+    ).rejects.toThrow('can call ic00 method delete_canister_snapshot');
+  });
+
   it('should reject a sender that is not a controller', async () => {
     const { pic, canisterId } = fixture;
 
