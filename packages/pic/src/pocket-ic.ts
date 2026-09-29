@@ -1,10 +1,9 @@
 import { Principal } from '@icp-sdk/core/principal';
 import {
   isNil,
-  logVisibilityFromIDL,
+  canisterSettingsToIDL,
   optCanisterLogFilterToIDL,
-  optLogVisibilityToIDL,
-  optSnapshotVisibilityToIDL,
+  visibilityFromIDL,
   optional,
   readFileAsBytes,
   sha256,
@@ -186,35 +185,11 @@ export class PocketIc {
     arg,
     wasm,
     idlFactory,
-    computeAllocation,
-    controllers,
-    cycles,
-    freezingThreshold,
-    memoryAllocation,
-    reservedCyclesLimit,
-    logVisibility,
-    snapshotVisibility,
-    logMemoryLimit,
-    wasmMemoryLimit,
-    wasmMemoryThreshold,
-    environmentVariables,
-    targetCanisterId,
     targetSubnetId,
+    ...createCanisterOptions
   }: SetupCanisterOptions): Promise<CanisterFixture<T>> {
     const canisterId = await this.createCanister({
-      computeAllocation,
-      controllers,
-      cycles,
-      freezingThreshold,
-      memoryAllocation,
-      reservedCyclesLimit,
-      logVisibility,
-      snapshotVisibility,
-      logMemoryLimit,
-      wasmMemoryLimit,
-      wasmMemoryThreshold,
-      environmentVariables,
-      targetCanisterId,
+      ...createCanisterOptions,
       targetSubnetId,
       sender,
     });
@@ -252,36 +227,12 @@ export class PocketIc {
   public async createCanister({
     sender = Principal.anonymous(),
     cycles = 1_000_000_000_000_000_000n,
-    controllers,
-    computeAllocation,
-    freezingThreshold,
-    memoryAllocation,
-    reservedCyclesLimit,
-    logVisibility,
-    snapshotVisibility,
-    logMemoryLimit,
-    wasmMemoryLimit,
-    wasmMemoryThreshold,
-    environmentVariables,
     targetCanisterId,
     targetSubnetId,
+    ...settings
   }: CreateCanisterOptions = {}): Promise<Principal> {
     const payload = encodeCreateCanisterRequest({
-      settings: [
-        {
-          controllers: optional(controllers),
-          compute_allocation: optional(computeAllocation),
-          memory_allocation: optional(memoryAllocation),
-          freezing_threshold: optional(freezingThreshold),
-          reserved_cycles_limit: optional(reservedCyclesLimit),
-          log_visibility: optLogVisibilityToIDL(logVisibility),
-          snapshot_visibility: optSnapshotVisibilityToIDL(snapshotVisibility),
-          log_memory_limit: optional(logMemoryLimit),
-          wasm_memory_limit: optional(wasmMemoryLimit),
-          wasm_memory_threshold: optional(wasmMemoryThreshold),
-          environment_variables: optional(environmentVariables),
-        },
-      ],
+      settings: [canisterSettingsToIDL(settings)],
       amount: [cycles],
       specified_id: optional(targetCanisterId),
     });
@@ -622,34 +573,12 @@ export class PocketIc {
    */
   public async updateCanisterSettings({
     canisterId,
-    computeAllocation,
-    controllers,
-    freezingThreshold,
-    memoryAllocation,
-    reservedCyclesLimit,
-    logVisibility,
-    snapshotVisibility,
-    logMemoryLimit,
-    wasmMemoryLimit,
-    wasmMemoryThreshold,
-    environmentVariables,
     sender = Principal.anonymous(),
+    ...settings
   }: UpdateCanisterSettingsOptions): Promise<void> {
     const payload = encodeUpdateCanisterSettingsRequest({
       canister_id: canisterId,
-      settings: {
-        controllers: optional(controllers),
-        compute_allocation: optional(computeAllocation),
-        memory_allocation: optional(memoryAllocation),
-        freezing_threshold: optional(freezingThreshold),
-        reserved_cycles_limit: optional(reservedCyclesLimit),
-        log_visibility: optLogVisibilityToIDL(logVisibility),
-        snapshot_visibility: optSnapshotVisibilityToIDL(snapshotVisibility),
-        log_memory_limit: optional(logMemoryLimit),
-        wasm_memory_limit: optional(wasmMemoryLimit),
-        wasm_memory_threshold: optional(wasmMemoryThreshold),
-        environment_variables: optional(environmentVariables),
-      },
+      settings: canisterSettingsToIDL(settings),
     });
 
     await this.client.updateCall({
@@ -699,23 +628,45 @@ export class PocketIc {
       payload,
     });
 
-    const response = decodeCanisterStatusResponse(res.body);
+    const {
+      settings,
+      memory_metrics: memory,
+      ...response
+    } = decodeCanisterStatusResponse(res.body);
 
     return {
       status: response.status,
+      readyForMigration: response.ready_for_migration,
+      version: response.version,
       settings: {
-        controllers: response.settings.controllers,
-        computeAllocation: response.settings.compute_allocation,
-        memoryAllocation: response.settings.memory_allocation,
-        freezingThreshold: response.settings.freezing_threshold,
-        reservedCyclesLimit: response.settings.reserved_cycles_limit,
-        logVisibility: logVisibilityFromIDL(response.settings.log_visibility),
-        wasmMemoryLimit: response.settings.wasm_memory_limit,
-        wasmMemoryThreshold: response.settings.wasm_memory_threshold,
-        environmentVariables: response.settings.environment_variables,
+        controllers: settings.controllers,
+        computeAllocation: settings.compute_allocation,
+        memoryAllocation: settings.memory_allocation,
+        freezingThreshold: settings.freezing_threshold,
+        reservedCyclesLimit: settings.reserved_cycles_limit,
+        minimumIncomingCanisterCallCycles:
+          settings.minimum_incoming_canister_call_cycles,
+        logVisibility: visibilityFromIDL(settings.log_visibility),
+        logMemoryLimit: settings.log_memory_limit,
+        snapshotVisibility: visibilityFromIDL(settings.snapshot_visibility),
+        statusVisibility: visibilityFromIDL(settings.status_visibility),
+        wasmMemoryLimit: settings.wasm_memory_limit,
+        wasmMemoryThreshold: settings.wasm_memory_threshold,
+        environmentVariables: settings.environment_variables,
       },
       moduleHash: response.module_hash[0] ?? null,
       memorySize: response.memory_size,
+      memoryMetrics: {
+        wasmMemorySize: memory.wasm_memory_size,
+        stableMemorySize: memory.stable_memory_size,
+        globalMemorySize: memory.global_memory_size,
+        wasmBinarySize: memory.wasm_binary_size,
+        customSectionsSize: memory.custom_sections_size,
+        canisterHistorySize: memory.canister_history_size,
+        wasmChunkStoreSize: memory.wasm_chunk_store_size,
+        snapshotsSize: memory.snapshots_size,
+        logMemoryStoreSize: memory.log_memory_store_size,
+      },
       cycles: response.cycles,
       reservedCycles: response.reserved_cycles,
       idleCyclesBurnedPerDay: response.idle_cycles_burned_per_day,

@@ -146,7 +146,14 @@ export interface HttpGatewayConfig {
  * Paths to the certificate and key used to serve an HTTP gateway over HTTPS.
  */
 export interface HttpsConfig {
+  /**
+   * The path to the PEM-encoded certificate chain, on the machine running the PocketIC server.
+   */
   certPath: string;
+
+  /**
+   * The path to the PEM-encoded private key, on the machine running the PocketIC server.
+   */
   keyPath: string;
 }
 
@@ -601,7 +608,14 @@ export interface CanisterFixture<T extends ActorInterface<T> = ActorInterface> {
  * @category Types
  */
 export interface EnvironmentVariable {
+  /**
+   * The name of the variable, unique within the canister.
+   */
   name: string;
+
+  /**
+   * The value of the variable.
+   */
   value: string;
 }
 
@@ -623,6 +637,17 @@ export type LogVisibility =
  * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
  */
 export type SnapshotVisibility =
+  | { controllers: null }
+  | { public: null }
+  | { allowedViewers: Principal[] };
+
+/**
+ * Status visibility for canister settings.
+ *
+ * @category Types
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
+ */
+export type StatusVisibility =
   | { controllers: null }
   | { public: null }
   | { allowedViewers: Principal[] };
@@ -661,19 +686,32 @@ export interface CanisterSettings {
   reservedCyclesLimit?: bigint;
 
   /**
-   * The log visibility of the canister.
+   * The minimum cycles that calls from other canisters must attach.
+   * Calls attaching fewer cycles are rejected and refunded.
+   * Ingress messages and calls from the canister itself are not affected.
    */
-  logVisibility?: LogVisibility;
+  minimumIncomingCanisterCallCycles?: bigint;
 
   /**
-   * The snapshot visibility of the canister.
+   * Who can read the canister's logs. Defaults to its controllers.
    */
-  snapshotVisibility?: SnapshotVisibility;
+  logVisibility?: LogVisibility;
 
   /**
    * The log memory limit of the canister in bytes.
    */
   logMemoryLimit?: bigint;
+
+  /**
+   * Who can list and read the canister's snapshots. Defaults to its controllers.
+   */
+  snapshotVisibility?: SnapshotVisibility;
+
+  /**
+   * Who can read the canister's status. Defaults to its controllers.
+   * The canister itself can always read it.
+   */
+  statusVisibility?: StatusVisibility;
 
   /**
    * The WASM memory limit of the canister in bytes.
@@ -935,17 +973,157 @@ export type CanisterStatus =
  * @category Types
  */
 export interface CanisterQueryStats {
+  /**
+   * The total number of query and composite query methods evaluated on the canister.
+   */
   numCallsTotal: bigint;
+
+  /**
+   * The total number of WebAssembly instructions executed by query and composite query methods.
+   */
   numInstructionsTotal: bigint;
+
+  /**
+   * The total number of query and composite query request payload bytes.
+   */
   requestPayloadBytesTotal: bigint;
+
+  /**
+   * The total number of query and composite query response payload bytes,
+   * counting reply data and reject messages.
+   */
   responsePayloadBytesTotal: bigint;
 }
 
 /**
- * The result of querying the status of a canister.
- * This is a subset of the IC management canister `canister_status` response.
- * Some fields (e.g. `snapshotVisibility`, `logMemoryLimit`, `memoryMetrics`)
- * are not yet included because the PocketIC server does not return them.
+ * Memory usage of a canister, broken down by kind, in bytes.
+ *
+ * @category Types
+ */
+export interface CanisterMemoryMetrics {
+  /**
+   * The heap memory used by the canister's WebAssembly code.
+   */
+  wasmMemorySize: bigint;
+
+  /**
+   * The stable memory used by the canister.
+   */
+  stableMemorySize: bigint;
+
+  /**
+   * The memory used by the canister's global variables.
+   */
+  globalMemorySize: bigint;
+
+  /**
+   * The size of the installed WASM module as uploaded, e.g. compressed if it was gzipped.
+   */
+  wasmBinarySize: bigint;
+
+  /**
+   * The memory used by the custom sections of the canister's WASM module.
+   */
+  customSectionsSize: bigint;
+
+  /**
+   * The memory used to store the canister's history.
+   */
+  canisterHistorySize: bigint;
+
+  /**
+   * The memory used by the canister's WASM chunk store.
+   */
+  wasmChunkStoreSize: bigint;
+
+  /**
+   * The memory used by all snapshots of the canister.
+   */
+  snapshotsSize: bigint;
+
+  /**
+   * The memory used by the canister's logs.
+   */
+  logMemoryStoreSize: bigint;
+}
+
+/**
+ * The settings of a canister, with every setting resolved to its current value,
+ * as returned by the management canister's `canister_status` method.
+ *
+ * @category Types
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
+ */
+export interface DefiniteCanisterSettings {
+  /**
+   * The controllers of the canister.
+   */
+  controllers: Principal[];
+
+  /**
+   * The compute allocation of the canister, as a percentage between 0 and 100.
+   */
+  computeAllocation: bigint;
+
+  /**
+   * The memory allocation of the canister in bytes.
+   */
+  memoryAllocation: bigint;
+
+  /**
+   * The freezing threshold of the canister in seconds.
+   */
+  freezingThreshold: bigint;
+
+  /**
+   * The upper limit on the canister's reserved cycles.
+   */
+  reservedCyclesLimit: bigint;
+
+  /**
+   * The minimum cycles that calls from other canisters must attach.
+   */
+  minimumIncomingCanisterCallCycles: bigint;
+
+  /**
+   * Who can read the canister's logs.
+   */
+  logVisibility: LogVisibility;
+
+  /**
+   * The log memory limit of the canister in bytes.
+   */
+  logMemoryLimit: bigint;
+
+  /**
+   * Who can list and read the canister's snapshots.
+   */
+  snapshotVisibility: SnapshotVisibility;
+
+  /**
+   * Who can read the canister's status.
+   */
+  statusVisibility: StatusVisibility;
+
+  /**
+   * The WASM memory limit of the canister in bytes, or 0 for no limit.
+   */
+  wasmMemoryLimit: bigint;
+
+  /**
+   * The WASM memory threshold of the canister in bytes.
+   */
+  wasmMemoryThreshold: bigint;
+
+  /**
+   * The environment variables exposed to the canister.
+   */
+  environmentVariables: EnvironmentVariable[];
+}
+
+/**
+ * The result of querying the status of a canister,
+ * as returned by the management canister's `canister_status` method.
  *
  * @category Types
  * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
@@ -957,19 +1135,22 @@ export interface CanisterStatusResult {
   status: CanisterStatus;
 
   /**
-   * The definite settings of the canister.
+   * Whether the canister's queues are empty and its streams flushed.
+   * Only meaningful while the canister is stopped.
    */
-  settings: {
-    controllers: Principal[];
-    computeAllocation: bigint;
-    memoryAllocation: bigint;
-    freezingThreshold: bigint;
-    reservedCyclesLimit: bigint;
-    logVisibility: LogVisibility;
-    wasmMemoryLimit: bigint;
-    wasmMemoryThreshold: bigint;
-    environmentVariables: EnvironmentVariable[];
-  };
+  readyForMigration: boolean;
+
+  /**
+   * The canister version. It increases with every change to the canister's code,
+   * settings, running status, cycles balance or memory, including every
+   * successful execution of an update method, callback, heartbeat or timer.
+   */
+  version: bigint;
+
+  /**
+   * The settings of the canister, see {@link DefiniteCanisterSettings}.
+   */
+  settings: DefiniteCanisterSettings;
 
   /**
    * The SHA-256 hash of the installed WASM module, if any.
@@ -980,6 +1161,11 @@ export interface CanisterStatusResult {
    * The total memory size of the canister in bytes.
    */
   memorySize: bigint;
+
+  /**
+   * The memory usage of the canister by kind, see {@link CanisterMemoryMetrics}.
+   */
+  memoryMetrics: CanisterMemoryMetrics;
 
   /**
    * The current cycle balance of the canister.
@@ -1300,6 +1486,9 @@ export type CanisterLogFilter =
  * Selects the log records whose index is in the range `[start, end)`.
  */
 export interface CanisterLogIdxFilter {
+  /**
+   * Filters by log record index.
+   */
   type: 'byIdx';
 
   /**
@@ -1317,6 +1506,9 @@ export interface CanisterLogIdxFilter {
  * Selects the log records whose timestamp is in the range `[start, end)`.
  */
 export interface CanisterLogTimestampFilter {
+  /**
+   * Filters by log record timestamp.
+   */
   type: 'byTimestampNanos';
 
   /**
