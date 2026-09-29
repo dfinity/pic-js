@@ -18,6 +18,8 @@ export interface _SERVICE {
   'get_certificate' : ActorMethod<[], [] | [Uint8Array]>,
   'get_time' : ActorMethod<[], Time>,
   'get_value' : ActorMethod<[], bigint>,
+  'increment_value_after_call' : ActorMethod<[], bigint>,
+  'noop' : ActorMethod<[], undefined>,
   'print_log' : ActorMethod<[string], undefined>,
   'schnorr_public_key_size' : ActorMethod<[string], PublicKeyResult>,
   'set_certified_data' : ActorMethod<[Uint8Array], undefined>,

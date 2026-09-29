@@ -1,3 +1,4 @@
+import { createServer } from 'node:net';
 import path from 'node:path';
 import { Identity } from '@icp-sdk/core/agent';
 import { Principal } from '@icp-sdk/core/principal';
@@ -88,4 +89,19 @@ export function addTime(date: Date, time: number): Date {
   const newDate = new Date(date);
   newDate.setTime(newDate.getTime() + time);
   return newDate;
+}
+
+export async function getFreePort(): Promise<number> {
+  return await new Promise((resolve, reject) => {
+    const server = createServer();
+    server.once('error', reject);
+    server.listen(0, '127.0.0.1', () => {
+      const address = server.address();
+      server.close(() =>
+        typeof address === 'object' && address
+          ? resolve(address.port)
+          : reject(new Error('Could not determine a free port')),
+      );
+    });
+  });
 }

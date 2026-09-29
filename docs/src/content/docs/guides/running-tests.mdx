@@ -78,3 +78,39 @@ const picServer = await PocketIcServer.start({
   showRuntimeLogs: true,
 });
 ```
+
+## Testing interleaved calls
+
+A canister can process other calls while one of its calls waits at an `await`, which can cause reentrancy bugs. To reproduce this, submit the calls with a deferred actor before awaiting any of them. They are executed together, so the second call runs while the first one waits:
+
+```ts
+const actor = pic.createDeferredActor<_SERVICE>({ idlFactory, canisterId });
+
+const first = await actor.withdraw(amount);
+const second = await actor.withdraw(amount);
+
+await first();
+await second();
+```
+
+`pic.submitCall` does the same for calls with a Candid-encoded argument, and `pic.ingressStatus` checks whether a submitted call has finished.
+
+## Live mode
+
+`makeLive` makes the instance execute rounds on its own, in real time, and starts an HTTP gateway, so agents can call canisters as they would on a real network:
+
+```ts
+const gatewayPort = await pic.makeLive();
+const agent = await HttpAgent.create({
+  host: `http://localhost:${gatewayPort}`,
+  shouldFetchRootKey: true,
+});
+
+// make calls with the agent...
+
+await pic.stopLive();
+```
+
+The gateway can be configured with the `httpGateway` option, for example `pic.makeLive({ httpGateway: { port: 8080 } })`.
+
+To give a test more time between rounds, set a minimum delay between them with `artificialDelayMs`, for example `pic.makeLive({ artificialDelayMs: 500 })`. This delays calls that wait for rounds, i.e. calls made through the HTTP gateway or with `pic.submitCall`. Calls made with an actor or `pic.updateCall` execute their rounds themselves and are not delayed.

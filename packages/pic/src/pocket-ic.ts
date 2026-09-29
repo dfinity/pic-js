@@ -31,6 +31,7 @@ import {
   SubmittedCall,
   IngressStatusOptions,
   VerifyCanisterSignatureOptions,
+  MakeLiveOptions,
   QueryCallOptions,
   UpdateCallOptions,
   PendingHttpsOutcall,
@@ -2058,28 +2059,25 @@ export class PocketIc {
    * Make the PocketIC instance live by enabling auto progress and starting an HTTP gateway.
    * If the instance was created with {@link CreateInstanceOptions.httpGateway}, that gateway is used instead.
    * If the instance is already live, this method returns the port of its HTTP gateway.
-   * The PocketIC instance must be created with at least an NNS subnet in
-   * order for `fetchRootKey` to work correctly.
+   *
+   * @param options Options for making the instance live, see {@link MakeLiveOptions}.
+   * To change them on a live instance, call {@link stopLive} first.
+   * @returns The HTTP Gateway port.
    *
    * @example
    * ```ts
-   * import { Principal } from '@icp-sdk/core/principal';
+   * import { Actor, HttpAgent } from '@icp-sdk/core/agent';
    * import { PocketIc, PocketIcServer } from '@dfinity/pic';
    * import { resolve } from 'node:path';
+   * import { idlFactory } from '../declarations';
    *
-   * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
    * const wasm = resolve('..', '..', 'canister.wasm');
    *
    * const picServer = await PocketIcServer.start();
-   * const pic = await PocketIc.create(picServer.getUrl(), {
-   *   nns: { state: { type: SubnetStateType.New } },
-   *   application: [{ state: { type: SubnetStateType.New } }],
-   * });
+   * const pic = await PocketIc.create(picServer.getUrl());
+   * const { canisterId } = await pic.setupCanister({ idlFactory, wasm });
    *
-   * const canister = await pic.installCode({ canisterId, wasm });
-   * await pic.installCode({ canisterId, wasm });
-   *
-   * const httpGatewayPort = await pic.makeLive();
+   * const httpGatewayPort = await pic.makeLive({ artificialDelayMs: 500 });
    * const agent = await HttpAgent.create({
    *   host: `http://localhost:${httpGatewayPort}`,
    *   shouldFetchRootKey: true,
@@ -2090,10 +2088,11 @@ export class PocketIc {
    * await pic.tearDown();
    * await picServer.stop();
    * ```
-   *
-   * @returns The HTTP Gateway port.
    */
-  public async makeLive(): Promise<number> {
+  public async makeLive({
+    artificialDelayMs,
+    httpGateway,
+  }: MakeLiveOptions = {}): Promise<number> {
     const isLive = await this.client.autoProgressEnabled();
     if (isLive) {
       if (isNil(this.httpGatewayPort)) {
@@ -2101,14 +2100,25 @@ export class PocketIc {
           'Inconsistent state, PocketIC server is live but no HTTP Gateway URL is known',
         );
       }
+      if (!isNil(artificialDelayMs) || !isNil(httpGateway)) {
+        throw new Error(
+          'The instance is already live, call stopLive before making it live with new options',
+        );
+      }
 
       return this.httpGatewayPort;
     }
 
-    await this.client.autoProgress();
+    if (!isNil(httpGateway) && !isNil(this.client.instanceHttpGatewayPort)) {
+      throw new Error(
+        'The instance was created with an HTTP gateway, configure it with the httpGateway option of PocketIc.create instead',
+      );
+    }
+
+    await this.client.autoProgress(artificialDelayMs);
     this.httpGatewayPort =
       this.client.instanceHttpGatewayPort ??
-      (await this.client.startHttpGateway());
+      (await this.client.startHttpGateway(httpGateway));
 
     return this.httpGatewayPort;
   }
@@ -2117,35 +2127,12 @@ export class PocketIc {
    * Disables auto progress and stops the HTTP gateway started by {@link makeLive}.
    * A gateway created with {@link CreateInstanceOptions.httpGateway} keeps running until the instance is torn down.
    *
-   *
    * @example
    * ```ts
-   * import { Principal } from '@icp-sdk/core/principal';
-   * import { PocketIc, PocketIcServer } from '@dfinity/pic';
-   * import { resolve } from 'node:path';
-   *
-   * const canisterId = Principal.fromUint8Array(new Uint8Array([0]));
-   * const wasm = resolve('..', '..', 'canister.wasm');
-   *
-   * const picServer = await PocketIcServer.start();
-   * const pic = await PocketIc.create(picServer.getUrl(), {
-   *   nns: { state: { type: SubnetStateType.New } },
-   *   application: [{ state: { type: SubnetStateType.New } }],
-   * });
-   *
-   * const canister = await pic.installCode({ canisterId, wasm });
-   * await pic.installCode({ canisterId, wasm });
-   *
    * const httpGatewayPort = await pic.makeLive();
-   * const agent = await HttpAgent.create({
-   *   host: `http://localhost:${httpGatewayPort}`,
-   *   shouldFetchRootKey: true,
-   * });
-   * const actor = Actor.createActor(idlFactory, { agent, canisterId });
+   * // make calls through the HTTP gateway...
    *
    * await pic.stopLive();
-   * await pic.tearDown();
-   * await picServer.stop();
    * ```
    */
   public async stopLive(): Promise<void> {

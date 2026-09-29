@@ -99,7 +99,9 @@ import {
   EncodedAutoProgressRequest,
   EncodedHttpGatewayRequest,
   EncodedHttpGatewayResponse,
+  encodeHttpGatewayConfig,
 } from './pocket-ic-client-types';
+import { HttpGatewayConfig } from './pocket-ic-types';
 import { base64Decode, base64DecodePrincipal, isNil } from './util';
 import { Principal } from '@icp-sdk/core/principal';
 
@@ -443,9 +445,9 @@ export class PocketIcClient {
     }
   }
 
-  public async autoProgress(): Promise<void> {
+  public async autoProgress(artificialDelayMs?: number): Promise<void> {
     await this.post<EncodedAutoProgressRequest, {}>('/auto_progress', {
-      artificial_delay_ms: 0,
+      artificial_delay_ms: artificialDelayMs,
     });
   }
 
@@ -457,13 +459,16 @@ export class PocketIcClient {
     await this.post<{}, {}>('/stop_progress', {});
   }
 
-  public async startHttpGateway(): Promise<number> {
+  public async startHttpGateway(config?: HttpGatewayConfig): Promise<number> {
     const res = await this.serverClient.jsonPost<
       EncodedHttpGatewayRequest,
       EncodedHttpGatewayResponse
     >({
       path: '/http_gateway',
-      body: { forward_to: { PocketIcInstance: this.instanceId } },
+      body: {
+        ...(config ? encodeHttpGatewayConfig(config) : {}),
+        forward_to: { PocketIcInstance: this.instanceId },
+      },
     });
 
     if ('Error' in res) {

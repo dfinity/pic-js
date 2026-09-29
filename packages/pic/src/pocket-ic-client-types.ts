@@ -330,7 +330,7 @@ function encodeIcpFeatures(icpFeatures: IcpFeatures): EncodedIcpFeatures {
   };
 }
 
-function encodeHttpGatewayConfig(
+export function encodeHttpGatewayConfig(
   config: HttpGatewayConfig,
 ): EncodedInstanceHttpGatewayConfig {
   return {

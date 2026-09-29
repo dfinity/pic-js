@@ -88,4 +88,15 @@ persistent actor TestCanister {
   public query func get_value() : async Nat {
     return value;
   };
+
+  public func noop() : async () {};
+
+  // Reads the value before awaiting a call and writes it after, so calls that
+  // interleave at the await overwrite each other's increment.
+  public func increment_value_after_call() : async Nat {
+    let current = value;
+    await noop();
+    value := current + 1;
+    return value;
+  };
 };
