@@ -1,33 +1,60 @@
 import { IDL } from '@icp-sdk/core/candid';
-import type { LogVisibility as LogVisibilityIDL } from '../management-canister';
-import type { SnapshotVisibility as SnapshotVisibilityIDL } from '../management-canister';
-import type { CanisterLogFilter as CanisterLogFilterIDL } from '../management-canister';
-import type { LogVisibility as LogVisibilityPIC } from '../pocket-ic-types';
-import type { SnapshotVisibility as SnapshotVisibilityPIC } from '../pocket-ic-types';
-import type { CanisterLogFilter as CanisterLogFilterPIC } from '../pocket-ic-types';
-import type { Snapshot as SnapshotIDL } from '../management-canister';
-import type { CanisterSnapshot as CanisterSnapshotPIC } from '../pocket-ic-types';
+import type {
+  CanisterLogFilter as CanisterLogFilterIDL,
+  CanisterSettings as CanisterSettingsIDL,
+  LogVisibility as VisibilityIDL,
+  Snapshot as SnapshotIDL,
+} from '../management-canister';
+import type {
+  CanisterLogFilter as CanisterLogFilterPIC,
+  CanisterSnapshot as CanisterSnapshotPIC,
+  CanisterSettings as CanisterSettingsPIC,
+  LogVisibility as VisibilityPIC,
+} from '../pocket-ic-types';
 import { isNil } from './is-nil';
 
 export function optional<T>(value: T | undefined | null): [] | [T] {
   return isNil(value) ? [] : [value];
 }
 
-export type { LogVisibilityIDL, SnapshotVisibilityIDL };
-
-export function optLogVisibilityToIDL(
-  lv: LogVisibilityPIC | undefined,
-): [] | [LogVisibilityIDL] {
-  if (lv === undefined) return [];
-  if ('controllers' in lv) return [{ controllers: null }];
-  if ('public' in lv) return [{ public: null }];
-  return [{ allowed_viewers: lv.allowedViewers }];
+// The log, snapshot and status visibility settings share one shape.
+function optVisibilityToIDL(
+  visibility: VisibilityPIC | undefined,
+): [] | [VisibilityIDL] {
+  if (visibility === undefined) return [];
+  if ('controllers' in visibility) return [{ controllers: null }];
+  if ('public' in visibility) return [{ public: null }];
+  return [{ allowed_viewers: visibility.allowedViewers }];
 }
 
-export function logVisibilityFromIDL(lv: LogVisibilityIDL): LogVisibilityPIC {
-  if ('allowed_viewers' in lv) return { allowedViewers: lv.allowed_viewers };
-  if ('public' in lv) return { public: null };
+export function visibilityFromIDL(visibility: VisibilityIDL): VisibilityPIC {
+  if ('allowed_viewers' in visibility) {
+    return { allowedViewers: visibility.allowed_viewers };
+  }
+  if ('public' in visibility) return { public: null };
   return { controllers: null };
+}
+
+export function canisterSettingsToIDL(
+  settings: CanisterSettingsPIC,
+): CanisterSettingsIDL {
+  return {
+    controllers: optional(settings.controllers),
+    compute_allocation: optional(settings.computeAllocation),
+    memory_allocation: optional(settings.memoryAllocation),
+    freezing_threshold: optional(settings.freezingThreshold),
+    reserved_cycles_limit: optional(settings.reservedCyclesLimit),
+    minimum_incoming_canister_call_cycles: optional(
+      settings.minimumIncomingCanisterCallCycles,
+    ),
+    log_visibility: optVisibilityToIDL(settings.logVisibility),
+    log_memory_limit: optional(settings.logMemoryLimit),
+    snapshot_visibility: optVisibilityToIDL(settings.snapshotVisibility),
+    status_visibility: optVisibilityToIDL(settings.statusVisibility),
+    wasm_memory_limit: optional(settings.wasmMemoryLimit),
+    wasm_memory_threshold: optional(settings.wasmMemoryThreshold),
+    environment_variables: optional(settings.environmentVariables),
+  };
 }
 
 export function optCanisterLogFilterToIDL(
@@ -37,23 +64,6 @@ export function optCanisterLogFilterToIDL(
   const range = { start: filter.start, end: filter.end };
   if (filter.type === 'byIdx') return [{ by_idx: range }];
   return [{ by_timestamp_nanos: range }];
-}
-
-export function optSnapshotVisibilityToIDL(
-  sv: SnapshotVisibilityPIC | undefined,
-): [] | [SnapshotVisibilityIDL] {
-  if (sv === undefined) return [];
-  if ('controllers' in sv) return [{ controllers: null }];
-  if ('public' in sv) return [{ public: null }];
-  return [{ allowed_viewers: sv.allowedViewers }];
-}
-
-export function snapshotVisibilityFromIDL(
-  sv: SnapshotVisibilityIDL,
-): SnapshotVisibilityPIC {
-  if ('allowed_viewers' in sv) return { allowedViewers: sv.allowed_viewers };
-  if ('public' in sv) return { public: null };
-  return { controllers: null };
 }
 
 export function canisterSnapshotFromIDL(

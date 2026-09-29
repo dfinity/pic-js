@@ -1254,7 +1254,16 @@ export interface SubmitCanisterCallResponse {
 
 export interface EncodedCanisterCallId {
   effective_principal: EncodedEffectivePrincipal;
-  message_id: Uint8Array;
+  message_id: string;
+}
+
+export function encodeCanisterCallId(
+  call: SubmitCanisterCallResponse,
+): EncodedCanisterCallId {
+  return {
+    effective_principal: encodeEffectivePrincipal(call.effectivePrincipal),
+    message_id: base64Encode(call.messageId),
+  };
 }
 
 export type EncodedSubmitCanisterCallResponse =
@@ -1267,7 +1276,7 @@ export function decodeSubmitCanisterCallResponse(
 
   return {
     effectivePrincipal: decodeEffectivePrincipal(okRes.effective_principal),
-    messageId: okRes.message_id,
+    messageId: base64Decode(okRes.message_id),
   };
 }
 
@@ -1276,21 +1285,25 @@ export function decodeSubmitCanisterCallResponse(
 //#region IngressStatus
 
 export interface IngressStatusRequest {
-  messageId: EncodedCanisterCallId;
+  call: SubmitCanisterCallResponse;
   caller?: Principal;
 }
 
 export interface EncodedIngressStatusRequest {
   raw_message_id: EncodedCanisterCallId;
-  raw_caller?: string;
+  raw_caller?: {
+    principal_id: string;
+  };
 }
 
 export function encodeIngressStatusRequest(
   req: IngressStatusRequest,
 ): EncodedIngressStatusRequest {
   return {
-    raw_message_id: req.messageId,
-    raw_caller: req.caller ? base64EncodePrincipal(req.caller) : undefined,
+    raw_message_id: encodeCanisterCallId(req.call),
+    raw_caller: req.caller
+      ? { principal_id: base64EncodePrincipal(req.caller) }
+      : undefined,
   };
 }
 
@@ -1323,10 +1336,7 @@ export type EncodedAwaitCanisterCallRequest = EncodedCanisterCallId;
 export function encodeAwaitCanisterCallRequest(
   req: AwaitCanisterCallRequest,
 ): EncodedAwaitCanisterCallRequest {
-  return {
-    effective_principal: encodeEffectivePrincipal(req.effectivePrincipal),
-    message_id: req.messageId,
-  };
+  return encodeCanisterCallId(req);
 }
 
 export type AwaitCanisterCallResponse = CanisterCallResponse;
@@ -1340,6 +1350,39 @@ export function decodeAwaitCanisterCallResponse(
 }
 
 //#endregion AwaitCanisterCall
+
+//#region VerifyCanisterSignature
+
+export interface VerifyCanisterSignatureRequest {
+  message: Uint8Array;
+  signature: Uint8Array;
+  publicKey: Uint8Array;
+  rootKey: Uint8Array;
+}
+
+export interface EncodedVerifyCanisterSignatureRequest {
+  msg: string;
+  sig: string;
+  pubkey: string;
+  root_pubkey: string;
+}
+
+export function encodeVerifyCanisterSignatureRequest(
+  req: VerifyCanisterSignatureRequest,
+): EncodedVerifyCanisterSignatureRequest {
+  return {
+    msg: base64Encode(req.message),
+    sig: base64Encode(req.signature),
+    pubkey: base64Encode(req.publicKey),
+    root_pubkey: base64Encode(req.rootKey),
+  };
+}
+
+export type EncodedVerifyCanisterSignatureResponse =
+  | { Ok: null }
+  | { Err: string };
+
+//#endregion VerifyCanisterSignature
 
 //#region LiveMode
 export type EncodedAutoProgressRequest = {

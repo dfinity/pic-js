@@ -36,15 +36,28 @@ export type SnapshotVisibility =
   | { public: null }
   | { allowed_viewers: Principal[] };
 
+const StatusVisibility = IDL.Variant({
+  controllers: IDL.Null,
+  public: IDL.Null,
+  allowed_viewers: IDL.Vec(IDL.Principal),
+});
+
+export type StatusVisibility =
+  | { controllers: null }
+  | { public: null }
+  | { allowed_viewers: Principal[] };
+
 export interface CanisterSettings {
   controllers: [] | [Principal[]];
   compute_allocation: [] | [bigint];
   memory_allocation: [] | [bigint];
   freezing_threshold: [] | [bigint];
   reserved_cycles_limit: [] | [bigint];
+  minimum_incoming_canister_call_cycles: [] | [bigint];
   log_visibility: [] | [LogVisibility];
-  snapshot_visibility: [] | [SnapshotVisibility];
   log_memory_limit: [] | [bigint];
+  snapshot_visibility: [] | [SnapshotVisibility];
+  status_visibility: [] | [StatusVisibility];
   wasm_memory_limit: [] | [bigint];
   wasm_memory_threshold: [] | [bigint];
   environment_variables: [] | [EnvironmentVariable[]];
@@ -56,9 +69,11 @@ export const CanisterSettings = IDL.Record({
   memory_allocation: IDL.Opt(IDL.Nat),
   freezing_threshold: IDL.Opt(IDL.Nat),
   reserved_cycles_limit: IDL.Opt(IDL.Nat),
+  minimum_incoming_canister_call_cycles: IDL.Opt(IDL.Nat),
   log_visibility: IDL.Opt(LogVisibility),
-  snapshot_visibility: IDL.Opt(SnapshotVisibility),
   log_memory_limit: IDL.Opt(IDL.Nat),
+  snapshot_visibility: IDL.Opt(SnapshotVisibility),
+  status_visibility: IDL.Opt(StatusVisibility),
   wasm_memory_limit: IDL.Opt(IDL.Nat),
   wasm_memory_threshold: IDL.Opt(IDL.Nat),
   environment_variables: IDL.Opt(IDL.Vec(EnvironmentVariable)),
@@ -131,6 +146,36 @@ export function encodeStopCanisterRequest(
   arg: StopCanisterRequest,
 ): Uint8Array {
   return new Uint8Array(IDL.encode([StopCanisterRequest], [arg]));
+}
+
+const DeleteCanisterRequest = IDL.Record({
+  canister_id: IDL.Principal,
+});
+
+export interface DeleteCanisterRequest {
+  canister_id: Principal;
+}
+
+export function encodeDeleteCanisterRequest(
+  arg: DeleteCanisterRequest,
+): Uint8Array {
+  return new Uint8Array(IDL.encode([DeleteCanisterRequest], [arg]));
+}
+
+const UninstallCodeRequest = IDL.Record({
+  canister_id: IDL.Principal,
+  sender_canister_version: IDL.Opt(IDL.Nat64),
+});
+
+export interface UninstallCodeRequest {
+  canister_id: Principal;
+  sender_canister_version: [] | [bigint];
+}
+
+export function encodeUninstallCodeRequest(
+  arg: UninstallCodeRequest,
+): Uint8Array {
+  return new Uint8Array(IDL.encode([UninstallCodeRequest], [arg]));
 }
 
 const CanisterInstallModeUpgradeOptions = IDL.Record({
@@ -223,7 +268,11 @@ const DefiniteCanisterSettings = IDL.Record({
   memory_allocation: IDL.Nat,
   freezing_threshold: IDL.Nat,
   reserved_cycles_limit: IDL.Nat,
+  minimum_incoming_canister_call_cycles: IDL.Nat,
   log_visibility: LogVisibility,
+  log_memory_limit: IDL.Nat,
+  snapshot_visibility: SnapshotVisibility,
+  status_visibility: StatusVisibility,
   wasm_memory_limit: IDL.Nat,
   wasm_memory_threshold: IDL.Nat,
   environment_variables: IDL.Vec(EnvironmentVariable),
@@ -235,7 +284,11 @@ export interface DefiniteCanisterSettings {
   memory_allocation: bigint;
   freezing_threshold: bigint;
   reserved_cycles_limit: bigint;
+  minimum_incoming_canister_call_cycles: bigint;
   log_visibility: LogVisibility;
+  log_memory_limit: bigint;
+  snapshot_visibility: SnapshotVisibility;
+  status_visibility: StatusVisibility;
   wasm_memory_limit: bigint;
   wasm_memory_threshold: bigint;
   environment_variables: EnvironmentVariable[];
@@ -255,15 +308,42 @@ export interface QueryStats {
   response_payload_bytes_total: bigint;
 }
 
+const MemoryMetrics = IDL.Record({
+  wasm_memory_size: IDL.Nat,
+  stable_memory_size: IDL.Nat,
+  global_memory_size: IDL.Nat,
+  wasm_binary_size: IDL.Nat,
+  custom_sections_size: IDL.Nat,
+  canister_history_size: IDL.Nat,
+  wasm_chunk_store_size: IDL.Nat,
+  snapshots_size: IDL.Nat,
+  log_memory_store_size: IDL.Nat,
+});
+
+export interface MemoryMetrics {
+  wasm_memory_size: bigint;
+  stable_memory_size: bigint;
+  global_memory_size: bigint;
+  wasm_binary_size: bigint;
+  custom_sections_size: bigint;
+  canister_history_size: bigint;
+  wasm_chunk_store_size: bigint;
+  snapshots_size: bigint;
+  log_memory_store_size: bigint;
+}
+
 const CanisterStatusResponse = IDL.Record({
   status: IDL.Variant({
     running: IDL.Null,
     stopping: IDL.Null,
     stopped: IDL.Null,
   }),
+  ready_for_migration: IDL.Bool,
+  version: IDL.Nat64,
   settings: DefiniteCanisterSettings,
   module_hash: IDL.Opt(IDL.Vec(IDL.Nat8)),
   memory_size: IDL.Nat,
+  memory_metrics: MemoryMetrics,
   cycles: IDL.Nat,
   reserved_cycles: IDL.Nat,
   idle_cycles_burned_per_day: IDL.Nat,
@@ -272,9 +352,12 @@ const CanisterStatusResponse = IDL.Record({
 
 export interface CanisterStatusResponse {
   status: { running: null } | { stopping: null } | { stopped: null };
+  ready_for_migration: boolean;
+  version: bigint;
   settings: DefiniteCanisterSettings;
   module_hash: [] | [Uint8Array];
   memory_size: bigint;
+  memory_metrics: MemoryMetrics;
   cycles: bigint;
   reserved_cycles: bigint;
   idle_cycles_burned_per_day: bigint;

@@ -222,8 +222,10 @@ describe.each(wasmVariants)('PocketIc — %s WASM', (_label, targetSize) => {
       logVisibility: { public: null },
       wasmMemoryThreshold: wasmThreshold,
       environmentVariables: envVars,
-      snapshotVisibility: { controllers: null },
-      logMemoryLimit: 4_096n,
+      snapshotVisibility: { public: null },
+      statusVisibility: { allowedViewers: [OTHER_PRINCIPAL] },
+      logMemoryLimit: 8_192n,
+      minimumIncomingCanisterCallCycles: 1_000n,
       sender: CONTROLLER_PRINCIPAL,
     });
 
@@ -237,11 +239,62 @@ describe.each(wasmVariants)('PocketIc — %s WASM', (_label, targetSize) => {
     expect(status.settings.controllers).toHaveLength(2);
 
     expect(status.settings.logVisibility).toEqual({ public: null });
+    expect(status.settings.snapshotVisibility).toEqual({ public: null });
+    expect(status.settings.statusVisibility).toEqual({
+      allowedViewers: [OTHER_PRINCIPAL],
+    });
+    expect(status.settings.logMemoryLimit).toEqual(8_192n);
+    expect(status.settings.minimumIncomingCanisterCallCycles).toEqual(1_000n);
     expect(status.settings.wasmMemoryThreshold).toEqual(wasmThreshold);
 
     expect(status.settings.environmentVariables).toEqual(
       expect.arrayContaining(envVars),
     );
     expect(status.settings.environmentVariables).toHaveLength(envVars.length);
+  });
+
+  it('should return the complete canister status', async () => {
+    const { canisterId } = await pic.setupCanister<TestCanister>({
+      idlFactory,
+      wasm: WASM_PATH,
+      sender: CONTROLLER_PRINCIPAL,
+      controllers: [CONTROLLER_PRINCIPAL],
+    });
+
+    const status = await pic.canisterStatus({
+      canisterId,
+      sender: CONTROLLER_PRINCIPAL,
+    });
+
+    expect(status.version).toBeGreaterThan(0n);
+    expect(typeof status.readyForMigration).toBe('boolean');
+    expect(status.settings.statusVisibility).toEqual({ controllers: null });
+    expect(status.settings.snapshotVisibility).toEqual({ controllers: null });
+    expect(status.settings.minimumIncomingCanisterCallCycles).toEqual(0n);
+    expect(status.memoryMetrics.wasmBinarySize).toBeGreaterThan(0n);
+    expect(status.memoryMetrics.logMemoryStoreSize).toBeGreaterThanOrEqual(0n);
+  });
+
+  it('should let statusVisibility control who can read the status', async () => {
+    const canisterId = await pic.createCanister({
+      sender: CONTROLLER_PRINCIPAL,
+      controllers: [CONTROLLER_PRINCIPAL],
+    });
+
+    await expect(
+      pic.canisterStatus({ canisterId, sender: OTHER_PRINCIPAL }),
+    ).rejects.toThrow('is not allowed to read the canister status');
+
+    await pic.updateCanisterSettings({
+      canisterId,
+      statusVisibility: { public: null },
+      sender: CONTROLLER_PRINCIPAL,
+    });
+
+    const status = await pic.canisterStatus({
+      canisterId,
+      sender: OTHER_PRINCIPAL,
+    });
+    expect(status.settings.statusVisibility).toEqual({ public: null });
   });
 });
