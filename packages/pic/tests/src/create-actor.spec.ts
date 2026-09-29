@@ -1,3 +1,4 @@
+import { ActorMethod } from '@icp-sdk/core/agent';
 import { Principal } from '@icp-sdk/core/principal';
 import { generateRandomIdentity } from '../../src';
 import {
@@ -64,6 +65,20 @@ describe('createDeferredActor', () => {
     await fixture.tearDown();
   });
 
+  it('should interleave calls submitted together', async () => {
+    const actor = fixture.pic.createDeferredActor<TestCanister>({
+      idlFactory,
+      canisterId: fixture.canisterId,
+    });
+
+    const first = await actor.increment_value_after_call();
+    const second = await actor.increment_value_after_call();
+
+    // Both calls read the value before either wrote it back after the await.
+    expect(await first()).toBe(1n);
+    expect(await second()).toBe(1n);
+  });
+
   it('should call as the given sender', async () => {
     const sender = generateRandomIdentity().getPrincipal();
     const actor = fixture.pic.createDeferredActor<TestCanister>({
@@ -77,17 +92,17 @@ describe('createDeferredActor', () => {
     expect((await whoami()).toText()).toBe(sender.toText());
   });
 
-  it('should interleave calls submitted together', async () => {
-    const actor = fixture.pic.createDeferredActor<TestCanister>({
-      idlFactory,
+  it('should reject when the call is rejected', async () => {
+    const actor = fixture.pic.createDeferredActor<{
+      missing_method: ActorMethod<[], void>;
+    }>({
+      idlFactory: ({ IDL }) =>
+        IDL.Service({ missing_method: IDL.Func([], [], []) }),
       canisterId: fixture.canisterId,
     });
 
-    const first = await actor.increment_value_after_call();
-    const second = await actor.increment_value_after_call();
+    const missingMethod = await actor.missing_method();
 
-    // Both calls read the value before either wrote it back after the await.
-    expect(await first()).toBe(1n);
-    expect(await second()).toBe(1n);
+    await expect(missingMethod()).rejects.toThrow('has no update method');
   });
 });
