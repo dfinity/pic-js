@@ -411,6 +411,66 @@ export function encodeCreateInstanceRequest(
 
 //#endregion CreateInstance
 
+//#region CanisterSnapshotTransfer
+
+export interface CanisterSnapshotDownloadRequest {
+  sender: Principal;
+  canisterId: Principal;
+  snapshotId: Uint8Array;
+  snapshotDir: string;
+}
+
+export interface EncodedCanisterSnapshotDownloadRequest {
+  sender: { principal_id: string };
+  canister_id: { canister_id: string };
+  snapshot_id: string;
+  snapshot_dir: string;
+}
+
+export function encodeCanisterSnapshotDownloadRequest(
+  req: CanisterSnapshotDownloadRequest,
+): EncodedCanisterSnapshotDownloadRequest {
+  return {
+    sender: { principal_id: base64EncodePrincipal(req.sender) },
+    canister_id: { canister_id: base64EncodePrincipal(req.canisterId) },
+    snapshot_id: base64Encode(req.snapshotId),
+    snapshot_dir: req.snapshotDir,
+  };
+}
+
+export interface CanisterSnapshotUploadRequest {
+  sender: Principal;
+  canisterId: Principal;
+  replaceSnapshot?: Uint8Array;
+  snapshotDir: string;
+}
+
+export interface EncodedCanisterSnapshotUploadRequest {
+  sender: { principal_id: string };
+  canister_id: { canister_id: string };
+  replace_snapshot: { snapshot_id: string } | null;
+  snapshot_dir: string;
+}
+
+export function encodeCanisterSnapshotUploadRequest(
+  req: CanisterSnapshotUploadRequest,
+): EncodedCanisterSnapshotUploadRequest {
+  return {
+    sender: { principal_id: base64EncodePrincipal(req.sender) },
+    canister_id: { canister_id: base64EncodePrincipal(req.canisterId) },
+    replace_snapshot: req.replaceSnapshot
+      ? { snapshot_id: base64Encode(req.replaceSnapshot) }
+      : null,
+    snapshot_dir: req.snapshotDir,
+  };
+}
+
+export interface EncodedCanisterSnapshotUploadResponse {
+  snapshot_id: string;
+}
+
+//#endregion CanisterSnapshotTransfer
+
 //#region GetPubKey
 
 export interface GetPubKeyRequest {

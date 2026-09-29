@@ -2,6 +2,13 @@ import { JSONParse } from 'json-with-bigint';
 import { Http2Client } from './http2-client';
 import { ServerRequestTimeoutError } from './error';
 import {
+  CanisterSnapshotDownloadRequest,
+  CanisterSnapshotUploadRequest,
+  EncodedCanisterSnapshotDownloadRequest,
+  EncodedCanisterSnapshotUploadRequest,
+  EncodedCanisterSnapshotUploadResponse,
+  encodeCanisterSnapshotDownloadRequest,
+  encodeCanisterSnapshotUploadRequest,
   EncodedAddCyclesRequest,
   EncodedAddCyclesResponse,
   EncodedCanisterCallRequest,
@@ -93,7 +100,7 @@ import {
   EncodedHttpGatewayRequest,
   EncodedHttpGatewayResponse,
 } from './pocket-ic-client-types';
-import { base64DecodePrincipal, isNil } from './util';
+import { base64Decode, base64DecodePrincipal, isNil } from './util';
 import { Principal } from '@icp-sdk/core/principal';
 
 const PROCESSING_TIME_VALUE_MS = 30_000;
@@ -260,6 +267,33 @@ export class PocketIcClient {
     >('/update/add_cycles', encodeAddCyclesRequest(req), JSONParse);
 
     return decodeAddCyclesResponse(res);
+  }
+
+  public async canisterSnapshotDownload(
+    req: CanisterSnapshotDownloadRequest,
+  ): Promise<void> {
+    this.assertInstanceNotDeleted();
+
+    await this.post<EncodedCanisterSnapshotDownloadRequest, {}>(
+      '/update/canister_snapshot_download',
+      encodeCanisterSnapshotDownloadRequest(req),
+    );
+  }
+
+  public async canisterSnapshotUpload(
+    req: CanisterSnapshotUploadRequest,
+  ): Promise<Uint8Array> {
+    this.assertInstanceNotDeleted();
+
+    const res = await this.post<
+      EncodedCanisterSnapshotUploadRequest,
+      EncodedCanisterSnapshotUploadResponse
+    >(
+      '/update/canister_snapshot_upload',
+      encodeCanisterSnapshotUploadRequest(req),
+    );
+
+    return base64Decode(res.snapshot_id);
   }
 
   public async uploadBlob(req: UploadBlobRequest): Promise<UploadBlobResponse> {

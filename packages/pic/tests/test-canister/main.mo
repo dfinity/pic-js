@@ -78,4 +78,14 @@ persistent actor TestCanister {
   public shared query ({ caller }) func whoami() : async Principal {
     return caller;
   };
+
+  var value : Nat = 0;
+
+  public func set_value(newValue : Nat) : async () {
+    value := newValue;
+  };
+
+  public query func get_value() : async Nat {
+    return value;
+  };
 };

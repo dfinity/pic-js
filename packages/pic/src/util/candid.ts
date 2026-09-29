@@ -3,9 +3,11 @@ import type {
   CanisterLogFilter as CanisterLogFilterIDL,
   CanisterSettings as CanisterSettingsIDL,
   LogVisibility as VisibilityIDL,
+  Snapshot as SnapshotIDL,
 } from '../management-canister';
 import type {
   CanisterLogFilter as CanisterLogFilterPIC,
+  CanisterSnapshot as CanisterSnapshotPIC,
   CanisterSettings as CanisterSettingsPIC,
   LogVisibility as VisibilityPIC,
 } from '../pocket-ic-types';
@@ -62,6 +64,16 @@ export function optCanisterLogFilterToIDL(
   const range = { start: filter.start, end: filter.end };
   if (filter.type === 'byIdx') return [{ by_idx: range }];
   return [{ by_timestamp_nanos: range }];
+}
+
+export function canisterSnapshotFromIDL(
+  snapshot: SnapshotIDL,
+): CanisterSnapshotPIC {
+  return {
+    id: new Uint8Array(snapshot.id),
+    takenAtTimestamp: snapshot.taken_at_timestamp,
+    totalSize: snapshot.total_size,
+  };
 }
 
 export function decodeCandid<T>(types: IDL.Type[], data: Uint8Array): T | null {

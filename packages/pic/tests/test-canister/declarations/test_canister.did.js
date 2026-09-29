@@ -16,9 +16,11 @@ export const idlFactory = ({ IDL }) => {
     'ecdsa_public_key_size' : IDL.Func([IDL.Text], [PublicKeyResult], []),
     'get_certificate' : IDL.Func([], [IDL.Opt(IDL.Vec(IDL.Nat8))], ['query']),
     'get_time' : IDL.Func([], [Time], ['query']),
+    'get_value' : IDL.Func([], [IDL.Nat], ['query']),
     'print_log' : IDL.Func([IDL.Text], [], []),
     'schnorr_public_key_size' : IDL.Func([IDL.Text], [PublicKeyResult], []),
     'set_certified_data' : IDL.Func([IDL.Vec(IDL.Nat8)], [], []),
+    'set_value' : IDL.Func([IDL.Nat], [], []),
     'vetkd_public_key_size' : IDL.Func([IDL.Text], [PublicKeyResult], []),
     'whoami' : IDL.Func([], [IDL.Principal], ['query']),
   });
