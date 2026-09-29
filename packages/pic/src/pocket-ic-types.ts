@@ -814,6 +814,54 @@ export interface StopCanisterOptions {
 }
 
 /**
+ * Options for deleting a given canister.
+ *
+ * @category Types
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
+ */
+export interface DeleteCanisterOptions {
+  /**
+   * The Principal of the canister to delete. It must be stopped.
+   */
+  canisterId: Principal;
+
+  /**
+   * The Principal to send the request as.
+   * Defaults to the anonymous principal.
+   */
+  sender?: Principal;
+
+  /**
+   * The ID of the subnet that the canister resides on.
+   */
+  targetSubnetId?: Principal;
+}
+
+/**
+ * Options for uninstalling the code of a given canister.
+ *
+ * @category Types
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
+ */
+export interface UninstallCodeOptions {
+  /**
+   * The Principal of the canister to uninstall the code of.
+   */
+  canisterId: Principal;
+
+  /**
+   * The Principal to send the request as.
+   * Defaults to the anonymous principal.
+   */
+  sender?: Principal;
+
+  /**
+   * The ID of the subnet that the canister resides on.
+   */
+  targetSubnetId?: Principal;
+}
+
+/**
  * Options for installing a WASM module to a given canister.
  *
  * @category Types
@@ -1296,7 +1344,75 @@ export interface UpdateCallOptions {
   senderInfo?: SenderInfo;
 }
 
+/**
+ * An update call submitted with {@link PocketIc.submitCall}.
+ *
+ * @category Types
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
+ */
+export interface SubmittedCall {
+  /**
+   * The ID of the call's ingress message.
+   */
+  messageId: Uint8Array;
+
+  /**
+   * The canister or subnet the call was routed by.
+   */
+  effectivePrincipal:
+    | { canisterId: Principal }
+    | { subnetId: Principal }
+    | null;
+}
+
+/**
+ * Options for fetching the status of a submitted update call.
+ *
+ * @category Types
+ * @see [Principal](https://js.icp.build/core/latest/libs/principal/api/#principal)
+ */
+export interface IngressStatusOptions {
+  /**
+   * The Principal that submitted the call. If set and the call was submitted
+   * by a different principal, the request is rejected.
+   */
+  caller?: Principal;
+}
+
 //#endregion CanisterCall
+
+//#region CanisterSignatures
+
+/**
+ * Options for verifying a canister signature.
+ *
+ * @category Types
+ */
+export interface VerifyCanisterSignatureOptions {
+  /**
+   * The signed message.
+   */
+  message: Uint8Array;
+
+  /**
+   * The canister signature, a CBOR-encoded certificate and hash tree.
+   */
+  signature: Uint8Array;
+
+  /**
+   * The DER-encoded canister signature public key, derived from the
+   * signing canister's ID and a seed.
+   */
+  publicKey: Uint8Array;
+
+  /**
+   * The DER-encoded root key of the network, e.g. the public key of the
+   * NNS subnet, see {@link PocketIc.getPubKey}.
+   */
+  rootKey: Uint8Array;
+}
+
+//#endregion CanisterSignatures
 
 //#region HTTPS Outcalls
 

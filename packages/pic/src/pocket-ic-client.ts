@@ -78,6 +78,10 @@ import {
   AwaitCanisterCallResponse,
   EncodedAwaitCanisterCallResponse,
   decodeAwaitCanisterCallResponse,
+  VerifyCanisterSignatureRequest,
+  EncodedVerifyCanisterSignatureRequest,
+  EncodedVerifyCanisterSignatureResponse,
+  encodeVerifyCanisterSignatureRequest,
   EncodedGetTopologyResponse,
   EncodedGetControllersRequest,
   EncodedGetControllersResponse,
@@ -386,6 +390,22 @@ export class PocketIcClient {
         );
       }
       throw err;
+    }
+  }
+
+  public async verifyCanisterSignature(
+    req: VerifyCanisterSignatureRequest,
+  ): Promise<void> {
+    const res = await this.serverClient.jsonPost<
+      EncodedVerifyCanisterSignatureRequest,
+      EncodedVerifyCanisterSignatureResponse
+    >({
+      path: '/verify_signature',
+      body: encodeVerifyCanisterSignatureRequest(req),
+    });
+
+    if ('Err' in res) {
+      throw new Error(res.Err);
     }
   }
 
