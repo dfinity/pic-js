@@ -1820,10 +1820,12 @@ export interface CanisterLogRecord {
 export interface MakeLiveOptions {
   /**
    * The minimum delay in milliseconds between consecutive rounds.
-   * Slows down calls that wait for rounds to be executed, i.e. calls made
-   * through the HTTP gateway or submitted with {@link PocketIc.submitCall}.
-   * Calls made with {@link PocketIc.updateCall} or through an actor execute
-   * their rounds themselves and are not delayed. Defaults to no delay.
+   * Slows down calls that wait for live mode to execute them: calls made
+   * through the HTTP gateway, and calls submitted with {@link PocketIc.submitCall}
+   * whose result is checked with {@link PocketIc.ingressStatus}.
+   * Calls made with an actor, a deferred actor, {@link PocketIc.updateCall} or
+   * {@link PocketIc.awaitCall} execute their rounds themselves and are not delayed.
+   * Defaults to no delay.
    */
   artificialDelayMs?: number;
 

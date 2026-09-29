@@ -2116,9 +2116,14 @@ export class PocketIc {
     }
 
     await this.client.autoProgress(artificialDelayMs);
-    this.httpGatewayPort =
-      this.client.instanceHttpGatewayPort ??
-      (await this.client.startHttpGateway(httpGateway));
+    try {
+      this.httpGatewayPort =
+        this.client.instanceHttpGatewayPort ??
+        (await this.client.startHttpGateway(httpGateway));
+    } catch (error) {
+      await this.client.stopProgress();
+      throw error;
+    }
 
     return this.httpGatewayPort;
   }

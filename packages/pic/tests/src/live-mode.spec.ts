@@ -1,3 +1,4 @@
+import { AddressInfo, createServer } from 'node:net';
 import { IDL } from '@icp-sdk/core/candid';
 import { PocketIc } from '../../src';
 import { getFreePort, TestFixture } from './util';
@@ -46,6 +47,25 @@ describe('makeLive', () => {
 
     const res = await fetch(`http://localhost:${port}/api/v2/status`);
     expect(res.status).toBe(200);
+  });
+
+  it('should stay stopped if the HTTP gateway fails to start', async () => {
+    const { pic } = fixture;
+    const blocker = createServer();
+    await new Promise<void>(resolve =>
+      blocker.listen(0, '127.0.0.1', () => resolve()),
+    );
+    const { port } = blocker.address() as AddressInfo;
+
+    try {
+      await expect(pic.makeLive({ httpGateway: { port } })).rejects.toThrow(
+        'Address already in use',
+      );
+    } finally {
+      blocker.close();
+    }
+
+    expect(await pic.makeLive()).toEqual(expect.any(Number));
   });
 
   it('should return the port without options when already live', async () => {
