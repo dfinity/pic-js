@@ -102,13 +102,10 @@ export function createDeferredActorClass<
         payload: new Uint8Array(arg),
       });
 
-      return function () {
-        return new Promise(async resolve => {
-          const res = await pocketIcClient.awaitCall(messageId);
-          const decodedRes = decodeCandid(func.retTypes, res.body);
+      return async function () {
+        const res = await pocketIcClient.awaitCall(messageId);
 
-          return resolve(decodedRes);
-        });
+        return decodeCandid(func.retTypes, res.body);
       };
     };
   }
