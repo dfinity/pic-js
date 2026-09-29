@@ -1,0 +1,6 @@
+{
+  "name": "reentrancy-tests",
+  "devDependencies": {
+    "@dfinity/pic": "workspace:*"
+  }
+}

@@ -11,7 +11,7 @@ for arg in "$@"; do
   [ "$arg" != "--" ] && args+=("$arg")
 done
 
-ALL_EXAMPLES=(clock counter google_search http icp_features multicanister nns_proxy todo)
+ALL_EXAMPLES=(clock counter google_search http icp_features multicanister nns_proxy reentrancy todo)
 
 if [ ${#args[@]} -eq 0 ]; then
   icp build

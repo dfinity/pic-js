@@ -81,23 +81,9 @@ const picServer = await PocketIcServer.start({
 
 ## Testing interleaved calls
 
-While a call waits at an `await`, for example for an inter-canister call, the canister can execute other calls. If the first call checked some state before the `await` and updates it after, a second call can act on the same state in between. A `withdraw` that checks the balance, awaits a ledger transfer, and only then deducts the amount lets two calls withdraw the same balance.
+While a call waits at an `await`, for example for an inter-canister call, the canister can execute other calls. If the first call checked some state before the `await` and updates it after, another call can act on the same state in between, which can cause reentrancy bugs.
 
-To reproduce this, submit the calls without executing them, using a deferred actor. Calling a method of a deferred actor submits the call and returns a function, and calling that function executes the call and returns its result. Calls submitted together are executed together, so they interleave at their `await`s:
-
-```ts
-const actor = pic.createDeferredActor<_SERVICE>({ idlFactory, canisterId });
-
-// Submit both calls before executing either of them.
-const executeFirst = await actor.withdraw(balance);
-const executeSecond = await actor.withdraw(balance);
-
-// Both calls passed the balance check before either deducted the amount.
-expect(await executeFirst()).toEqual({ ok: null });
-expect(await executeSecond()).toEqual({ ok: null });
-```
-
-A regular actor from `createActor` submits and executes a call in one step. Its calls only interleave if they are made concurrently, e.g. with `Promise.all`, and then only if the second call happens to be submitted before the first one is executed. The deferred actor makes the order explicit. For calls with a Candid-encoded argument, `pic.submitCall` submits a call and `pic.awaitCall` executes it.
+To reproduce this, submit the calls with a deferred actor before executing any of them. Calling a method of a deferred actor submits the call and returns a function that executes it. Calls submitted together are executed together, so they interleave at their `await`s. The [Reentrancy](https://github.com/dfinity/pic-js/tree/main/examples/reentrancy) example uses this to show a withdrawal that pays out twice, and how to fix it. For calls without generated declarations, `pic.submitCall` and `pic.awaitCall` do the same with a Candid-encoded argument.
 
 ## Live mode
 
@@ -117,4 +103,4 @@ await pic.stopLive();
 
 The gateway can be configured with the `httpGateway` option, for example `pic.makeLive({ httpGateway: { port: 8080 } })`.
 
-To give a test more time between rounds, set a minimum delay between them with `artificialDelayMs`, for example `pic.makeLive({ artificialDelayMs: 500 })`. This delays calls that wait for live mode to execute them: calls made through the HTTP gateway, and calls submitted with `pic.submitCall` whose result is checked with `pic.ingressStatus`. Calls made with an actor, a deferred actor, `pic.updateCall` or `pic.awaitCall` execute their rounds themselves and are not delayed.
+To test how a client handles slower calls, for example its loading states or timeouts, set a minimum delay between rounds with `artificialDelayMs`, for example `pic.makeLive({ artificialDelayMs: 500 })`. This delays calls that wait for live mode to execute them: calls made through the HTTP gateway, and calls submitted with `pic.submitCall` whose result is checked with `pic.ingressStatus`. Calls made with an actor, a deferred actor, `pic.updateCall` or `pic.awaitCall` execute their rounds themselves and are not delayed.
