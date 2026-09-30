@@ -21,9 +21,7 @@ but `@dfinity/pic` can be used with JavaScript and any other testing runner, suc
 
 - Install the canister toolchain. `build:examples` shells out to `icp` and
   `mops`, and the Rust examples compile to WebAssembly, so all three are
-  needed. These mirror
-  [`setup-canister-toolchain`](../.github/actions/setup-canister-toolchain/action.yml),
-  which CI runs for the same reason:
+  needed:
 
   ```bash
   pnpm add -g @icp-sdk/icp-cli @icp-sdk/ic-wasm
@@ -31,6 +29,10 @@ but `@dfinity/pic` can be used with JavaScript and any other testing runner, suc
   mops install
   rustup target add wasm32-unknown-unknown
   ```
+
+  Alternatively, work inside the
+  [`ghcr.io/dfinity/icp-dev-env-all`](https://github.com/dfinity/icp-dev-env)
+  image, which ships these tools and is what CI runs the examples in.
 
 - Build `@dfinity/pic`. The examples resolve it through the workspace and load
   its `dist/` output, which is not checked in:

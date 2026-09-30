@@ -34,10 +34,9 @@ jobs:
 
   e2e_test_nodejs:
     name: e2e_test_nodejs:required
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
+    # Provides icp-cli, ic-wasm, mops and Rust with the wasm32 target.
+    container: ghcr.io/dfinity/icp-dev-env-all:v2.3.0
     steps:
       - name: Checkout Code
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
@@ -48,10 +47,29 @@ jobs:
       - name: Setup
         run: pnpm run setup
 
-      - name: Setup Canister Toolchain
-        uses: ./.github/actions/setup-canister-toolchain
+      - name: Cache Mops
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
-          package-manager: pnpm
+          path: |
+            ~/.cache/mops
+            .mops
+          key: mops-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('mops.toml', 'mops.lock') }}
+
+      - name: Install Motoko dependencies
+        run: mops install
+
+      - name: Cache Cargo
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: |
+            /usr/local/cargo/registry
+            target
+          key: cargo-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/Cargo.lock', 'rust-toolchain.toml') }}
+
+      # Installs the toolchain pinned in rust-toolchain.toml before the examples
+      # are built in parallel, which would otherwise each try to install it.
+      - name: Install Rust toolchain
+        run: rustup toolchain install
 
       - name: Build
         run: pnpm run build
@@ -68,8 +86,7 @@ jobs:
       fail-fast: false
       matrix:
         package-manager: [npm, pnpm, yarn, bun]
-    # The opt-in mechanisms are not platform specific, and the darwin binary
-    # download is covered by e2e_test_nodejs on macos-latest.
+    # The opt-in mechanisms are not platform specific.
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
