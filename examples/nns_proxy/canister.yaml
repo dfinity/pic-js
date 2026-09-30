@@ -3,5 +3,4 @@ recipe:
   type: '@dfinity/rust@v3.4.0'
   configuration:
     package: nns_proxy
-    candid: nns_proxy.did
     compress: true

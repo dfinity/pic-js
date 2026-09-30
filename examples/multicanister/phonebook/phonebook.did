@@ -1,9 +1,0 @@
-type PhoneBookEntry = record {
-  phone : text;
-  description : text;
-};
-
-service : {
-  insert : (text, PhoneBookEntry) -> ();
-  lookup : (text) -> (opt PhoneBookEntry) query;
-}

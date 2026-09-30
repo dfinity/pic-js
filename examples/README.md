@@ -19,15 +19,16 @@ but `@dfinity/pic` can be used with JavaScript and any other testing runner, suc
   pnpm run setup
   ```
 
-- Install the canister toolchain. `build:examples` shells out to `icp` and
-  `mops`, and the Rust examples compile to WebAssembly, so all three are
-  needed:
+- Install the canister toolchain. `build:examples` shells out to `icp`,
+  `mops` and `ic-wasm`, and the Rust examples compile to WebAssembly and have
+  their Candid interface extracted with `candid-extractor`:
 
   ```bash
   pnpm add -g @icp-sdk/icp-cli @icp-sdk/ic-wasm
   pnpm add -g ic-mops
   mops install
   rustup target add wasm32-unknown-unknown
+  cargo install candid-extractor
   ```
 
   Alternatively, work inside the

@@ -3,5 +3,4 @@ recipe:
   type: '@dfinity/rust@v3.4.0'
   configuration:
     package: todo
-    candid: todo.did
     compress: true

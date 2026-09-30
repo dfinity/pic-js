@@ -51,3 +51,5 @@ fn http_request(req: HttpRequest) -> HttpResponse {
         }
     })
 }
+
+ic_cdk::export_candid!();

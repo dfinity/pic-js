@@ -21,12 +21,21 @@ else
   examples=("${args[@]}")
 fi
 
+# Generate the bindings from the Candid interface embedded in each built WASM.
+candid_dir=".icp/cache/candid"
+mkdir -p "$candid_dir"
+
+pids=()
 for name in "${examples[@]}"; do
+  ic-wasm ".icp/cache/artifacts/$name" metadata candid:service > "$candid_dir/$name.did"
   icp-bindgen \
-    --did-file "examples/$name/$name.did" \
+    --did-file "$candid_dir/$name.did" \
     --out-dir "examples/$name" \
     --actor-disabled \
     --force &
+  pids+=("$!")
 done
 
-wait
+for pid in "${pids[@]}"; do
+  wait "$pid"
+done

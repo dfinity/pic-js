@@ -44,3 +44,5 @@ async fn get_pending_proposals() -> Vec<ProposalInfo> {
         })
         .collect()
 }
+
+ic_cdk::export_candid!();
