@@ -1,0 +1,113 @@
+---
+title: Working with Bitcoin
+sidebar:
+  order: 7
+---
+
+The `bitcoin` ICP feature deploys the Bitcoin canister under the Bitcoin testnet canister ID `g4xu7-jiaaa-aaaan-aaaaq-cai`, configured for the regtest network. It gets its blocks from a local `bitcoind` node in regtest mode, so your tests control the chain: they mine blocks, send transactions, and check how your canister reacts. The Bitcoin subnet it runs on is created automatically.
+
+It doesn't deploy ckBTC. To test against ckBTC, deploy the ckBTC ledger yourself and make an identity you control its minter, so the tests can mint ckBTC.
+
+## Running bitcoind
+
+Start `bitcoind` in regtest mode, for example with the [Bitcoin Core Docker image](https://hub.docker.com/r/bitcoin/bitcoin), and expose its P2P port `18444`:
+
+```shell
+docker run -d --name bitcoind -p 18444:18444 bitcoin/bitcoin:latest bitcoind -regtest
+```
+
+Then mine blocks to an address. Coinbase rewards can only be spent after 100 confirmations, so mine at least 101 blocks to be able to spend the first reward:
+
+```shell
+docker exec --user bitcoin bitcoind bitcoin-cli -regtest createwallet test
+docker exec --user bitcoin bitcoind bitcoin-cli -regtest getnewaddress
+docker exec --user bitcoin bitcoind bitcoin-cli -regtest generatetoaddress 101 <address>
+```
+
+## Connecting the Bitcoin canister
+
+Enable the `bitcoin` ICP feature and pass the address of `bitcoind` with `bitcoindAddrs`. The address must be reachable from the machine running the PocketIC server:
+
+```ts
+import { IcpFeaturesConfig, PocketIc } from '@dfinity/pic';
+
+const pic = await PocketIc.create(process.env.PIC_URL, {
+  icpFeatures: { bitcoin: IcpFeaturesConfig.DefaultConfig },
+  bitcoindAddrs: ['127.0.0.1:18444'],
+  initialTime: new Date(),
+});
+```
+
+`bitcoind` timestamps blocks with the real time, so the instance has to start at the current time to accept them, which `initialTime: new Date()` does. Alternatively, create the instance with `autoProgress: {}`, which makes it live and follow the real time, see [Live mode](./running-tests#live-mode).
+
+## Waiting for the canister to sync
+
+The Bitcoin canister fetches blocks from `bitcoind` as the instance executes rounds, and rejects calls with `Canister state is not fully synced` until it has caught up. Before asserting on your canister, tick until the Bitcoin canister reports the expected state, for example the balance of the address you mined to:
+
+```ts
+import { IDL } from '@icp-sdk/core/candid';
+import { Principal } from '@icp-sdk/core/principal';
+
+const BITCOIN_CANISTER_ID = Principal.fromText('g4xu7-jiaaa-aaaan-aaaaq-cai');
+
+const GetBalanceRequest = IDL.Record({
+  address: IDL.Text,
+  network: IDL.Variant({
+    mainnet: IDL.Null,
+    testnet: IDL.Null,
+    regtest: IDL.Null,
+  }),
+  min_confirmations: IDL.Opt(IDL.Nat32),
+});
+
+async function getBalance(address: string): Promise<bigint> {
+  const res = await pic.queryCall({
+    canisterId: BITCOIN_CANISTER_ID,
+    method: 'bitcoin_get_balance_query',
+    arg: new Uint8Array(
+      IDL.encode(
+        [GetBalanceRequest],
+        [{ address, network: { regtest: null }, min_confirmations: [] }],
+      ),
+    ),
+  });
+
+  return IDL.decode([IDL.Nat64], res)[0] as bigint;
+}
+
+async function waitForBalance(address: string, expected: bigint) {
+  for (;;) {
+    try {
+      if ((await getBalance(address)) >= expected) {
+        return;
+      }
+    } catch (error) {
+      if (!String(error).includes('Canister state is not fully synced')) {
+        throw error;
+      }
+    }
+    await pic.tick();
+  }
+}
+
+// 101 blocks mined to the address, with a reward of 50 BTC each.
+await waitForBalance(address, 101n * 50n * 100_000_000n);
+```
+
+After mining more blocks or sending transactions with `bitcoin-cli`, wait again before the next assertion.
+
+## Dogecoin
+
+The `dogecoin` ICP feature works the same way. It deploys the Dogecoin canister under its mainnet canister ID `gordg-fyaaa-aaaan-aaadq-cai`, configured for the regtest network, and gets its blocks from the `dogecoind` nodes given by `dogecoindAddrs`:
+
+```ts
+const pic = await PocketIc.create(process.env.PIC_URL, {
+  icpFeatures: { dogecoin: IcpFeaturesConfig.DefaultConfig },
+  dogecoindAddrs: ['127.0.0.1:18444'],
+  initialTime: new Date(),
+});
+```
+
+Start `dogecoind` with `dogecoind -regtest`, using a [Dogecoin Core release](https://github.com/dogecoin/dogecoin/releases), and mine blocks with `dogecoin-cli -regtest generatetoaddress`. The Dogecoin canister's interface differs from the Bitcoin canister's: its methods are prefixed with `dogecoin_`, such as `dogecoin_get_balance_query`, its network is `variant { mainnet; regtest }`, and amounts are `nat` rather than `nat64`.
+
+The Bitcoin and Dogecoin canisters can run on the same instance, but `bitcoindAddrs` and `dogecoindAddrs` can't be combined, as the PocketIC server fails to create an instance with both.

@@ -115,7 +115,82 @@ export interface CreateInstanceOptions {
    * Defaults to `false`.
    */
   disableIngressValidation?: boolean;
+
+  /**
+   * The initial time of the instance, as a `Date` or in milliseconds since the Unix epoch.
+   * Must be at least 6 May 2021 21:17:10 CEST, or 10 May 2021 10:00:01 CEST
+   * if the `cyclesMinting` ICP feature is enabled, which is also the default time then.
+   * Cannot be combined with {@link CreateInstanceOptions.autoProgress}.
+   */
+  initialTime?: Date | number;
+
+  /**
+   * Makes the instance live from creation: it executes rounds on its own and
+   * follows the real time, see {@link PocketIc.makeLive}.
+   * Creating the instance returns once its certified time has been set for the first time.
+   * Cannot be combined with {@link CreateInstanceOptions.initialTime}.
+   */
+  autoProgress?: AutoProgressConfig;
+
+  /**
+   * The addresses of `bitcoind` nodes, e.g. `127.0.0.1:18444`, that the Bitcoin
+   * canister deployed by the `bitcoin` ICP feature syncs with. The addresses
+   * must be reachable from the machine running the PocketIC server.
+   * Cannot be combined with {@link CreateInstanceOptions.dogecoindAddrs}, as the
+   * PocketIC server fails to create an instance with both.
+   */
+  bitcoindAddrs?: string[];
+
+  /**
+   * The addresses of `dogecoind` nodes, e.g. `127.0.0.1:18444`, that the Dogecoin
+   * canister deployed by the `dogecoin` ICP feature syncs with. The addresses
+   * must be reachable from the machine running the PocketIC server.
+   * Cannot be combined with {@link CreateInstanceOptions.bitcoindAddrs}, as the
+   * PocketIC server fails to create an instance with both.
+   */
+  dogecoindAddrs?: string[];
+
+  /**
+   * Creates the NNS subnet with the subnet ID of the NNS subnet on mainnet,
+   * `tdb26-jop6k-aogll-7ltgs-eruif-6kk7m-qpktf-gdiqx-mxtrf-vb5e6-eqe`.
+   * Defaults to `false`.
+   */
+  mainnetNnsSubnetId?: boolean;
+
+  /**
+   * The log level of the PocketIC instance's replica, whose logs are written to the
+   * PocketIC server's standard output, see {@link StartServerOptions.showRuntimeLogs}.
+   * Defaults to `warn`.
+   */
+  logLevel?: LogLevel;
 }
+
+/**
+ * Options for making an instance live when it is created,
+ * see {@link CreateInstanceOptions.autoProgress}.
+ *
+ * @category Types
+ */
+export interface AutoProgressConfig {
+  /**
+   * The minimum delay in milliseconds between consecutive rounds,
+   * see {@link MakeLiveOptions.artificialDelayMs}. Defaults to no delay.
+   */
+  artificialDelayMs?: number;
+}
+
+/**
+ * The log level of a PocketIC instance's replica.
+ *
+ * @category Types
+ */
+export type LogLevel =
+  | 'critical'
+  | 'error'
+  | 'warn'
+  | 'info'
+  | 'debug'
+  | 'trace';
 
 /**
  * Options for the HTTP gateway created together with a PocketIC instance.
@@ -446,6 +521,25 @@ export interface IcpFeatures {
    * `icpToken`, `nnsGovernance`, `sns` and `ii` features.
    */
   nnsUi?: IcpFeaturesConfig;
+
+  /**
+   * Deploys the Bitcoin canister under the Bitcoin testnet canister ID
+   * `g4xu7-jiaaa-aaaan-aaaaq-cai`, configured for the regtest network.
+   * It syncs with the `bitcoind` nodes given by {@link CreateInstanceOptions.bitcoindAddrs}.
+   */
+  bitcoin?: IcpFeaturesConfig;
+
+  /**
+   * Deploys the Dogecoin canister under its mainnet canister ID
+   * `gordg-fyaaa-aaaan-aaadq-cai`, configured for the regtest network.
+   * It syncs with the `dogecoind` nodes given by {@link CreateInstanceOptions.dogecoindAddrs}.
+   */
+  dogecoin?: IcpFeaturesConfig;
+
+  /**
+   * Deploys the canister migration orchestrator canister on the NNS subnet.
+   */
+  canisterMigration?: IcpFeaturesConfig;
 }
 
 /**

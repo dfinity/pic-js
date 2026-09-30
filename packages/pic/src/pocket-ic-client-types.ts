@@ -9,7 +9,12 @@ import {
   isNotNil,
 } from './util';
 import { HttpGatewayRequiredError, TopologyValidationError } from './error';
-import { CanisterCyclesCostSchedule, SenderInfo } from './pocket-ic-types';
+import {
+  AutoProgressConfig,
+  CanisterCyclesCostSchedule,
+  LogLevel,
+  SenderInfo,
+} from './pocket-ic-types';
 
 export { CanisterCyclesCostSchedule };
 
@@ -33,6 +38,12 @@ export interface CreateInstanceRequest {
   icpFeatures?: IcpFeatures;
   disableIngressValidation?: boolean;
   httpGateway?: HttpGatewayConfig;
+  initialTime?: Date | number;
+  autoProgress?: AutoProgressConfig;
+  bitcoindAddrs?: string[];
+  dogecoindAddrs?: string[];
+  mainnetNnsSubnetId?: boolean;
+  logLevel?: LogLevel;
 }
 
 export interface SubnetConfig<
@@ -118,6 +129,9 @@ export interface IcpFeatures {
   sns?: IcpFeaturesConfig;
   ii?: IcpFeaturesConfig;
   nnsUi?: IcpFeaturesConfig;
+  bitcoin?: IcpFeaturesConfig;
+  dogecoin?: IcpFeaturesConfig;
+  canisterMigration?: IcpFeaturesConfig;
 }
 
 export interface HttpGatewayConfig {
@@ -136,6 +150,45 @@ export interface EncodedCreateInstanceRequest {
   icp_features?: EncodedIcpFeatures;
   disable_ingress_validation?: boolean;
   http_gateway_config?: EncodedInstanceHttpGatewayConfig;
+  initial_time?: EncodedInitialTime;
+  bitcoind_addr?: string[];
+  dogecoind_addr?: string[];
+  mainnet_nns_subnet_id?: boolean;
+  log_level?: LogLevel;
+}
+
+export type EncodedInitialTime =
+  | { Timestamp: { nanos_since_epoch: bigint } }
+  | { AutoProgress: { artificial_delay_ms?: number } };
+
+function encodeInitialTime({
+  initialTime,
+  autoProgress,
+}: CreateInstanceRequest): EncodedInitialTime | undefined {
+  if (!isNil(initialTime) && !isNil(autoProgress)) {
+    throw new Error(
+      'The initialTime and autoProgress options cannot be combined, as an instance created with autoProgress follows the real time',
+    );
+  }
+
+  if (!isNil(initialTime)) {
+    const millis =
+      initialTime instanceof Date ? initialTime.getTime() : initialTime;
+
+    return {
+      Timestamp: {
+        nanos_since_epoch: BigInt(millis) * NANOS_PER_MILLISECOND,
+      },
+    };
+  }
+
+  if (!isNil(autoProgress)) {
+    return {
+      AutoProgress: { artificial_delay_ms: autoProgress.artificialDelayMs },
+    };
+  }
+
+  return undefined;
 }
 
 export interface EncodedInstanceHttpGatewayConfig {
@@ -186,6 +239,9 @@ export interface EncodedIcpFeatures {
   sns?: EncodedIcpFeaturesConfig;
   ii?: EncodedIcpFeaturesConfig;
   nns_ui?: EncodedIcpFeaturesConfig;
+  bitcoin?: EncodedIcpFeaturesConfig;
+  dogecoin?: EncodedIcpFeaturesConfig;
+  canister_migration?: EncodedIcpFeaturesConfig;
 }
 
 export interface EncodedSubnetConfig {
@@ -327,6 +383,15 @@ function encodeIcpFeatures(icpFeatures: IcpFeatures): EncodedIcpFeatures {
     nns_ui: icpFeatures.nnsUi
       ? encodeIcpFeaturesConfig(icpFeatures.nnsUi)
       : undefined,
+    bitcoin: icpFeatures.bitcoin
+      ? encodeIcpFeaturesConfig(icpFeatures.bitcoin)
+      : undefined,
+    dogecoin: icpFeatures.dogecoin
+      ? encodeIcpFeaturesConfig(icpFeatures.dogecoin)
+      : undefined,
+    canister_migration: icpFeatures.canisterMigration
+      ? encodeIcpFeaturesConfig(icpFeatures.canisterMigration)
+      : undefined,
   };
 }
 
@@ -384,7 +449,22 @@ export function encodeCreateInstanceRequest(
     http_gateway_config: defaultOptions.httpGateway
       ? encodeHttpGatewayConfig(defaultOptions.httpGateway)
       : undefined,
+    initial_time: encodeInitialTime(defaultOptions),
+    bitcoind_addr: defaultOptions.bitcoindAddrs,
+    dogecoind_addr: defaultOptions.dogecoindAddrs,
+    mainnet_nns_subnet_id: defaultOptions.mainnetNnsSubnetId,
+    log_level: defaultOptions.logLevel,
   };
+
+  // The PocketIC server panics when it starts both adapters for one instance.
+  if (
+    !isNil(defaultOptions.bitcoindAddrs) &&
+    !isNil(defaultOptions.dogecoindAddrs)
+  ) {
+    throw new Error(
+      'The bitcoindAddrs and dogecoindAddrs options cannot be combined, as the PocketIC server fails to create an instance with both',
+    );
+  }
 
   const { ii, nnsUi } = defaultOptions.icpFeatures ?? {};
   if ((ii || nnsUi) && isNil(defaultOptions.httpGateway)) {
