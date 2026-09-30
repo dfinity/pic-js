@@ -1,3 +1,4 @@
+import { ActorMethod } from '@icp-sdk/core/agent';
 import { Principal } from '@icp-sdk/core/principal';
 import { generateRandomIdentity } from '../../src';
 import {
@@ -75,5 +76,19 @@ describe('createDeferredActor', () => {
     const whoami = await actor.whoami();
 
     expect((await whoami()).toText()).toBe(sender.toText());
+  });
+
+  it('should reject when the call is rejected', async () => {
+    const actor = fixture.pic.createDeferredActor<{
+      missing_method: ActorMethod<[], void>;
+    }>({
+      idlFactory: ({ IDL }) =>
+        IDL.Service({ missing_method: IDL.Func([], [], []) }),
+      canisterId: fixture.canisterId,
+    });
+
+    const missingMethod = await actor.missing_method();
+
+    await expect(missingMethod()).rejects.toThrow('has no update method');
   });
 });
