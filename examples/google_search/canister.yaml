@@ -1,7 +1,5 @@
 name: google_search
 recipe:
-  type: '@dfinity/motoko@v4.1.0'
+  type: '@dfinity/motoko@v5.1.0'
   configuration:
-    main: src/main.mo
-    candid: google_search.did
     compress: true

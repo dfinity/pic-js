@@ -20,7 +20,7 @@ runs:
           ~/.cache/mops
           ~/Library/Caches/mops
           .mops
-        key: mops-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('mops.toml') }}
+        key: mops-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('mops.toml', 'mops.lock') }}
 
     - name: Setup Motoko toolchain
       shell: bash

@@ -4,6 +4,34 @@ core = "2.0.0"
 [toolchain]
 moc = "1.2.0"
 
+[canisters.test_canister]
+main = "packages/pic/tests/test-canister/main.mo"
+candid = "packages/pic/tests/test-canister/test_canister.did"
+
+[canisters.clock]
+main = "examples/clock/src/main.mo"
+candid = "examples/clock/clock.did"
+
+[canisters.counter]
+main = "examples/counter/src/main.mo"
+candid = "examples/counter/counter.did"
+
+[canisters.google_search]
+main = "examples/google_search/src/main.mo"
+candid = "examples/google_search/google_search.did"
+
+[canisters.multicanister]
+main = "examples/multicanister/src/main.mo"
+candid = "examples/multicanister/multicanister.did"
+
+[canisters.phonebook]
+main = "examples/multicanister/phonebook/phonebook.mo"
+candid = "examples/multicanister/phonebook/phonebook.did"
+
+[canisters.superheroes]
+main = "examples/multicanister/superheroes/superheroes.mo"
+candid = "examples/multicanister/superheroes/superheroes.did"
+
 [canisters.reentrancy]
 main = "examples/reentrancy/src/main.mo"
 candid = "examples/reentrancy/reentrancy.did"
