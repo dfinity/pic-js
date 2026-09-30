@@ -77,3 +77,5 @@ but `@dfinity/pic` can be used with JavaScript and any other testing runner, suc
   This example demonstrates how to mock HTTPS Outcalls.
 - [HTTP](./http/README.md)
   This example demonstrates how to use "live" mode with an HTTP canister.
+- [Reentrancy](./reentrancy/README.md)
+  This example demonstrates how to reproduce a reentrancy bug by interleaving calls with a deferred actor.

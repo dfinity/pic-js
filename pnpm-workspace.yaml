@@ -6,6 +6,7 @@ packages:
   - examples/icp_features/tests
   - examples/multicanister/tests
   - examples/nns_proxy/tests
+  - examples/reentrancy/tests
   - examples/todo/tests
   - packages/pic
   - packages/pic-server

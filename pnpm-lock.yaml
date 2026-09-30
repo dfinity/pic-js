@@ -131,6 +131,12 @@ importers:
         specifier: workspace:*
         version: link:../../../packages/pic
 
+  examples/reentrancy/tests:
+    devDependencies:
+      '@dfinity/pic':
+        specifier: workspace:*
+        version: link:../../../packages/pic
+
   examples/todo/tests:
     devDependencies:
       '@dfinity/pic':

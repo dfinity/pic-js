@@ -1,6 +1,6 @@
-import { createServer } from 'node:net';
 import { Principal } from '@icp-sdk/core/principal';
 import { IcpFeaturesConfig, PocketIc } from '../../src';
+import { getFreePort } from './util';
 
 const II_BACKEND_ID = 'rdmx6-jaaaa-aaaaa-aaadq-cai';
 const II_FRONTEND_ID = 'uqzsh-gqaaa-aaaaq-qaada-cai';
@@ -10,21 +10,6 @@ const NNS_DAPP_ID = 'qoctq-giaaa-aaaaa-aaaea-cai';
 // default timeouts on a busy CI runner.
 const NNS_DAPP_PROCESSING_TIMEOUT_MS = 120_000;
 const NNS_DAPP_TEST_TIMEOUT_MS = 180_000;
-
-async function getFreePort(): Promise<number> {
-  return await new Promise((resolve, reject) => {
-    const server = createServer();
-    server.once('error', reject);
-    server.listen(0, '127.0.0.1', () => {
-      const address = server.address();
-      server.close(() =>
-        typeof address === 'object' && address
-          ? resolve(address.port)
-          : reject(new Error('Could not determine a free port')),
-      );
-    });
-  });
-}
 
 async function fetchFrontend(
   canisterId: string,

@@ -3,3 +3,7 @@ core = "2.0.0"
 
 [toolchain]
 moc = "1.2.0"
+
+[canisters.reentrancy]
+main = "examples/reentrancy/src/main.mo"
+candid = "examples/reentrancy/reentrancy.did"

@@ -1809,3 +1809,31 @@ export interface CanisterLogRecord {
 }
 
 //#endregion FetchCanisterLogs
+
+//#region LiveMode
+
+/**
+ * Options for making a PocketIC instance live, see {@link PocketIc.makeLive}.
+ *
+ * @category Types
+ */
+export interface MakeLiveOptions {
+  /**
+   * The minimum delay in milliseconds between consecutive rounds.
+   * Slows down calls that wait for live mode to execute them: calls made
+   * through the HTTP gateway, and calls submitted with {@link PocketIc.submitCall}
+   * whose result is checked with {@link PocketIc.ingressStatus}.
+   * Calls made with an actor, a deferred actor, {@link PocketIc.updateCall} or
+   * {@link PocketIc.awaitCall} execute their rounds themselves and are not delayed.
+   * Defaults to no delay.
+   */
+  artificialDelayMs?: number;
+
+  /**
+   * The HTTP gateway to start. Not supported if the instance was created
+   * with {@link CreateInstanceOptions.httpGateway}, whose gateway is used instead.
+   */
+  httpGateway?: HttpGatewayConfig;
+}
+
+//#endregion LiveMode

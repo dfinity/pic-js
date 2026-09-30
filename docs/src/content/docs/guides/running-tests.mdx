@@ -78,3 +78,29 @@ const picServer = await PocketIcServer.start({
   showRuntimeLogs: true,
 });
 ```
+
+## Testing interleaved calls
+
+While a call waits at an `await`, for example for an inter-canister call, the canister can execute other calls. If the first call checked some state before the `await` and updates it after, another call can act on the same state in between, which can cause reentrancy bugs.
+
+To reproduce this, submit the calls with a deferred actor before executing any of them. Calling a method of a deferred actor submits the call and returns a function that executes it. Calls submitted together are executed together, so they interleave at their `await`s. The [Reentrancy](https://github.com/dfinity/pic-js/tree/main/examples/reentrancy) example uses this to show a withdrawal that pays out twice, and how to fix it. For calls without generated declarations, `pic.submitCall` and `pic.awaitCall` do the same with a Candid-encoded argument.
+
+## Live mode
+
+`makeLive` makes the instance execute rounds on its own, in real time, and starts an HTTP gateway, so agents can call canisters as they would on a real network:
+
+```ts
+const gatewayPort = await pic.makeLive();
+const agent = await HttpAgent.create({
+  host: `http://localhost:${gatewayPort}`,
+  shouldFetchRootKey: true,
+});
+
+// make calls with the agent...
+
+await pic.stopLive();
+```
+
+The gateway can be configured with the `httpGateway` option, for example `pic.makeLive({ httpGateway: { port: 8080 } })`.
+
+To test how a client handles slower calls, for example its loading states or timeouts, set a minimum delay between rounds with `artificialDelayMs`, for example `pic.makeLive({ artificialDelayMs: 500 })`. This delays calls that wait for live mode to execute them: calls made through the HTTP gateway, and calls submitted with `pic.submitCall` whose result is checked with `pic.ingressStatus`. Calls made with an actor, a deferred actor, `pic.updateCall` or `pic.awaitCall` execute their rounds themselves and are not delayed.

@@ -1,0 +1,5 @@
+name: reentrancy
+recipe:
+  type: '@dfinity/motoko@v5.1.0'
+  configuration:
+    compress: true

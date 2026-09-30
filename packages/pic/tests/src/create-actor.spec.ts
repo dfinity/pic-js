@@ -65,6 +65,20 @@ describe('createDeferredActor', () => {
     await fixture.tearDown();
   });
 
+  it('should interleave calls submitted together', async () => {
+    const actor = fixture.pic.createDeferredActor<TestCanister>({
+      idlFactory,
+      canisterId: fixture.canisterId,
+    });
+
+    const first = await actor.increment_value_after_call();
+    const second = await actor.increment_value_after_call();
+
+    // Both calls read the value before either wrote it back after the await.
+    expect(await first()).toBe(1n);
+    expect(await second()).toBe(1n);
+  });
+
   it('should call as the given sender', async () => {
     const sender = generateRandomIdentity().getPrincipal();
     const actor = fixture.pic.createDeferredActor<TestCanister>({

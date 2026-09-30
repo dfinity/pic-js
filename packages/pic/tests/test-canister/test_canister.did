@@ -12,4 +12,6 @@ service : {
   whoami : () -> (principal) query;
   set_value : (nat) -> ();
   get_value : () -> (nat) query;
+  noop : () -> ();
+  increment_value_after_call : () -> (nat);
 }
