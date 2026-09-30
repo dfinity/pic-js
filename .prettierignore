@@ -36,6 +36,7 @@
 .env
 .DS_Store
 pnpm-lock.yaml
+mops.lock
 .cz.yaml
 
 CHANGELOG.md

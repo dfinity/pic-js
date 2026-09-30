@@ -138,3 +138,5 @@ fn delete_todo(id: TodoId) {
         todos.remove(&id);
     });
 }
+
+ic_cdk::export_candid!();

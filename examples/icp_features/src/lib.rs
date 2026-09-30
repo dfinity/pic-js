@@ -32,3 +32,5 @@ impl LedgerService {
             .candid()?)
     }
 }
+
+ic_cdk::export_candid!();

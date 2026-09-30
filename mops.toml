@@ -1,9 +1,15 @@
 [dependencies]
-core = "2.0.0"
+core = "2.6.2"
 
 [toolchain]
-moc = "1.2.0"
+moc = "1.16.1"
 
-[canisters.reentrancy]
-main = "examples/reentrancy/src/main.mo"
-candid = "examples/reentrancy/reentrancy.did"
+[canisters]
+test_canister = { main = "packages/pic/tests/test-canister/main.mo", candid = "packages/pic/tests/test-canister/test_canister.did" }
+clock = "examples/clock/src/main.mo"
+counter = "examples/counter/src/main.mo"
+google_search = "examples/google_search/src/main.mo"
+multicanister = "examples/multicanister/src/main.mo"
+phonebook = "examples/multicanister/phonebook/phonebook.mo"
+superheroes = "examples/multicanister/superheroes/superheroes.mo"
+reentrancy = "examples/reentrancy/src/main.mo"
