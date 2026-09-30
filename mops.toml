@@ -2,7 +2,7 @@
 core = "2.0.0"
 
 [toolchain]
-moc = "1.2.0"
+moc = "1.16.1"
 
 [canisters]
 test_canister = "packages/pic/tests/test-canister/main.mo"
