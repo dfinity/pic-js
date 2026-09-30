@@ -1,5 +1,5 @@
 [dependencies]
-core = "2.0.0"
+core = "2.6.2"
 
 [toolchain]
 moc = "1.16.1"
