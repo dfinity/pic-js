@@ -5,7 +5,7 @@ core = "2.6.2"
 moc = "1.16.1"
 
 [canisters]
-test_canister = "packages/pic/tests/test-canister/main.mo"
+test_canister = { main = "packages/pic/tests/test-canister/main.mo", candid = "packages/pic/tests/test-canister/test_canister.did" }
 clock = "examples/clock/src/main.mo"
 counter = "examples/counter/src/main.mo"
 google_search = "examples/google_search/src/main.mo"
