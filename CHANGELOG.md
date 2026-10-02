@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+
+### Feat
+
+- **pic**: support the remaining instance options (#318)
+- **pic**: add options to makeLive (#314)
+- **pic**: support canister snapshots (#310)
+- **pic**: add the missing canister lifecycle methods (#311)
+- **pic**: complete the canister settings and status, check the live spec (#309)
+
+### Fix
+
+- **pic**: reject a deferred call's promise when the call fails (#315)
+
 ## 0.24.0 (2026-09-25)
 
 ### BREAKING CHANGE
