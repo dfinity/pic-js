@@ -40,6 +40,8 @@ const pic = await PocketIc.create(process.env.PIC_URL, {
 
 `bitcoind` timestamps blocks with the real time, so the instance has to start at the current time to accept them, which `initialTime: new Date()` does. Alternatively, create the instance with `autoProgress: {}`, which makes it live and follow the real time, see [Live mode](./running-tests#live-mode).
 
+If your canister signs Bitcoin transactions with threshold ECDSA or Schnorr, also create the test threshold keys subnet with `testThresholdKeys: { state: { type: SubnetStateType.New } }`, which holds the `test_key_1` keys.
+
 ## Waiting for the canister to sync
 
 The Bitcoin canister fetches blocks from `bitcoind` as the instance executes rounds, and rejects calls with `Canister state is not fully synced` until it has caught up. Before asserting on your canister, tick until the Bitcoin canister reports the expected state, for example the balance of the address you mined to:

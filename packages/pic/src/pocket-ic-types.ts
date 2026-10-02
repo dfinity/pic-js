@@ -153,7 +153,7 @@ export interface CreateInstanceOptions {
   /**
    * Creates the NNS subnet with the subnet ID of the NNS subnet on mainnet,
    * `tdb26-jop6k-aogll-7ltgs-eruif-6kk7m-qpktf-gdiqx-mxtrf-vb5e6-eqe`.
-   * Defaults to `false`.
+   * Has no effect if the instance has no NNS subnet. Defaults to `false`.
    */
   mainnetNnsSubnetId?: boolean;
 
