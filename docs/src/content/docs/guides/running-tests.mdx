@@ -79,6 +79,14 @@ const picServer = await PocketIcServer.start({
 });
 ```
 
+These include the logs of each instance's replica, which only logs warnings and errors by default. To see more, set its log level with the `logLevel` option when creating the instance, one of `critical`, `error`, `warn`, `info`, `debug` or `trace`:
+
+```ts
+const pic = await PocketIc.create(picServer.getUrl(), {
+  logLevel: 'debug',
+});
+```
+
 ## Testing interleaved calls
 
 While a call waits at an `await`, for example for an inter-canister call, the canister can execute other calls. If the first call checked some state before the `await` and updates it after, another call can act on the same state in between, which can cause reentrancy bugs.
@@ -102,5 +110,7 @@ await pic.stopLive();
 ```
 
 The gateway can be configured with the `httpGateway` option, for example `pic.makeLive({ httpGateway: { port: 8080 } })`.
+
+To create an instance that is live from the start, set the `autoProgress` option, for example `PocketIc.create(url, { autoProgress: {} })`. Its time follows the real time right away, and `makeLive` starts the HTTP gateway for it.
 
 To test how a client handles slower calls, for example its loading states or timeouts, set a minimum delay between rounds with `artificialDelayMs`, for example `pic.makeLive({ artificialDelayMs: 500 })`. This delays calls that wait for live mode to execute them: calls made through the HTTP gateway, and calls submitted with `pic.submitCall` whose result is checked with `pic.ingressStatus`. Calls made with an actor, a deferred actor, `pic.updateCall` or `pic.awaitCall` execute their rounds themselves and are not delayed.

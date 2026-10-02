@@ -2058,7 +2058,8 @@ export class PocketIc {
   /**
    * Make the PocketIC instance live by enabling auto progress and starting an HTTP gateway.
    * If the instance was created with {@link CreateInstanceOptions.httpGateway}, that gateway is used instead.
-   * If the instance is already live, this method returns the port of its HTTP gateway.
+   * If the instance is already live, this method returns the port of its HTTP gateway,
+   * starting one first if the instance was created live with {@link CreateInstanceOptions.autoProgress}.
    *
    * @param options Options for making the instance live, see {@link MakeLiveOptions}.
    * To change them on a live instance, call {@link stopLive} first.
@@ -2093,26 +2094,30 @@ export class PocketIc {
     artificialDelayMs,
     httpGateway,
   }: MakeLiveOptions = {}): Promise<number> {
+    if (!isNil(httpGateway) && !isNil(this.client.instanceHttpGatewayPort)) {
+      throw new Error(
+        'The instance was created with an HTTP gateway, configure it with the httpGateway option of PocketIc.create instead',
+      );
+    }
+
     const isLive = await this.client.autoProgressEnabled();
     if (isLive) {
-      if (isNil(this.httpGatewayPort)) {
-        throw new Error(
-          'Inconsistent state, PocketIC server is live but no HTTP Gateway URL is known',
-        );
-      }
-      if (!isNil(artificialDelayMs) || !isNil(httpGateway)) {
+      const hasGateway = !isNil(this.httpGatewayPort);
+      if (!isNil(artificialDelayMs) || (hasGateway && !isNil(httpGateway))) {
         throw new Error(
           'The instance is already live, call stopLive before making it live with new options',
         );
       }
 
-      return this.httpGatewayPort;
-    }
+      // An instance created with CreateInstanceOptions.autoProgress is live
+      // before it has an HTTP gateway.
+      if (isNil(this.httpGatewayPort)) {
+        this.httpGatewayPort =
+          this.client.instanceHttpGatewayPort ??
+          (await this.client.startHttpGateway(httpGateway));
+      }
 
-    if (!isNil(httpGateway) && !isNil(this.client.instanceHttpGatewayPort)) {
-      throw new Error(
-        'The instance was created with an HTTP gateway, configure it with the httpGateway option of PocketIc.create instead',
-      );
+      return this.httpGatewayPort;
     }
 
     await this.client.autoProgress(artificialDelayMs);

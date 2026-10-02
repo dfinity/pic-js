@@ -19,16 +19,19 @@ const pic = await PocketIc.create(process.env.PIC_URL, {
 
 `IcpFeaturesConfig.DefaultConfig` configures each feature to resemble mainnet as closely as possible. The available features are:
 
-| Feature         | Deploys                                                                                          |
-| --------------- | ------------------------------------------------------------------------------------------------ |
-| `registry`      | The NNS registry canister, kept in sync with PocketIC's internal registry                        |
-| `cyclesMinting` | The cycles minting canister, with the ICP/XDR conversion rate set                                |
-| `icpToken`      | The ICP ledger and index canisters; the anonymous principal starts with 1,000,000,000 ICP        |
-| `cyclesToken`   | The cycles ledger and index canisters; the anonymous principal starts with 2^127 - 1 cycles      |
-| `nnsGovernance` | The NNS governance and root canisters, with a 1 ICP neuron controlled by the anonymous principal |
-| `sns`           | The SNS-W and aggregator canisters, with the SNS canister WASMs uploaded                         |
-| `ii`            | The Internet Identity backend and frontend canisters                                             |
-| `nnsUi`         | The NNS dapp; requires `cyclesMinting`, `icpToken`, `nnsGovernance`, `sns` and `ii`              |
+| Feature             | Deploys                                                                                                    |
+| ------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `registry`          | The NNS registry canister, kept in sync with PocketIC's internal registry                                  |
+| `cyclesMinting`     | The cycles minting canister, with the ICP/XDR conversion rate set                                          |
+| `icpToken`          | The ICP ledger and index canisters; the anonymous principal starts with 1,000,000,000 ICP                  |
+| `cyclesToken`       | The cycles ledger and index canisters; the anonymous principal starts with 2^127 - 1 cycles                |
+| `nnsGovernance`     | The NNS governance and root canisters, with a 1 ICP neuron controlled by the anonymous principal           |
+| `sns`               | The SNS-W and aggregator canisters, with the SNS canister WASMs uploaded                                   |
+| `ii`                | The Internet Identity backend and frontend canisters                                                       |
+| `nnsUi`             | The NNS dapp; requires `cyclesMinting`, `icpToken`, `nnsGovernance`, `sns` and `ii`                        |
+| `canisterMigration` | The canister migration orchestrator canister                                                               |
+| `bitcoin`           | The Bitcoin canister for the regtest network, see [Working with Bitcoin](./working-with-bitcoin)           |
+| `dogecoin`          | The Dogecoin canister for the regtest network, see [Working with Bitcoin](./working-with-bitcoin#dogecoin) |
 
 `ii` and `nnsUi` also deploy frontends, which PocketIC serves through an HTTP gateway created together with the instance. Set the `httpGateway` option, then make the instance live to serve them:
 
@@ -44,6 +47,8 @@ const iiUrl = `http://uqzsh-gqaaa-aaaaq-qaada-cai.localhost:${gatewayPort}`;
 
 Without `httpGateway`, creating an instance with either feature throws an error.
 
-The subnets that host these canisters must be empty: leave them unconfigured or use `SubnetStateType.New`, as PocketIC rejects state loaded with `SubnetStateType.FromPath`. Enabling `cyclesMinting` also moves the instance's default time to 10 May 2021, to match the cycles minting canister's state.
+The subnets that host these canisters must be empty: leave them unconfigured or use `SubnetStateType.New`, as PocketIC rejects state loaded with `SubnetStateType.FromPath`. Enabling `cyclesMinting` also moves the instance's default time to 10 May 2021, to match the cycles minting canister's state. To start at a later time, set the `initialTime` option, for example `initialTime: new Date()`. Earlier times are rejected.
+
+The NNS subnet gets a random subnet ID. If your canisters rely on the ID of the NNS subnet on mainnet, set `mainnetNnsSubnetId: true` to create it with that ID.
 
 Check out the [NNS Proxy](https://github.com/dfinity/pic-js/tree/main/examples/nns_proxy) example for a full test that creates neurons and proposals against NNS governance.
