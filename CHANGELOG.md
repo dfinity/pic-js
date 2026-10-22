@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Fix
+
+- **pic**: read HTTPS outcalls made with PUT, DELETE and PATCH (#320)
+
 ## 0.25.0 (2026-10-02)
 
 ### Feat
