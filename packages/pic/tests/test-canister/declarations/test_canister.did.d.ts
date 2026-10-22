@@ -10,6 +10,12 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export type HttpMethod = { 'get' : null } |
+  { 'put' : null } |
+  { 'head' : null } |
+  { 'post' : null } |
+  { 'delete' : null } |
+  { 'patch' : null };
 export type PublicKeyResult = { 'ok' : bigint } |
   { 'err' : string };
 export type Time = bigint;
@@ -18,6 +24,7 @@ export interface _SERVICE {
   'get_certificate' : ActorMethod<[], [] | [Uint8Array]>,
   'get_time' : ActorMethod<[], Time>,
   'get_value' : ActorMethod<[], bigint>,
+  'http_request_status' : ActorMethod<[HttpMethod], bigint>,
   'increment_value_after_call' : ActorMethod<[], bigint>,
   'noop' : ActorMethod<[], undefined>,
   'print_log' : ActorMethod<[string], undefined>,
