@@ -1720,6 +1720,21 @@ export enum CanisterHttpMethod {
    * A HEAD request.
    */
   HEAD = 'HEAD',
+
+  /**
+   * A PUT request.
+   */
+  PUT = 'PUT',
+
+  /**
+   * A DELETE request.
+   */
+  DELETE = 'DELETE',
+
+  /**
+   * A PATCH request.
+   */
+  PATCH = 'PATCH',
 }
 
 /**

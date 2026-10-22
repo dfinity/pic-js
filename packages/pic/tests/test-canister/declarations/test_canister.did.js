@@ -11,12 +11,21 @@ import { IDL } from '@icp-sdk/core/candid';
 export const idlFactory = ({ IDL }) => {
   const PublicKeyResult = IDL.Variant({ 'ok' : IDL.Nat, 'err' : IDL.Text });
   const Time = IDL.Int;
+  const HttpMethod = IDL.Variant({
+    'get' : IDL.Null,
+    'put' : IDL.Null,
+    'head' : IDL.Null,
+    'post' : IDL.Null,
+    'delete' : IDL.Null,
+    'patch' : IDL.Null,
+  });
   
   return IDL.Service({
     'ecdsa_public_key_size' : IDL.Func([IDL.Text], [PublicKeyResult], []),
     'get_certificate' : IDL.Func([], [IDL.Opt(IDL.Vec(IDL.Nat8))], ['query']),
     'get_time' : IDL.Func([], [Time], ['query']),
     'get_value' : IDL.Func([], [IDL.Nat], ['query']),
+    'http_request_status' : IDL.Func([HttpMethod], [IDL.Nat], []),
     'increment_value_after_call' : IDL.Func([], [IDL.Nat], []),
     'noop' : IDL.Func([], [], []),
     'print_log' : IDL.Func([IDL.Text], [], []),

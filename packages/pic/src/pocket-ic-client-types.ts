@@ -1002,6 +1002,9 @@ export enum CanisterHttpMethod {
   GET = 'GET',
   POST = 'POST',
   HEAD = 'HEAD',
+  PUT = 'PUT',
+  DELETE = 'DELETE',
+  PATCH = 'PATCH',
 }
 
 export type CanisterHttpHeader = [string, string];
@@ -1022,6 +1025,9 @@ export enum EncodedCanisterHttpMethod {
   GET = 'GET',
   POST = 'POST',
   HEAD = 'HEAD',
+  PUT = 'PUT',
+  DELETE = 'DELETE',
+  PATCH = 'PATCH',
 }
 
 export interface EncodedCanisterHttpHeader {
@@ -1061,6 +1067,12 @@ function decodeCanisterHttpMethod(
       return CanisterHttpMethod.POST;
     case EncodedCanisterHttpMethod.HEAD:
       return CanisterHttpMethod.HEAD;
+    case EncodedCanisterHttpMethod.PUT:
+      return CanisterHttpMethod.PUT;
+    case EncodedCanisterHttpMethod.DELETE:
+      return CanisterHttpMethod.DELETE;
+    case EncodedCanisterHttpMethod.PATCH:
+      return CanisterHttpMethod.PATCH;
   }
 }
 
