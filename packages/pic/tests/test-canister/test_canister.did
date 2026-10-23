@@ -1,5 +1,7 @@
 type Time = int;
+type HttpMethod = variant { get; head; post; put; delete; patch };
 
 service : {
   get_time : () -> (Time) query;
+  http_request_status : (HttpMethod) -> (nat);
 }
