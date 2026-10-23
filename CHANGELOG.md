@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.23.1 (2026-10-23)
+
+### Fix
+
+- **pic**: read HTTPS outcalls made with PUT, DELETE and PATCH (0.23 backport) (#322)
+
 ## 0.23.0 (2026-08-03)
 
 ### Feat
