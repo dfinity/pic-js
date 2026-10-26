@@ -40,6 +40,24 @@ describe('createActor', () => {
     expect((await actor.whoami()).toText()).toBe(sender.toText());
   });
 
+  it('should accept the deprecated positional arguments', async () => {
+    const actor = fixture.pic.createActor<TestCanister>(
+      idlFactory,
+      fixture.canisterId,
+    );
+
+    expect((await actor.whoami()).toText()).toBe(
+      Principal.anonymous().toText(),
+    );
+  });
+
+  it('should throw when the positional canisterId is missing', () => {
+    expect(() =>
+      // @ts-expect-error testing the runtime guard of the deprecated form
+      fixture.pic.createActor<TestCanister>(idlFactory),
+    ).toThrow('require a canisterId');
+  });
+
   it('should let the sender be changed after creation', async () => {
     const other = generateRandomIdentity().getPrincipal();
     const actor = fixture.pic.createActor<TestCanister>({
@@ -90,6 +108,17 @@ describe('createDeferredActor', () => {
     const whoami = await actor.whoami();
 
     expect((await whoami()).toText()).toBe(sender.toText());
+  });
+
+  it('should accept the deprecated positional arguments', async () => {
+    const actor = fixture.pic.createDeferredActor<TestCanister>(
+      idlFactory,
+      fixture.canisterId,
+    );
+
+    const whoami = await actor.whoami();
+
+    expect((await whoami()).toText()).toBe(Principal.anonymous().toText());
   });
 
   it('should reject when the call is rejected', async () => {

@@ -1,4 +1,5 @@
 import { Principal } from '@icp-sdk/core/principal';
+import { IDL } from '@icp-sdk/core/candid';
 import {
   canisterSnapshotFromIDL,
   isNil,
@@ -970,11 +971,34 @@ export class PocketIc {
    * await picServer.stop();
    * ```
    */
-  public createActor<T extends ActorInterface<T> = ActorInterface>({
-    idlFactory,
-    canisterId,
-    sender,
-  }: CreateActorOptions): Actor<T> {
+  public createActor<T extends ActorInterface<T> = ActorInterface>(
+    options: CreateActorOptions,
+  ): Actor<T>;
+  /**
+   * Creates an {@link Actor} for the given canister.
+   *
+   * @deprecated Pass a {@link CreateActorOptions} object instead:
+   * `pic.createActor<T>({ idlFactory, canisterId })`.
+   * This positional form will be removed in a future release.
+   *
+   * @param interfaceFactory The InterfaceFactory to use for the {@link Actor}.
+   * @param canisterId The Principal of the canister to create the {@link Actor} for.
+   * @typeParam T The type of the {@link Actor}. Must implement {@link ActorInterface}.
+   * @returns The {@link Actor} instance.
+   */
+  public createActor<T extends ActorInterface<T> = ActorInterface>(
+    interfaceFactory: IDL.InterfaceFactory,
+    canisterId: Principal,
+  ): Actor<T>;
+  public createActor<T extends ActorInterface<T> = ActorInterface>(
+    optionsOrInterfaceFactory: CreateActorOptions | IDL.InterfaceFactory,
+    legacyCanisterId?: Principal,
+  ): Actor<T> {
+    const { idlFactory, canisterId, sender } = resolveCreateActorOptions(
+      optionsOrInterfaceFactory,
+      legacyCanisterId,
+    );
+
     const Actor = createActorClass<T>(idlFactory, canisterId, this.client);
     const actor = new Actor();
 
@@ -1013,11 +1037,34 @@ export class PocketIc {
    * const response = await executeCall();
    * ```
    */
-  public createDeferredActor<T extends ActorInterface<T> = ActorInterface>({
-    idlFactory,
-    canisterId,
-    sender,
-  }: CreateActorOptions): DeferredActor<T> {
+  public createDeferredActor<T extends ActorInterface<T> = ActorInterface>(
+    options: CreateActorOptions,
+  ): DeferredActor<T>;
+  /**
+   * Creates a {@link DeferredActor} for the given canister.
+   *
+   * @deprecated Pass a {@link CreateActorOptions} object instead:
+   * `pic.createDeferredActor<T>({ idlFactory, canisterId })`.
+   * This positional form will be removed in a future release.
+   *
+   * @param interfaceFactory The InterfaceFactory to use for the {@link DeferredActor}.
+   * @param canisterId The Principal of the canister to create the {@link DeferredActor} for.
+   * @typeParam T The type of the {@link DeferredActor}. Must implement {@link ActorInterface}.
+   * @returns The {@link DeferredActor} instance.
+   */
+  public createDeferredActor<T extends ActorInterface<T> = ActorInterface>(
+    interfaceFactory: IDL.InterfaceFactory,
+    canisterId: Principal,
+  ): DeferredActor<T>;
+  public createDeferredActor<T extends ActorInterface<T> = ActorInterface>(
+    optionsOrInterfaceFactory: CreateActorOptions | IDL.InterfaceFactory,
+    legacyCanisterId?: Principal,
+  ): DeferredActor<T> {
+    const { idlFactory, canisterId, sender } = resolveCreateActorOptions(
+      optionsOrInterfaceFactory,
+      legacyCanisterId,
+    );
+
     const DeferredActor = createDeferredActorClass<T>(
       idlFactory,
       canisterId,
@@ -2231,4 +2278,29 @@ export class PocketIc {
       effectivePrincipal,
     });
   }
+}
+
+/**
+ * Normalises the arguments of `createActor` and `createDeferredActor`,
+ * accepting both the options object and the deprecated positional form.
+ */
+function resolveCreateActorOptions(
+  optionsOrInterfaceFactory: CreateActorOptions | IDL.InterfaceFactory,
+  legacyCanisterId?: Principal,
+): CreateActorOptions {
+  if (typeof optionsOrInterfaceFactory === 'function') {
+    if (isNil(legacyCanisterId)) {
+      throw new Error(
+        'createActor and createDeferredActor require a canisterId. ' +
+          'Pass an options object: { idlFactory, canisterId }.',
+      );
+    }
+
+    return {
+      idlFactory: optionsOrInterfaceFactory,
+      canisterId: legacyCanisterId,
+    };
+  }
+
+  return optionsOrInterfaceFactory;
 }
